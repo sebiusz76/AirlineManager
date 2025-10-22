@@ -10,6 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AirlineManager.DataAccess\AirlineManager.DataAccess.csproj" />
+    <ProjectReference Include="..\AirlineManager.Services\AirlineManager.Services.csproj" />
   </ItemGroup>
 
 </Project>
