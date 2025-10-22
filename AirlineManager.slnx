@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="AirlineManager.DataAccess/AirlineManager.DataAccess.csproj" Id="c0177cef-6b1a-43fc-ba91-5a93e5a93700" />
+  <Project Path="AirlineManager.Models/AirlineManager.Models.csproj" Id="a2073ecb-7329-428f-a304-cf2101e6b2dc" />
+  <Project Path="AirlineManager.Services/AirlineManager.Services.csproj" Id="a49dbbca-011f-4ff4-9f00-dbfd62d9154d" />
   <Project Path="AirlineManager/AirlineManager.csproj" />
 </Solution>

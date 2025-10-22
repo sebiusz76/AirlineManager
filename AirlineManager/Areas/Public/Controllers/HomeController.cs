@@ -1,9 +1,12 @@
 using System.Diagnostics;
 using AirlineManager.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AirlineManager.Controllers
+namespace AirlineManager.Areas.Public.Controllers
 {
+    [Area("Public")]
+    [AllowAnonymous]    
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -14,11 +17,6 @@ namespace AirlineManager.Controllers
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
