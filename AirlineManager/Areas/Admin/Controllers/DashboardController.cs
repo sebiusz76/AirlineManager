@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AirlineManager.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin, SuperAdmin")]
     public class DashboardController : Controller
     {
         public IActionResult Index()

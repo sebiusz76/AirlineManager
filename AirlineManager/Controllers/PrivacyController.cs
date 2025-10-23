@@ -3,9 +3,8 @@ using AirlineManager.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AirlineManager.Areas.Public.Controllers
+namespace AirlineManager.Controllers
 {
-    [Area("Public")]
     [AllowAnonymous]
     public class PrivacyController : Controller
     {
@@ -15,7 +14,7 @@ namespace AirlineManager.Areas.Public.Controllers
         {
             _logger = logger;
         }
-        
+
         public IActionResult Index()
         {
             return View();

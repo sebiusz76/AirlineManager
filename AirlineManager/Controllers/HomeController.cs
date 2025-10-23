@@ -3,10 +3,9 @@ using AirlineManager.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AirlineManager.Areas.Public.Controllers
+namespace AirlineManager.Controllers
 {
-    [Area("Public")]
-    [AllowAnonymous]    
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
