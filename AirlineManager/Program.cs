@@ -1,7 +1,42 @@
 using System.IO.Compression;
+using AirlineManager.DataAccess.Data;
+using AirlineManager.Models.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add database connection
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
+
+// Add Identity services
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// Configure cookie settings
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.SlidingExpiration = true;
+});
 
 // Compression service registration
 builder.Services.AddResponseCompression(options =>
@@ -24,11 +59,10 @@ builder.Services.Configure<GzipCompressionProviderOptions>(o =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews()
-#if DEBUG    
+#if DEBUG
     .AddRazorRuntimeCompilation()
 #endif
     ;
-    
 
 var app = builder.Build();
 
@@ -49,8 +83,10 @@ app.UseHttpsRedirection();
 app.UseResponseCompression();
 
 // Serve static files from wwwroot
-app.UseStaticFiles(new StaticFileOptions { 
-    OnPrepareResponse = ctx => {
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
         // cache static files for 7 days
         ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
     }
@@ -58,9 +94,47 @@ app.UseStaticFiles(new StaticFileOptions {
 
 app.UseRouting();
 
-// If you use authentication, enable it here:
-// app.UseAuthentication();
+// Add authentication and authorization
+app.UseAuthentication();
 app.UseAuthorization();
+
+// Initialize roles and SuperAdmin
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Create roles if they don't exist
+    string[] roles = { "User", "Admin", "SuperAdmin" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Create a SuperAdmin if it doesn't exist (you'll want to secure this in production)
+    var adminEmail = "admin@example.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new ApplicationUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            FirstName = "Super",
+            LastName = "Admin"
+        };
+
+        var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "SuperAdmin");
+        }
+    }
+}
 
 app.MapControllerRoute(
     name: "areas",
@@ -69,7 +143,7 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{area=Public}/{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
