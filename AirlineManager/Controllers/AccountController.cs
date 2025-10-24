@@ -167,5 +167,153 @@ namespace AirlineManager.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ProfileTabs()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var model = new ProfileCompositeViewModel
+            {
+                Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                Email = new ProfileEmailViewModel { Email = user.Email },
+                Password = new ProfilePasswordViewModel()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProfileInfo([Bind(Prefix = "Info")] ProfileInfoViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            if (!ModelState.IsValid)
+            {
+                // Return composite view with posted info so validation messages display
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = model,
+                    Email = new ProfileEmailViewModel { Email = user.Email },
+                    Password = new ProfilePasswordViewModel()
+                };
+                TempData["ActiveTab"] = "info";
+                return View("ProfileTabs", composite);
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            await _userManager.UpdateAsync(user);
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Profile information updated.";
+            TempData["ActiveTab"] = "info";
+            return RedirectToAction(nameof(ProfileTabs));
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProfileEmail([Bind(Prefix = "Email")] ProfileEmailViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            if (!ModelState.IsValid)
+            {
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = model,
+                    Password = new ProfilePasswordViewModel()
+                };
+                TempData["ActiveTab"] = "email";
+                return View("ProfileTabs", composite);
+            }
+
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!passwordValid)
+            {
+                ModelState.AddModelError("Email.CurrentPassword", "Invalid current password.");
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = model,
+                    Password = new ProfilePasswordViewModel()
+                };
+                TempData["ActiveTab"] = "email";
+                return View("ProfileTabs", composite);
+            }
+
+            var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
+            if (!setEmailResult.Succeeded)
+            {
+                foreach (var err in setEmailResult.Errors) ModelState.AddModelError(string.Empty, err.Description);
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = model,
+                    Password = new ProfilePasswordViewModel()
+                };
+                TempData["ActiveTab"] = "email";
+                return View("ProfileTabs", composite);
+            }
+
+            user.UserName = model.Email;
+            await _userManager.UpdateAsync(user);
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Email updated.";
+            TempData["ActiveTab"] = "email";
+            return RedirectToAction(nameof(ProfileTabs));
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProfilePassword([Bind(Prefix = "Password")] ProfilePasswordViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            if (!ModelState.IsValid)
+            {
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = new ProfileEmailViewModel { Email = user.Email },
+                    Password = model
+                };
+                TempData["ActiveTab"] = "password";
+                return View("ProfileTabs", composite);
+            }
+
+            var changeRes = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!changeRes.Succeeded)
+            {
+                foreach (var err in changeRes.Errors) ModelState.AddModelError(string.Empty, err.Description);
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = new ProfileEmailViewModel { Email = user.Email },
+                    Password = model
+                };
+                TempData["ActiveTab"] = "password";
+                return View("ProfileTabs", composite);
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Password changed.";
+            TempData["ActiveTab"] = "password";
+            return RedirectToAction(nameof(ProfileTabs));
+        }
     }
 }
