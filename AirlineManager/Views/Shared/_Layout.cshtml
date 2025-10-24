@@ -1,78 +1,165 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AirlineManager</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AirlineManager.styles.css" asp-append-version="true" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - AirlineManager</title>
+	<script type="importmap"></script>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/AirlineManager.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/lib/sweetalert2/dist/sweetalert2.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AirlineManager</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
-                        </li>
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-controller="UserTest" asp-action="Index">User Test</a>
-                            </li>
-                            @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
-                            {
-                                <li class="nav-item">
-                                    
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Administration
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                                        </li>
-                                        <li>
-                                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
-                            
-                        }                        
-                    </ul>
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AirlineManager</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
+						</li>
+						@if (User.Identity.IsAuthenticated)
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="User" asp-controller="UserTest" asp-action="Index">User Test</a>
+							</li>
+							@if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+							{
+								<li class="nav-item">
+									
+								</li>
+								<li class="nav-item dropdown">
+									<a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+										Administration
+									</a>
+									<ul class="dropdown-menu">
+										<li>
+											<a class="nav-link text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+										</li>
+										<li>
+											<a class="nav-link text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+										</li>
+									</ul>
+								</li>
+							}
+							
+						}                        
+					</ul>
 
 					<partial name="_LoginPartial" />                    
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - AirlineManager - <a asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+	<footer class="border-top footer text-muted">
+		<div class="container">
+			&copy; @DateTime.Now.Year - AirlineManager - <a asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
+		</div>
+	</footer>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+
+	<script>
+		// Show toast if TempData contains notification
+		$(function () {
+			const toast = Swal.mixin({
+				toast: true,
+				position: 'top-end',
+				showConfirmButton: false,
+				timer:3000,
+				timerProgressBar: true
+			});
+
+			var toastType = "@TempData["ToastType"]";
+			var toastMessage = "@TempData["ToastMessage"]";
+			if (toastMessage) {
+				// map server-side toast types to Swal icons
+				var icon = 'info';
+				switch ((toastType || '').toLowerCase()) {
+					case 'success': icon = 'success'; break;
+					case 'error': icon = 'error'; break;
+					case 'warning': icon = 'warning'; break;
+					case 'info': icon = 'info'; break;
+				}
+
+				toast.fire({
+					icon: icon,
+					title: toastMessage
+				});
+			}
+
+			// Attach delete confirmation handler
+			$(document).on('submit', 'form.delete-form', function (e) {
+				var form = this;
+				e.preventDefault();
+				var email = $(form).find('.js-delete-user').data('email');
+
+				Swal.fire({
+					title: 'Are you sure? ',
+					text: `Delete user ${email}? This action cannot be undone.`,
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete',
+					cancelButtonText: 'Cancel'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+
+			// Unsaved changes handling for edit forms
+			var isDirty = false;
+			$(document).on('change', 'form.edit-form :input', function () {
+				isDirty = true;
+			});
+
+			// Intercept navigation away from edit page (links, back button)
+			$(document).on('click', 'a', function (e) {
+				var href = $(this).attr('href');
+				if (isDirty && href && !href.startsWith('#') && !$(this).attr('target')) {
+					e.preventDefault();
+					var link = this;
+					Swal.fire({
+						title: 'You have unsaved changes',
+						text: 'Are you sure you want to leave without saving?',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonText: 'Leave',
+						cancelButtonText: 'Stay'
+					}).then(function (result) {
+						if (result.isConfirmed) {
+							window.location = href;
+						}
+					});
+				}
+			});
+
+			// When edit form is submitted, reset dirty flag
+			$(document).on('submit', 'form.edit-form', function () {
+				isDirty = false;
+			});
+		});
+	</script>
+
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

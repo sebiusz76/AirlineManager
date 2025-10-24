@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "sweetalert2@11",
+      "files": [
+        "dist/sweetalert2.min.css",
+        "dist/sweetalert2.all.min.js"
+      ],
+      "destination": "wwwroot/lib/sweetalert2/"
+    }
+  ]
+}
