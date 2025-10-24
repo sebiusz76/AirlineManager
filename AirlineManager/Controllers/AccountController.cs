@@ -86,6 +86,13 @@ namespace AirlineManager.Controllers
 
                 if (result.Succeeded)
                 {
+                    // after successful sign-in, check flag
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user != null && user.MustChangePassword)
+                    {
+                        return RedirectToAction(nameof(ChangePassword));
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -96,6 +103,42 @@ namespace AirlineManager.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetResult = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+            if (!resetResult.Succeeded)
+            {
+                foreach (var err in resetResult.Errors) ModelState.AddModelError(string.Empty, err.Description);
+                return View(model);
+            }
+
+            user.MustChangePassword = false;
+            await _userManager.UpdateAsync(user);
+
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Your password has been changed.";
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

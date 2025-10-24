@@ -11,5 +11,8 @@ namespace AirlineManager.Models.Domain
 
         [Required]
         public string LastName { get; set; }
+
+        // If true, user must change password at next login
+        public bool MustChangePassword { get; set; } = false;
     }
 }

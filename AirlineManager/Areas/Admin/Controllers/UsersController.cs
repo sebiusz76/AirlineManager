@@ -208,5 +208,60 @@ namespace AirlineManager.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SetPassword(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var model = new AdminSetPasswordViewModel
+            {
+                Id = user.Id,
+                Email = user.Email
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPassword(AdminSetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+            var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null) return NotFound();
+
+            // Remove existing password if any (for external logins) then set new password via reset token
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            if (hasPassword)
+            {
+                // generate reset token and reset
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var res = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                if (!res.Succeeded)
+                {
+                    foreach (var err in res.Errors) ModelState.AddModelError(string.Empty, err.Description);
+                    return View(model);
+                }
+            }
+            else
+            {
+                var res = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (!res.Succeeded)
+                {
+                    foreach (var err in res.Errors) ModelState.AddModelError(string.Empty, err.Description);
+                    return View(model);
+                }
+            }
+
+            // Force user to change password at next login
+            user.MustChangePassword = true;
+            await _userManager.UpdateAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Password updated successfully. User will be required to change it at next login.";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
