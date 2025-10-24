@@ -255,8 +255,12 @@ namespace AirlineManager.Areas.Admin.Controllers
                 }
             }
 
+            // Force user to change password at next login
+            user.MustChangePassword = true;
+            await _userManager.UpdateAsync(user);
+
             TempData["ToastType"] = "success";
-            TempData["ToastMessage"] = "Password updated successfully.";
+            TempData["ToastMessage"] = "Password updated successfully. User will be required to change it at next login.";
             return RedirectToAction(nameof(Index));
         }
     }

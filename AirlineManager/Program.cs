@@ -1,4 +1,5 @@
 using AirlineManager.DataAccess.Data;
+using AirlineManager.Middleware;
 using AirlineManager.Models.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -50,15 +51,15 @@ builder.Services.AddAuthorization(options =>
         {
             policy.RequireAssertion(context =>
      {
-            var user = context.User;
-            var minIndex = Array.IndexOf(roleOrder, minimumRole);
-            if (minIndex < 0) return false;
-            for (var i = minIndex; i < roleOrder.Length; i++)
-            {
-                if (user.IsInRole(roleOrder[i])) return true;
-            }
-            return false;
-        });
+         var user = context.User;
+         var minIndex = Array.IndexOf(roleOrder, minimumRole);
+         if (minIndex < 0) return false;
+         for (var i = minIndex; i < roleOrder.Length; i++)
+         {
+             if (user.IsInRole(roleOrder[i])) return true;
+         }
+         return false;
+     });
         });
     }
 
@@ -96,6 +97,13 @@ builder.Services.AddControllersWithViews()
 
 var app = builder.Build();
 
+// Apply any pending migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -104,7 +112,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -112,12 +119,10 @@ app.UseHttpsRedirection();
 
 app.UseResponseCompression();
 
-// Serve static files from wwwroot
 app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        // cache static files for7 days
         ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
     }
 });
@@ -126,6 +131,10 @@ app.UseRouting();
 
 // Add authentication and authorization
 app.UseAuthentication();
+
+// Middleware to force password change
+app.UseMiddleware<RequirePasswordChangeMiddleware>();
+
 app.UseAuthorization();
 
 // Initialize roles and SuperAdmin
