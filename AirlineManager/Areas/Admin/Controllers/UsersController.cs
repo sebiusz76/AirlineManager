@@ -178,6 +178,10 @@ namespace AirlineManager.Areas.Admin.Controllers
                 await _userManager.ResetAccessFailedCountAsync(user);
             }
 
+            // Set TempData for success toast
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "User updated successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -198,6 +202,10 @@ namespace AirlineManager.Areas.Admin.Controllers
             }
 
             await _userManager.DeleteAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "User deleted successfully.";
+
             return RedirectToAction(nameof(Index));
         }
     }
