@@ -1,17 +1,17 @@
-using System.IO.Compression;
 using AirlineManager.DataAccess.Data;
 using AirlineManager.Models.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add database connection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+ options.UseSqlServer(
+ builder.Configuration.GetConnectionString("DefaultConnection")
+ )
 );
 
 // Add Identity services
@@ -25,8 +25,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedAccount = false;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+ .AddEntityFrameworkStores<ApplicationDbContext>()
+ .AddDefaultTokenProviders();
 
 // Configure cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
@@ -36,6 +36,36 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
     options.SlidingExpiration = true;
+});
+
+// Register role hierarchy and authorization policies
+var roleOrder = new[] { "User", "Moderator", "Admin", "SuperAdmin" };
+
+builder.Services.AddAuthorization(options =>
+{
+    // helper to add policy for minimum role
+    void AddMinimumRolePolicy(string policyName, string minimumRole)
+    {
+        options.AddPolicy(policyName, policy =>
+        {
+            policy.RequireAssertion(context =>
+     {
+            var user = context.User;
+            var minIndex = Array.IndexOf(roleOrder, minimumRole);
+            if (minIndex < 0) return false;
+            for (var i = minIndex; i < roleOrder.Length; i++)
+            {
+                if (user.IsInRole(roleOrder[i])) return true;
+            }
+            return false;
+        });
+        });
+    }
+
+    AddMinimumRolePolicy("AtLeastUser", "User");
+    AddMinimumRolePolicy("AtLeastModerator", "Moderator");
+    AddMinimumRolePolicy("AtLeastAdmin", "Admin");
+    AddMinimumRolePolicy("AtLeastSuperAdmin", "SuperAdmin");
 });
 
 // Compression service registration
@@ -60,9 +90,9 @@ builder.Services.Configure<GzipCompressionProviderOptions>(o =>
 // Add services to the container.
 builder.Services.AddControllersWithViews()
 #if DEBUG
-    .AddRazorRuntimeCompilation()
+ .AddRazorRuntimeCompilation()
 #endif
-    ;
+ ;
 
 var app = builder.Build();
 
@@ -74,7 +104,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The default HSTS value is30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -87,7 +117,7 @@ app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
     {
-        // cache static files for 7 days
+        // cache static files for7 days
         ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
     }
 });
@@ -105,7 +135,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     // Create roles if they don't exist
-    string[] roles = { "User", "Admin", "SuperAdmin" };
+    string[] roles = { "User", "Moderator", "Admin", "SuperAdmin" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -137,13 +167,13 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapControllerRoute(
-    name: "areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+ name: "areas",
+ pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+ .WithStaticAssets();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+ name: "default",
+ pattern: "{controller=Home}/{action=Index}/{id?}")
+ .WithStaticAssets();
 
 app.Run();

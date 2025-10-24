@@ -24,14 +24,11 @@
 		<span asp-validation-for="LastName" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
-		<label>Roles</label>
-		@foreach (var role in Model.AllRoles)
-		{
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role" @(Model.SelectedRoles.Contains(role) ? "checked" : "") />
-				<label class="form-check-label">@role</label>
-			</div>
-		}
+		<label asp-for="SelectedRole" class="form-label">Role</label>
+		<select asp-for="SelectedRole" class="form-select" asp-items="@(new SelectList(Model.AllRoles))">
+			<option value="">-- Select role --</option>
+		</select>
+		<span asp-validation-for="SelectedRole" class="text-danger"></span>
 	</div>
 	<div class="mb-3 form-check">
 		<input asp-for="IsLockedOut" class="form-check-input" />

@@ -16,7 +16,8 @@ namespace AirlineManager.Models.ViewModel
         [Required]
         public string LastName { get; set; }
 
-        public List<string> SelectedRoles { get; set; } = new List<string>();
+        [Required]
+        public string SelectedRole { get; set; }
         public List<string> AllRoles { get; set; } = new List<string>();
         public bool IsLockedOut { get; set; }
     }
