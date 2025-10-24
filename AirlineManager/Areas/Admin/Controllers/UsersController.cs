@@ -14,11 +14,19 @@ namespace AirlineManager.Areas.Admin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly string[] _roleOrder = new[] { "User", "Moderator", "Admin", "SuperAdmin" };
 
         public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+        }
+
+        private string GetHighestRole(IEnumerable<string> roles)
+        {
+            // returns the role with highest index in roleOrder
+            var best = roles.OrderBy(r => Array.IndexOf(_roleOrder, r)).FirstOrDefault();
+            return best;
         }
 
         public async Task<IActionResult> Index()
@@ -29,6 +37,7 @@ namespace AirlineManager.Areas.Admin.Controllers
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
+                var highest = GetHighestRole(roles);
                 var isLocked = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow;
 
                 model.Add(new AdminUserViewModel
@@ -37,7 +46,7 @@ namespace AirlineManager.Areas.Admin.Controllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Roles = roles.ToList(),
+                    Role = highest ?? "User",
                     IsLockedOut = isLocked,
                     LockoutEnd = user.LockoutEnd
                 });
@@ -63,7 +72,7 @@ namespace AirlineManager.Areas.Admin.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                SelectedRoles = userRoles.ToList(),
+                SelectedRole = GetHighestRole(userRoles) ?? "User",
                 AllRoles = allRoles,
                 IsLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow
             };
@@ -87,19 +96,16 @@ namespace AirlineManager.Areas.Admin.Controllers
             user.LastName = model.LastName;
             await _userManager.UpdateAsync(user);
 
-            // Update roles
+            // Ensure user has only one role: remove existing and add the selected
             var userRoles = await _userManager.GetRolesAsync(user);
-            var rolesToAdd = model.SelectedRoles.Except(userRoles).ToList();
-            var rolesToRemove = userRoles.Except(model.SelectedRoles).ToList();
-
-            if (rolesToRemove.Any())
+            if (userRoles.Any())
             {
-                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
             }
 
-            if (rolesToAdd.Any())
+            if (!string.IsNullOrEmpty(model.SelectedRole))
             {
-                await _userManager.AddToRolesAsync(user, rolesToAdd);
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
             }
 
             // Update lockout
