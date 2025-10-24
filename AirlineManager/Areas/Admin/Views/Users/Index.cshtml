@@ -1,0 +1,36 @@
+@model IEnumerable<AirlineManager.Models.ViewModel.AdminUserViewModel>
+
+@{
+	ViewData["Title"] = "Users";
+}
+
+<h1>Users</h1>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Email</th>
+			<th>Name</th>
+			<th>Roles</th>
+			<th>Locked</th>
+			<th></th>
+		</tr>
+	</thead>
+<tbody>
+	@foreach (var user in Model)
+	{
+		<tr>
+			<td>@user.Email</td>
+			<td>@user.FirstName @user.LastName</td>
+			<td>@string.Join(", ", user.Roles)</td>
+			<td>@(user.IsLockedOut ? "Yes" : "No")</td>
+			<td>
+				<a asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
+				<form asp-area="Admin" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id" method="post" style="display:inline-block;">
+					<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+				</form>
+			</td>
+		</tr>
+	}
+</tbody>
+</table>
