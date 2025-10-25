@@ -3,10 +3,11 @@ using AirlineManager.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace AirlineManager.Controllers
 {
-    public class AccountController : Controller
+    public partial class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -170,7 +171,7 @@ namespace AirlineManager.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ProfileTabs()
+        public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
@@ -179,7 +180,8 @@ namespace AirlineManager.Controllers
             {
                 Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                 Email = new ProfileEmailViewModel { Email = user.Email },
-                Password = new ProfilePasswordViewModel()
+                Password = new ProfilePasswordViewModel(),
+                Delete = new ProfileDeleteViewModel()
             };
 
             return View(model);
@@ -200,10 +202,11 @@ namespace AirlineManager.Controllers
                 {
                     Info = model,
                     Email = new ProfileEmailViewModel { Email = user.Email },
-                    Password = new ProfilePasswordViewModel()
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "info";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             user.FirstName = model.FirstName;
@@ -214,7 +217,7 @@ namespace AirlineManager.Controllers
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "Profile information updated.";
             TempData["ActiveTab"] = "info";
-            return RedirectToAction(nameof(ProfileTabs));
+            return RedirectToAction("Profile");
         }
 
         [HttpPost]
@@ -231,10 +234,11 @@ namespace AirlineManager.Controllers
                 {
                     Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                     Email = model,
-                    Password = new ProfilePasswordViewModel()
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "email";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
@@ -245,10 +249,11 @@ namespace AirlineManager.Controllers
                 {
                     Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                     Email = model,
-                    Password = new ProfilePasswordViewModel()
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "email";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
@@ -259,10 +264,11 @@ namespace AirlineManager.Controllers
                 {
                     Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                     Email = model,
-                    Password = new ProfilePasswordViewModel()
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "email";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             user.UserName = model.Email;
@@ -272,7 +278,7 @@ namespace AirlineManager.Controllers
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "Email updated.";
             TempData["ActiveTab"] = "email";
-            return RedirectToAction(nameof(ProfileTabs));
+            return RedirectToAction("Profile");
         }
 
         [HttpPost]
@@ -289,10 +295,11 @@ namespace AirlineManager.Controllers
                 {
                     Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                     Email = new ProfileEmailViewModel { Email = user.Email },
-                    Password = model
+                    Password = model,
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "password";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             var changeRes = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
@@ -303,17 +310,96 @@ namespace AirlineManager.Controllers
                 {
                     Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
                     Email = new ProfileEmailViewModel { Email = user.Email },
-                    Password = model
+                    Password = model,
+                    Delete = new ProfileDeleteViewModel()
                 };
                 TempData["ActiveTab"] = "password";
-                return View("ProfileTabs", composite);
+                return View("Profile", composite);
             }
 
             await _signInManager.RefreshSignInAsync(user);
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "Password changed.";
             TempData["ActiveTab"] = "password";
-            return RedirectToAction(nameof(ProfileTabs));
+            return RedirectToAction("Profile");
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExportData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            var export = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                Roles = roles,
+                Claims = claims.Select(c => new { c.Type, c.Value })
+            };
+
+            var json = JsonSerializer.Serialize(export, new JsonSerializerOptions { WriteIndented = true });
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            return File(bytes, "application/json", $"user-{user.Id}.json");
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount([Bind(Prefix = "Delete")] ProfileDeleteViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            if (!ModelState.IsValid)
+            {
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = new ProfileEmailViewModel { Email = user.Email },
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = model
+                };
+                TempData["ActiveTab"] = "export";
+                return View("Profile", composite);
+            }
+
+            var pwOk = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!pwOk)
+            {
+                ModelState.AddModelError("Delete.CurrentPassword", "Invalid password.");
+                var composite = new ProfileCompositeViewModel
+                {
+                    Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
+                    Email = new ProfileEmailViewModel { Email = user.Email },
+                    Password = new ProfilePasswordViewModel(),
+                    Delete = model
+                };
+                TempData["ActiveTab"] = "export";
+                return View("Profile", composite);
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Failed to delete account.";
+                TempData["ActiveTab"] = "export";
+                return RedirectToAction("Profile");
+            }
+
+            await _signInManager.SignOutAsync();
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Your account has been deleted.";
+            return RedirectToAction("Index", "Home");
         }
     }
 }
