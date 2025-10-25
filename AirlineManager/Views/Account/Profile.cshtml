@@ -1,0 +1,127 @@
+@model AirlineManager.Models.ViewModel.ProfileCompositeViewModel
+
+@{
+	ViewData["Title"] = "Profile";
+}
+
+<h1>Profile</h1>
+
+<ul class="nav nav-tabs" id="profileTabs" role="tablist">
+	<li class="nav-item" role="presentation">
+		<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">Info</button>
+	</li>
+	<li class="nav-item" role="presentation">
+		<button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab" aria-controls="email" aria-selected="false">Email</button>
+	</li>
+	<li class="nav-item" role="presentation">
+		<button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">Password</button>
+	</li>
+	<li class="nav-item" role="presentation">
+		<button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab" aria-controls="export" aria-selected="false">Export / Delete</button>
+	</li>
+</ul>
+
+<div class="tab-content mt-3" id="profileTabsContent">
+	<div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+		<form asp-action="ProfileInfo" method="post" class="edit-form">
+			@Html.AntiForgeryToken()
+			<div class="mb-3">
+				<label asp-for="Info.FirstName" class="form-label"></label>
+				<input asp-for="Info.FirstName" class="form-control" />
+				<span asp-validation-for="Info.FirstName" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Info.LastName" class="form-label"></label>
+				<input asp-for="Info.LastName" class="form-control" />
+				<span asp-validation-for="Info.LastName" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-primary">Save info</button>
+		</form>
+	</div>
+
+	<div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
+		<form asp-action="ProfileEmail" method="post" class="edit-form">
+			@Html.AntiForgeryToken()
+			<div class="mb-3">
+				<label asp-for="Email.Email" class="form-label"></label>
+				<input asp-for="Email.Email" class="form-control" />
+				<span asp-validation-for="Email.Email" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Email.CurrentPassword" class="form-label"></label>
+				<input asp-for="Email.CurrentPassword" class="form-control" />
+				<span asp-validation-for="Email.CurrentPassword" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-primary">Change email</button>
+		</form>
+	</div>
+
+	<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+		<form asp-action="ProfilePassword" method="post" class="edit-form">
+			@Html.AntiForgeryToken()
+			<div class="mb-3">
+				<label asp-for="Password.CurrentPassword" class="form-label"></label>
+				<input asp-for="Password.CurrentPassword" class="form-control" />
+				<span asp-validation-for="Password.CurrentPassword" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Password.NewPassword" class="form-label"></label>
+				<input asp-for="Password.NewPassword" class="form-control" />
+				<span asp-validation-for="Password.NewPassword" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Password.ConfirmPassword" class="form-label"></label>
+				<input asp-for="Password.ConfirmPassword" class="form-control" />
+				<span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-primary">Change password</button>
+		</form>
+	</div>
+
+	<div class="tab-pane fade" id="export" role="tabpanel" aria-labelledby="export-tab">
+		<h4>Download your data</h4>
+		<p>You can download all data related to your account as a JSON file. This will include your profile, roles and related entities.</p>
+		<form asp-action="ExportData" method="post">
+			@Html.AntiForgeryToken()
+			<button type="submit" class="btn btn-outline-primary">Download my data</button>
+		</form>
+
+		<hr />
+		<h4>Delete account</h4>
+		<p>Deleting your account will remove your user data. This action is irreversible.</p>
+		<form asp-action="DeleteAccount" method="post" class="delete-form">
+			@Html.AntiForgeryToken()
+			<div class="mb-3">
+				<label asp-for="Delete.CurrentPassword" class="form-label"></label>
+				<input asp-for="Delete.CurrentPassword" class="form-control" />
+				<span asp-validation-for="Delete.CurrentPassword" class="text-danger"></span>
+			</div>
+			<button type="submit" class="btn btn-danger">Delete my account</button>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		(function () {
+			// Activate tab from TempData (set by controller) or hash
+			var active = '@TempData["ActiveTab"]' || window.location.hash.replace('#', '');
+			if (active) {
+				var triggerEl = document.querySelector('#' + active + '-tab');
+				if (triggerEl) {
+					var tab = new bootstrap.Tab(triggerEl);
+					tab.show();
+					// set focus to first input in active tab
+					var target = document.querySelector(triggerEl.getAttribute('data-bs-target'));
+					if (target) {
+						var input = target.querySelector('input');
+						if (input) input.focus();
+					}
+				}
+			}
+
+			// If redirect preserved ModelState via TempData you'd need to repopulate fields. Simplified here.
+		})();
+	</script>
+}

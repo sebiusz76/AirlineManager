@@ -47,12 +47,56 @@ namespace AirlineManager.Areas.Admin.Controllers
             return _roleOrder.Take(idx + 1).ToList();
         }
 
-        public async Task<IActionResult> Index()
+        // Index with filtering and pagination
+        public async Task<IActionResult> Index(string search = null, string roleFilter = null, int page = 1, int pageSize = 10)
         {
-            var users = await _userManager.Users.ToListAsync();
-            var model = new List<AdminUserViewModel>();
+            // provide roles for filter dropdown
+            var allRoles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+            ViewBag.AvailableRoles = allRoles;
 
-            foreach (var user in users)
+            // normalize paging inputs
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 5, 100);
+
+            List<ApplicationUser> usersPage;
+            int totalCount;
+
+            if (!string.IsNullOrEmpty(roleFilter))
+            {
+                // get users in role (in-memory)
+                var usersInRole = await _userManager.GetUsersInRoleAsync(roleFilter);
+                var q = usersInRole.AsQueryable();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var s = search.Trim();
+                    q = q.Where(u => (u.Email != null && u.Email.Contains(s))
+                                     || (u.FirstName != null && u.FirstName.Contains(s))
+                                     || (u.LastName != null && u.LastName.Contains(s)));
+                }
+
+                totalCount = q.Count();
+                usersPage = q.OrderBy(u => u.Email).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            }
+            else
+            {
+                // query directly from store
+                var q = _userManager.Users.AsQueryable();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    var s = search.Trim();
+                    q = q.Where(u => (u.Email != null && u.Email.Contains(s))
+                                     || (u.FirstName != null && u.FirstName.Contains(s))
+                                     || (u.LastName != null && u.LastName.Contains(s)));
+                }
+
+                totalCount = await q.CountAsync();
+                usersPage = await q.OrderBy(u => u.Email).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            }
+
+            var model = new List<AdminUserViewModel>();
+            foreach (var user in usersPage)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var highest = GetHighestRole(roles);
@@ -69,6 +113,14 @@ namespace AirlineManager.Areas.Admin.Controllers
                     LockoutEnd = user.LockoutEnd
                 });
             }
+
+            // paging metadata
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+            ViewBag.Search = search;
+            ViewBag.RoleFilter = roleFilter;
 
             return View(model);
         }
