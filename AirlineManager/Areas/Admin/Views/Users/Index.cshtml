@@ -2,9 +2,38 @@
 
 @{
 	ViewData["Title"] = "Users";
+	var currentPage = ViewBag.CurrentPage as int? ?? 1;
+	var pageSize = ViewBag.PageSize as int? ?? 10;
+	var totalPages = ViewBag.TotalPages as int? ?? 1;
+	var totalCount = ViewBag.TotalCount as int? ?? 0;
+	var search = ViewBag.Search as string ?? string.Empty;
+	var roleFilter = ViewBag.RoleFilter as string ?? string.Empty;
+	var availableRoles = ViewBag.AvailableRoles as List<string> ?? new List<string>();
 }
 
 <h1>Users</h1>
+
+<form method="get" class="row g-3 mb-3">
+	<div class="col-auto">
+		<input type="text" name="search" value="@search" class="form-control"
+			placeholder="Search name or email" />
+	</div>
+	<div class="col-auto">
+		<select name="roleFilter" class="form-select">
+			<option value="">All roles</option>
+			@foreach (var r in availableRoles) {
+				@if (r == roleFilter) {
+					<option value="@r" selected="selected">@r</option>
+				} else {
+					<option value="@r">@r</option>
+				}
+			}
+		</select>
+	</div>
+	<div class="col-auto">
+		<button class="btn btn-primary" type="submit">Filter</button>
+	</div>
+</form>
 
 <table class="table">
 	<thead>
@@ -17,22 +46,41 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var user in Model)
-		{
+		@foreach (var user in Model) {
 			<tr>
 				<td>@user.Email</td>
 				<td>@user.FirstName @user.LastName</td>
 				<td>@user.Role</td>
 				<td>@(user.IsLockedOut ? "Yes" : "No")</td>
 				<td>
-					<a asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
-					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword" asp-route-id="@user.Id" class="btn btn-sm btn-warning">Set Password</a>
-					<form asp-area="Admin" asp-controller="Users" asp-action="Delete" asp-route-id="@user.Id" method="post" class="delete-form" style="display:inline-block;">
+					<a asp-area="Admin" asp-controller="Users" asp-action="Edit"
+						asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
+					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
+						asp-route-id="@user.Id" class="btn btn-sm btn-warning">Set Password</a>
+					<form asp-area="Admin" asp-controller="Users" asp-action="Delete"
+						asp-route-id="@user.Id" method="post" class="delete-form"
+						style="display:inline-block;">
 						@Html.AntiForgeryToken()
-						<button type="submit" class="btn btn-sm btn-danger js-delete-user" data-email="@user.Email">Delete</button>
+						<button type="submit" class="btn btn-sm btn-danger js-delete-user"
+							data-email="@user.Email">Delete</button>
 					</form>
 				</td>
 			</tr>
 		}
 	</tbody>
 </table>
+
+<nav>
+	<ul class="pagination">
+		<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+			<a class="page-link" href="?search=@search&roleFilter=@roleFilter&page=@(currentPage - 1)&pageSize=@pageSize">Previous</a>
+		</li>
+		@for (int p = 1; p <= totalPages; p++) {
+			<li class="page-item @(p == currentPage ? "active" : "")"><a class="page-link"
+				href="?search=@search&roleFilter=@roleFilter&page=@p&pageSize=@pageSize">@p</a></li>
+		}
+		<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+			<a class="page-link" href="?search=@search&roleFilter=@roleFilter&page=@(currentPage + 1)&pageSize=@pageSize">Next</a>
+		</li>
+	</ul>
+</nav>
