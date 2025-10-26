@@ -252,6 +252,13 @@ namespace AirlineManager.Controllers
                 authenticatorUri = GenerateQrCodeUri(user.Email, unformattedKey);
             }
 
+            var is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            int? recoveryCodesLeft = null;
+            if (is2faEnabled)
+            {
+                recoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user);
+            }
+
             var model = new ProfileCompositeViewModel
             {
                 Info = new ProfileInfoViewModel { FirstName = user.FirstName, LastName = user.LastName },
@@ -260,11 +267,12 @@ namespace AirlineManager.Controllers
                 Delete = new ProfileDeleteViewModel(),
                 TwoFactor = new
                 {
-                    Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
+                    Is2faEnabled = is2faEnabled,
                     SharedKey = unformattedKey,
                     AuthenticatorUri = authenticatorUri,
                     QrCodeImage = (string?)null,
-                    RecoveryCodes = (IEnumerable<string>?)null
+                    RecoveryCodes = (IEnumerable<string>?)null,
+                    RecoveryCodesLeft = recoveryCodesLeft
                 }
             };
 
