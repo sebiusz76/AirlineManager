@@ -9,6 +9,33 @@
 <!-- Hidden antiforgery token for AJAX requests -->
 <form id="antiforgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
 
+<!-- Recovery Codes Modal -->
+<div class="modal fade" id="recoveryCodesModal" tabindex="-1" aria-labelledby="recoveryCodesModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="recoveryCodesModalLabel">Recovery Codes</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-warning">
+					<strong>Important!</strong> Save these recovery codes in a safe place. You can use them to sign in if you lose access to your authenticator app.
+				</div>
+				<pre id="modalRecoveryCodes" class="p-3 bg-light border rounded" style="white-space:pre-wrap; font-family: monospace;"></pre>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="btnCopyRecoveryCodes">
+					<i class="bi bi-clipboard"></i> Copy to clipboard
+				</button>
+				<button type="button" class="btn btn-primary" id="btnDownloadRecoveryCodes">
+					<i class="bi bi-download"></i> Download as file
+				</button>
+				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <ul class="nav nav-tabs" id="profileTabs" role="tablist">
 	<li class="nav-item" role="presentation">
 		<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">Info</button>
@@ -117,12 +144,6 @@
 			</div>
 			<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
 		</div>
-		<div id="tfRecoveryArea" style="display:none; margin-top:12px;">
-			<h5>Recovery Codes</h5>
-			<p>Save these recovery codes in a safe place. You can use them to sign in if you lose access to your authenticator app.</p>
-			<pre id="tfRecoveryCodes" class="p-2 bg-light" style="white-space:pre-wrap;"></pre>
-			<button id="tfCopyRecovery" class="btn btn-sm btn-outline-secondary">Copy to clipboard</button>
-		</div>
 	</div>
 
 	<div class="tab-pane fade" id="export" role="tabpanel" aria-labelledby="export-tab">
@@ -151,8 +172,12 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script src="~/lib/qrcodejs/qrcode.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
 	(function(){
+		var recoveryCodesModal;
+		var currentRecoveryCodes = [];
+
 		function getRequestVerificationToken() {
 			var el = document.querySelector('#antiforgeryForm input[name="__RequestVerificationToken"]');
 			return el ? el.value : '';
@@ -164,12 +189,71 @@
 			new QRCode(container, { text: uri, width:200, height:200 });
 		}
 
-		function showRecoveryCodes(codes) {
-			var area = document.getElementById('tfRecoveryArea');
-			var pre = document.getElementById('tfRecoveryCodes');
-			pre.innerText = (codes || []).join('\n');
-			area.style.display = 'block';
+		function showToast(message, type) {
+			var icon = type === 'success' ? 'success' : type === 'danger' ? 'error' : 'info';
+			Swal.fire({
+				toast: true,
+				position: 'top-end',
+				icon: icon,
+				title: message,
+				showConfirmButton: false,
+				timer: 3000,
+				timerProgressBar: true
+			});
 		}
+
+		function showRecoveryCodesModal(codes) {
+			currentRecoveryCodes = codes || [];
+			var pre = document.getElementById('modalRecoveryCodes');
+			pre.innerText = currentRecoveryCodes.join('\n');
+			
+			if (!recoveryCodesModal) {
+				recoveryCodesModal = new bootstrap.Modal(document.getElementById('recoveryCodesModal'));
+			}
+			recoveryCodesModal.show();
+		}
+
+		function copyRecoveryCodesToClipboard() {
+			var text = currentRecoveryCodes.join('\n');
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(text).then(function(){
+					showToast('Recovery codes copied to clipboard.', 'success');
+				}).catch(function(err){
+					showToast('Failed to copy: ' + err.message, 'danger');
+				});
+			} else {
+				var textarea = document.createElement('textarea');
+				textarea.value = text;
+				textarea.style.position = 'fixed';
+				textarea.style.opacity = '0';
+				document.body.appendChild(textarea);
+				textarea.select();
+				try {
+					document.execCommand('copy');
+					showToast('Recovery codes copied to clipboard.', 'success');
+				} catch(err) {
+					showToast('Failed to copy.', 'danger');
+				}
+				document.body.removeChild(textarea);
+			}
+		}
+
+		function downloadRecoveryCodes() {
+			var text = currentRecoveryCodes.join('\n');
+			var blob = new Blob([text], { type: 'text/plain' });
+			var url = URL.createObjectURL(blob);
+			var a = document.createElement('a');
+			a.href = url;
+			a.download = 'recovery-codes-' + new Date().toISOString().split('T')[0] + '.txt';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			showToast('Recovery codes downloaded.', 'success');
+		}
+
+		document.getElementById('btnCopyRecoveryCodes').addEventListener('click', copyRecoveryCodesToClipboard);
+		document.getElementById('btnDownloadRecoveryCodes').addEventListener('click', downloadRecoveryCodes);
 
 		var tfConfigureBtn = document.getElementById('tfConfigure');
 		if(tfConfigureBtn) {
@@ -209,7 +293,8 @@
 				.then(function(res){
 					if(res.success){
 						if(res.recovery){
-							showRecoveryCodes(res.recovery);
+							showRecoveryCodesModal(res.recovery);
+							showToast('Two-factor authentication enabled successfully!', 'success');
 						}
 						setTimeout(function(){ location.reload(); }, 3000);
 					} else {
@@ -224,11 +309,32 @@
 		if(tfDisableBtn) {
 			tfDisableBtn.addEventListener('click', function(e){
 				e.preventDefault();
-				if(!confirm('Disable two-factor authentication? You will need to reconfigure it to use authenticator apps again.')) return;
-				var form = document.createElement('form'); form.method='post'; form.action='/Account/DisableTwoFactorSelf';
-				var token = getRequestVerificationToken();
-				if(token){ var inp = document.createElement('input'); inp.type='hidden'; inp.name='__RequestVerificationToken'; inp.value=token; form.appendChild(inp); }
-				document.body.appendChild(form); form.submit();
+				Swal.fire({
+					title: 'Disable Two-Factor Authentication?',
+					text: 'You will need to reconfigure it to use authenticator apps again.',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#3085d6',
+					confirmButtonText: 'Yes, disable it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						var form = document.createElement('form'); 
+						form.method='post'; 
+						form.action='/Account/DisableTwoFactorSelf';
+						var token = getRequestVerificationToken();
+						if(token){ 
+							var inp = document.createElement('input'); 
+							inp.type='hidden'; 
+							inp.name='__RequestVerificationToken'; 
+							inp.value=token; 
+							form.appendChild(inp); 
+						}
+						document.body.appendChild(form); 
+						form.submit();
+					}
+				});
 			});
 		}
 
@@ -236,50 +342,32 @@
 		if(tfResetRecoveryBtn) {
 			tfResetRecoveryBtn.addEventListener('click', function(e){
 				e.preventDefault();
-				if(!confirm('Reset recovery codes? This will invalidate your existing recovery codes and generate new ones.')) return;
-				fetch('/Account/ResetRecoveryCodesAjax', {
-					method: 'POST',
-					credentials: 'same-origin',
-					headers: { 'RequestVerificationToken': getRequestVerificationToken() }
-				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
-				.then(function(res){
-					if(res.success && res.recovery){
-						showRecoveryCodes(res.recovery);
-						alert('Recovery codes have been reset. Save the new codes in a safe place.');
-					} else {
-						alert(res.message || 'Failed to reset recovery codes.');
+				Swal.fire({
+					title: 'Reset Recovery Codes?',
+					text: 'This will invalidate your existing recovery codes and generate new ones.',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#f0ad4e',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, reset them',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						fetch('/Account/ResetRecoveryCodesAjax', {
+							method: 'POST',
+							credentials: 'same-origin',
+							headers: { 'RequestVerificationToken': getRequestVerificationToken() }
+						}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+						.then(function(res){
+							if(res.success && res.recovery){
+								showRecoveryCodesModal(res.recovery);
+								showToast('Recovery codes have been reset successfully!', 'success');
+							} else {
+								showToast(res.message || 'Failed to reset recovery codes.', 'danger');
+							}
+						}).catch(function(err){ showToast(err.message || 'Request failed.', 'danger'); });
 					}
-				}).catch(function(err){ alert(err.message || 'Request failed.'); });
-			});
-		}
-
-		var tfCopyRecoveryBtn = document.getElementById('tfCopyRecovery');
-		if(tfCopyRecoveryBtn) {
-			tfCopyRecoveryBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				var text = document.getElementById('tfRecoveryCodes').innerText;
-				if(navigator.clipboard && navigator.clipboard.writeText) {
-					navigator.clipboard.writeText(text).then(function(){
-						alert('Recovery codes copied to clipboard.');
-					}).catch(function(err){
-						alert('Failed to copy: ' + err.message);
-					});
-				} else {
-					// fallback for older browsers
-					var textarea = document.createElement('textarea');
-					textarea.value = text;
-					textarea.style.position = 'fixed';
-					textarea.style.opacity = '0';
-					document.body.appendChild(textarea);
-					textarea.select();
-					try {
-						document.execCommand('copy');
-						alert('Recovery codes copied to clipboard.');
-					} catch(err) {
-						alert('Failed to copy.');
-					}
-					document.body.removeChild(textarea);
-				}
+				});
 			});
 		}
 
