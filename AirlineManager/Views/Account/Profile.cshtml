@@ -6,6 +6,9 @@
 
 <h1>Profile</h1>
 
+<!-- Hidden antiforgery token for AJAX requests -->
+<form id="antiforgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
+
 <ul class="nav nav-tabs" id="profileTabs" role="tablist">
 	<li class="nav-item" role="presentation">
 		<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">Info</button>
@@ -15,6 +18,9 @@
 	</li>
 	<li class="nav-item" role="presentation">
 		<button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">Password</button>
+	</li>
+	<li class="nav-item" role="presentation">
+		<button class="nav-link" id="twofactor-tab" data-bs-toggle="tab" data-bs-target="#twofactor" type="button" role="tab" aria-controls="twofactor" aria-selected="false">Two-factor authentication</button>
 	</li>
 	<li class="nav-item" role="presentation">
 		<button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab" aria-controls="export" aria-selected="false">Export / Delete</button>
@@ -78,6 +84,47 @@
 		</form>
 	</div>
 
+	<div class="tab-pane fade" id="twofactor" role="tabpanel" aria-labelledby="twofactor-tab">
+		<h4>Two-factor authentication</h4>
+		@if (Model.TwoFactor != null && Model.TwoFactor.Is2faEnabled)
+		{
+			<div class="alert alert-success">
+				<strong>Two-factor authentication is enabled.</strong>
+			</div>
+			<p>Your account is protected with two-factor authentication using an authenticator app.</p>
+			<div class="mb-3">
+				<button id="tfResetRecovery" class="btn btn-warning">Reset recovery codes</button>
+				<button id="tfDisable" class="btn btn-danger ms-2">Disable 2FA</button>
+			</div>
+		}
+		else
+		{
+			<p>Configure your authenticator app (TOTP) to enable two-factor authentication.</p>
+			<div class="mb-2">
+				<button id="tfConfigure" class="btn btn-primary">Configure Authenticator</button>
+			</div>
+		}
+		<div id="tfArea" style="display:none; margin-top:12px;">
+			<div id="tfQr" style="width:200px;height:200px;"></div>
+			<div class="mt-2"><strong>Authentication key</strong></div>
+			<pre id="tfKey" class="p-2 bg-light" style="max-width:320px; white-space:pre-wrap;"></pre>
+			<div class="mt-2">
+				<label for="tfCode">Verification code</label>
+				<input id="tfCode" class="form-control" autocomplete="one-time-code" />
+			</div>
+			<div class="mt-2">
+				<button id="tfEnable" class="btn btn-success">Enable</button>
+			</div>
+			<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
+		</div>
+		<div id="tfRecoveryArea" style="display:none; margin-top:12px;">
+			<h5>Recovery Codes</h5>
+			<p>Save these recovery codes in a safe place. You can use them to sign in if you lose access to your authenticator app.</p>
+			<pre id="tfRecoveryCodes" class="p-2 bg-light" style="white-space:pre-wrap;"></pre>
+			<button id="tfCopyRecovery" class="btn btn-sm btn-outline-secondary">Copy to clipboard</button>
+		</div>
+	</div>
+
 	<div class="tab-pane fade" id="export" role="tabpanel" aria-labelledby="export-tab">
 		<h4>Download your data</h4>
 		<p>You can download all data related to your account as a JSON file. This will include your profile, roles and related entities.</p>
@@ -103,16 +150,146 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script src="~/lib/qrcodejs/qrcode.min.js"></script>
 	<script>
-		(function () {
-			// Activate tab from TempData (set by controller) or hash
+	(function(){
+		function getRequestVerificationToken() {
+			var el = document.querySelector('#antiforgeryForm input[name="__RequestVerificationToken"]');
+			return el ? el.value : '';
+		}
+
+		function renderQr(uri) {
+			var container = document.getElementById('tfQr');
+			container.innerHTML = '';
+			new QRCode(container, { text: uri, width:200, height:200 });
+		}
+
+		function showRecoveryCodes(codes) {
+			var area = document.getElementById('tfRecoveryArea');
+			var pre = document.getElementById('tfRecoveryCodes');
+			pre.innerText = (codes || []).join('\n');
+			area.style.display = 'block';
+		}
+
+		var tfConfigureBtn = document.getElementById('tfConfigure');
+		if(tfConfigureBtn) {
+			tfConfigureBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				fetch('/Account/Generate2faAjax', {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: { 'RequestVerificationToken': getRequestVerificationToken() }
+				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+				.then(function(res){
+					if(res.success) {
+						document.getElementById('tfArea').style.display = 'block';
+						renderQr(res.authenticatorUri);
+						document.getElementById('tfKey').innerText = (res.sharedKey||'').replace(/(.{4})/g,'$1 ').trim();
+						document.getElementById('tfFeedback').style.display = 'none';
+					} else {
+						document.getElementById('tfFeedback').innerText = res.message||'Failed to generate key.';
+						document.getElementById('tfFeedback').style.display = 'block';
+					}
+				}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
+			});
+		}
+
+		var tfEnableBtn = document.getElementById('tfEnable');
+		if(tfEnableBtn) {
+			tfEnableBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				var code = document.getElementById('tfCode').value.trim();
+				if(!code){ document.getElementById('tfFeedback').innerText='Enter verification code.'; document.getElementById('tfFeedback').style.display='block'; return; }
+				fetch('/Account/EnableSecondFactorAjax', {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: { 'Content-Type':'application/json', 'RequestVerificationToken': getRequestVerificationToken() },
+					body: JSON.stringify({ VerificationCode: code })
+				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+				.then(function(res){
+					if(res.success){
+						if(res.recovery){
+							showRecoveryCodes(res.recovery);
+						}
+						setTimeout(function(){ location.reload(); }, 3000);
+					} else {
+						document.getElementById('tfFeedback').innerText = res.message||'Failed to enable.';
+						document.getElementById('tfFeedback').style.display = 'block';
+					}
+				}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
+			});
+		}
+
+		var tfDisableBtn = document.getElementById('tfDisable');
+		if(tfDisableBtn) {
+			tfDisableBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				if(!confirm('Disable two-factor authentication? You will need to reconfigure it to use authenticator apps again.')) return;
+				var form = document.createElement('form'); form.method='post'; form.action='/Account/DisableTwoFactorSelf';
+				var token = getRequestVerificationToken();
+				if(token){ var inp = document.createElement('input'); inp.type='hidden'; inp.name='__RequestVerificationToken'; inp.value=token; form.appendChild(inp); }
+				document.body.appendChild(form); form.submit();
+			});
+		}
+
+		var tfResetRecoveryBtn = document.getElementById('tfResetRecovery');
+		if(tfResetRecoveryBtn) {
+			tfResetRecoveryBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				if(!confirm('Reset recovery codes? This will invalidate your existing recovery codes and generate new ones.')) return;
+				fetch('/Account/ResetRecoveryCodesAjax', {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: { 'RequestVerificationToken': getRequestVerificationToken() }
+				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+				.then(function(res){
+					if(res.success && res.recovery){
+						showRecoveryCodes(res.recovery);
+						alert('Recovery codes have been reset. Save the new codes in a safe place.');
+					} else {
+						alert(res.message || 'Failed to reset recovery codes.');
+					}
+				}).catch(function(err){ alert(err.message || 'Request failed.'); });
+			});
+		}
+
+		var tfCopyRecoveryBtn = document.getElementById('tfCopyRecovery');
+		if(tfCopyRecoveryBtn) {
+			tfCopyRecoveryBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				var text = document.getElementById('tfRecoveryCodes').innerText;
+				if(navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(text).then(function(){
+						alert('Recovery codes copied to clipboard.');
+					}).catch(function(err){
+						alert('Failed to copy: ' + err.message);
+					});
+				} else {
+					// fallback for older browsers
+					var textarea = document.createElement('textarea');
+					textarea.value = text;
+					textarea.style.position = 'fixed';
+					textarea.style.opacity = '0';
+					document.body.appendChild(textarea);
+					textarea.select();
+					try {
+						document.execCommand('copy');
+						alert('Recovery codes copied to clipboard.');
+					} catch(err) {
+						alert('Failed to copy.');
+					}
+					document.body.removeChild(textarea);
+				}
+			});
+		}
+
+		(function activateTab() {
 			var active = '@TempData["ActiveTab"]' || window.location.hash.replace('#', '');
 			if (active) {
 				var triggerEl = document.querySelector('#' + active + '-tab');
 				if (triggerEl) {
 					var tab = new bootstrap.Tab(triggerEl);
 					tab.show();
-					// set focus to first input in active tab
 					var target = document.querySelector(triggerEl.getAttribute('data-bs-target'));
 					if (target) {
 						var input = target.querySelector('input');
@@ -120,8 +297,7 @@
 					}
 				}
 			}
-
-			// If redirect preserved ModelState via TempData you'd need to repopulate fields. Simplified here.
 		})();
+	})();
 	</script>
 }
