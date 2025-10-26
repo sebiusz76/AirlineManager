@@ -25,14 +25,16 @@ namespace AirlineManager.Middleware
                     if (appUser != null && appUser.MustChangePassword)
                     {
                         var path = context.Request.Path.Value ?? string.Empty;
-                        // Allow access to ChangePassword, Logout, AccessDenied and static files
+                        // Allow access to ChangePassword, Logout, AccessDenied, 2FA endpoints and static files
                         if (!path.StartsWith("/Account/ChangePassword", StringComparison.OrdinalIgnoreCase)
-                          && !path.StartsWith("/Account/Logout", StringComparison.OrdinalIgnoreCase)
-                                      && !path.StartsWith("/Account/AccessDenied", StringComparison.OrdinalIgnoreCase)
-                          && !path.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase)
-                                   && !path.StartsWith("/css/", StringComparison.OrdinalIgnoreCase)
-                          && !path.StartsWith("/js/", StringComparison.OrdinalIgnoreCase)
-                          && !path.StartsWith("/favicon.ico", StringComparison.OrdinalIgnoreCase))
+                            && !path.StartsWith("/Account/Logout", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/Account/AccessDenied", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/Account/LoginWith2fa", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/Account/LoginWithRecovery", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/css/", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/js/", StringComparison.OrdinalIgnoreCase)
+                            && !path.StartsWith("/favicon.ico", StringComparison.OrdinalIgnoreCase))
                         {
                             context.Response.Redirect("/Account/ChangePassword");
                             return;
