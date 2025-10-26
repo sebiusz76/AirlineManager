@@ -6,5 +6,8 @@ namespace AirlineManager.Models.ViewModel
         public ProfileEmailViewModel Email { get; set; } = new ProfileEmailViewModel();
         public ProfilePasswordViewModel Password { get; set; } = new ProfilePasswordViewModel();
         public ProfileDeleteViewModel Delete { get; set; } = new ProfileDeleteViewModel();
+
+        // dynamic container for two-factor details (set by controller)
+        public dynamic? TwoFactor { get; set; }
     }
 }
