@@ -101,6 +101,7 @@ namespace AirlineManager.Areas.Admin.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 var highest = GetHighestRole(roles);
                 var isLocked = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow;
+                var twoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
 
                 model.Add(new AdminUserViewModel
                 {
@@ -110,7 +111,8 @@ namespace AirlineManager.Areas.Admin.Controllers
                     LastName = user.LastName,
                     Role = highest ?? "User",
                     IsLockedOut = isLocked,
-                    LockoutEnd = user.LockoutEnd
+                    LockoutEnd = user.LockoutEnd,
+                    TwoFactorEnabled = twoFactorEnabled
                 });
             }
 
@@ -257,6 +259,34 @@ namespace AirlineManager.Areas.Admin.Controllers
 
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "User deleted successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> DisableTwoFactor(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            if (!is2faEnabled)
+            {
+                TempData["ToastType"] = "warning";
+                TempData["ToastMessage"] = "Two-factor authentication is not enabled for this user.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            await _userManager.SetTwoFactorEnabledAsync(user, false);
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = $"Two-factor authentication disabled for {user.Email}.";
 
             return RedirectToAction(nameof(Index));
         }

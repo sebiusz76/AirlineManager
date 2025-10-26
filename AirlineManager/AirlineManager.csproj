@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AirlineManager.DataAccess\AirlineManager.DataAccess.csproj" />
+    <ProjectReference Include="..\AirlineManager.Middleware\AirlineManager.Middleware.csproj" />
     <ProjectReference Include="..\AirlineManager.Services\AirlineManager.Services.csproj" />
   </ItemGroup>
 

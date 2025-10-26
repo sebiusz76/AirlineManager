@@ -119,6 +119,30 @@
 				<strong>Two-factor authentication is enabled.</strong>
 			</div>
 			<p>Your account is protected with two-factor authentication using an authenticator app.</p>
+			
+			@if (Model.TwoFactor.RecoveryCodesLeft != null)
+			{
+				var codesLeft = Model.TwoFactor.RecoveryCodesLeft;
+				if (codesLeft == 0)
+				{
+					<div class="alert alert-danger">
+						<strong>Warning!</strong> You have no recovery codes left. Generate new recovery codes immediately to avoid being locked out.
+					</div>
+				}
+				else if (codesLeft <= 3)
+				{
+					<div class="alert alert-warning">
+						<strong>Warning!</strong> You have only <strong>@codesLeft</strong> recovery code(s) left. Consider generating new recovery codes.
+					</div>
+				}
+				else
+				{
+					<div class="alert alert-info">
+						You have <strong>@codesLeft</strong> recovery code(s) remaining.
+					</div>
+				}
+			}
+			
 			<div class="mb-3">
 				<button id="tfResetRecovery" class="btn btn-warning">Reset recovery codes</button>
 				<button id="tfDisable" class="btn btn-danger ms-2">Disable 2FA</button>

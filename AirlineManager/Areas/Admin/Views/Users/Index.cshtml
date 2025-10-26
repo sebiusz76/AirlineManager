@@ -9,6 +9,7 @@
 	var search = ViewBag.Search as string ?? string.Empty;
 	var roleFilter = ViewBag.RoleFilter as string ?? string.Empty;
 	var availableRoles = ViewBag.AvailableRoles as List<string> ?? new List<string>();
+	var isSuperAdmin = User.IsInRole("SuperAdmin");
 }
 
 <h1>Users</h1>
@@ -42,6 +43,10 @@
 			<th>Name</th>
 			<th>Role</th>
 			<th>Locked</th>
+			@if (isSuperAdmin)
+			{
+				<th>2FA</th>
+			}
 			<th></th>
 		</tr>
 	</thead>
@@ -52,11 +57,33 @@
 				<td>@user.FirstName @user.LastName</td>
 				<td>@user.Role</td>
 				<td>@(user.IsLockedOut ? "Yes" : "No")</td>
+				@if (isSuperAdmin)
+				{
+					<td>
+						@if (user.TwoFactorEnabled)
+						{
+							<span class="badge bg-success">Enabled</span>
+						}
+						else
+						{
+							<span class="badge bg-secondary">Disabled</span>
+						}
+					</td>
+				}
 				<td>
 					<a asp-area="Admin" asp-controller="Users" asp-action="Edit"
 						asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
 					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
 						asp-route-id="@user.Id" class="btn btn-sm btn-warning">Set Password</a>
+					@if (isSuperAdmin && user.TwoFactorEnabled)
+					{
+						<form asp-area="Admin" asp-controller="Users" asp-action="DisableTwoFactor"
+							asp-route-id="@user.Id" method="post" class="d-inline-block">
+							@Html.AntiForgeryToken()
+							<button type="submit" class="btn btn-sm btn-info js-disable-2fa"
+								data-email="@user.Email">Disable 2FA</button>
+						</form>
+					}
 					<form asp-area="Admin" asp-controller="Users" asp-action="Delete"
 						asp-route-id="@user.Id" method="post" class="delete-form"
 						style="display:inline-block;">
@@ -84,3 +111,54 @@
 		</li>
 	</ul>
 </nav>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		document.querySelectorAll('.js-disable-2fa').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var email = this.dataset.email;
+				var form = this.closest('form');
+				
+				Swal.fire({
+					title: 'Disable Two-Factor Authentication?',
+					html: 'This will disable 2FA for user <strong>' + email + '</strong>.<br>The user will need to reconfigure it if they want to enable it again.',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#17a2b8',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, disable it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+		});
+
+		document.querySelectorAll('.js-delete-user').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var email = this.dataset.email;
+				var form = this.closest('form');
+				
+				Swal.fire({
+					title: 'Delete User?',
+					html: 'Are you sure you want to delete user <strong>' + email + '</strong>?<br>This action cannot be undone.',
+					icon: 'error',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, delete it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+		});
+	</script>
+}
