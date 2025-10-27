@@ -1,0 +1,103 @@
+@model IEnumerable<AirlineManager.Models.Domain.UserAuditLog>
+
+@{
+	ViewData["Title"] = "User Audit Log";
+	var userEmail = ViewBag.UserEmail as string;
+	var userId = ViewBag.UserId as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h1>Audit Log for @userEmail</h1>
+	<a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+</div>
+
+@if (!Model.Any())
+{
+	<div class="alert alert-info">
+		No audit log entries found for this user.
+	</div>
+}
+else
+{
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="width: 180px;">Modified At</th>
+					<th style="width: 200px;">Modified By</th>
+					<th style="width: 120px;">Action</th>
+					<th>Changes</th>
+					<th style="width: 50px;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var log in Model)
+				{
+					var badgeClass = log.Action switch
+					{
+						"Updated" => "bg-primary",
+						"Deleted" => "bg-danger",
+						"Created" => "bg-success",
+						"PasswordReset" => "bg-warning",
+						"2FADisabled" => "bg-info",
+						_ => "bg-secondary"
+					};
+
+					<tr>
+						<td class="text-nowrap">
+							<small>@log.ModifiedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</small>
+						</td>
+						<td>@log.ModifiedByEmail</td>
+						<td>
+							<span class="badge @badgeClass">@log.Action</span>
+						</td>
+						<td>
+							@if (!string.IsNullOrEmpty(log.Changes))
+							{
+								<small>@log.Changes</small>
+							}
+							else
+							{
+								<small class="text-muted">No changes recorded</small>
+							}
+						</td>
+						<td>
+							@if (!string.IsNullOrEmpty(log.OldValues) || !string.IsNullOrEmpty(log.NewValues))
+							{
+								<button class="btn btn-sm btn-outline-secondary" type="button" 
+									data-bs-toggle="collapse" data-bs-target="#details-@log.Id">
+									<i class="bi bi-info-circle"></i>
+								</button>
+							}
+						</td>
+					</tr>
+					@if (!string.IsNullOrEmpty(log.OldValues) || !string.IsNullOrEmpty(log.NewValues))
+					{
+						<tr>
+							<td colspan="5" class="p-0">
+								<div class="collapse" id="details-@log.Id">
+									<div class="card card-body bg-light m-2">
+										@if (!string.IsNullOrEmpty(log.OldValues))
+										{
+											<div class="mb-2">
+												<strong>Old Values:</strong>
+												<pre style="font-size: 11px; margin-bottom: 0; white-space: pre-wrap;">@log.OldValues</pre>
+											</div>
+										}
+										@if (!string.IsNullOrEmpty(log.NewValues))
+										{
+											<div>
+												<strong>New Values:</strong>
+												<pre style="font-size: 11px; margin-bottom: 0; white-space: pre-wrap;">@log.NewValues</pre>
+											</div>
+										}
+									</div>
+								</div>
+							</td>
+						</tr>
+					}
+				}
+			</tbody>
+		</table>
+	</div>
+}
