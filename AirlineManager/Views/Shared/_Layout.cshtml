@@ -51,6 +51,15 @@
 										<li>
 											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Logs" asp-action="Index">Logs</a>
 										</li>
+										@if (User.IsInRole("SuperAdmin"))
+										{
+											<li><hr class="dropdown-divider"></li>
+											<li>
+												<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Configuration" asp-action="Index">
+													<i class="bi bi-gear"></i> Configuration
+												</a>
+											</li>
+										}
 									</ul>
 								</li>
 							}

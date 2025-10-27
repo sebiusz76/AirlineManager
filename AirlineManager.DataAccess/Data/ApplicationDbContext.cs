@@ -12,6 +12,7 @@ namespace AirlineManager.DataAccess.Data
 
         public DbSet<ApplicationLog> ApplicationLogs { get; set; }
         public DbSet<UserAuditLog> UserAuditLogs { get; set; }
+        public DbSet<AppConfiguration> AppConfigurations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,6 +50,103 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.ModifiedAt);
                 entity.HasIndex(e => e.Action);
             });
+
+            builder.Entity<AppConfiguration>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Key).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Value).IsRequired();
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.IsEncrypted).IsRequired();
+                entity.Property(e => e.LastModified).IsRequired();
+                entity.Property(e => e.LastModifiedBy).HasMaxLength(256);
+                entity.HasIndex(e => e.Key).IsUnique();
+                entity.HasIndex(e => e.Category);
+            });
+
+            // Seed default SMTP configuration
+            var seedDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            builder.Entity<AppConfiguration>().HasData(
+                new AppConfiguration
+                {
+                    Id = 1,
+                    Key = "SMTP_Host",
+                    Value = "smtp.gmail.com",
+                    Description = "SMTP server hostname",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 2,
+                    Key = "SMTP_Port",
+                    Value = "587",
+                    Description = "SMTP server port",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 3,
+                    Key = "SMTP_Username",
+                    Value = "",
+                    Description = "SMTP authentication username",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 4,
+                    Key = "SMTP_Password",
+                    Value = "",
+                    Description = "SMTP authentication password",
+                    Category = "SMTP",
+                    IsEncrypted = true,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 5,
+                    Key = "SMTP_FromEmail",
+                    Value = "noreply@example.com",
+                    Description = "Sender email address",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 6,
+                    Key = "SMTP_FromName",
+                    Value = "Airline Manager",
+                    Description = "Sender display name",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 7,
+                    Key = "SMTP_EnableSSL",
+                    Value = "true",
+                    Description = "Enable SSL/TLS encryption",
+                    Category = "SMTP",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                }
+            );
         }
     }
 }

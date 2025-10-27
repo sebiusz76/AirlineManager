@@ -11,4 +11,8 @@
     <Folder Include="Implementations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AirlineManager.DataAccess\AirlineManager.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
