@@ -25,14 +25,15 @@ jobs:
         echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
     - name: LibMan restore
-      run: libman restore --project AirlineManager/libman.json
+      working-directory: AirlineManager
+      run: libman restore
 
     - name: Restore NuGet packages
-      run: dotnet restore AirlineManager/AirlineManager.csproj
+      run: dotnet restore
 
     - name: Build
-      run: dotnet build AirlineManager/AirlineManager.csproj --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
 
     - name: Run tests (if any)
       run: |
-        dotnet test --no-build --verbosity normal || true
+        dotnet test --no-build --configuration Release --verbosity normal || true
