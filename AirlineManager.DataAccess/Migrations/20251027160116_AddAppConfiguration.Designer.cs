@@ -4,6 +4,7 @@ using AirlineManager.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineManager.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027160116_AddAppConfiguration")]
+    partial class AddAppConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,7 +78,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "SMTP server hostname",
                             IsEncrypted = false,
                             Key = "SMTP_Host",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(2794),
                             LastModifiedBy = "System",
                             Value = "smtp.example.com"
                         },
@@ -86,7 +89,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "SMTP server port",
                             IsEncrypted = false,
                             Key = "SMTP_Port",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3245),
                             LastModifiedBy = "System",
                             Value = "587"
                         },
@@ -97,7 +100,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "SMTP authentication username",
                             IsEncrypted = false,
                             Key = "SMTP_Username",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3247),
                             LastModifiedBy = "System",
                             Value = ""
                         },
@@ -108,7 +111,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "SMTP authentication password",
                             IsEncrypted = true,
                             Key = "SMTP_Password",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3248),
                             LastModifiedBy = "System",
                             Value = ""
                         },
@@ -119,7 +122,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "Sender email address",
                             IsEncrypted = false,
                             Key = "SMTP_FromEmail",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3249),
                             LastModifiedBy = "System",
                             Value = "noreply@example.com"
                         },
@@ -130,7 +133,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "Sender display name",
                             IsEncrypted = false,
                             Key = "SMTP_FromName",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3250),
                             LastModifiedBy = "System",
                             Value = "AirlineManager"
                         },
@@ -141,7 +144,7 @@ namespace AirlineManager.DataAccess.Migrations
                             Description = "Enable SSL/TLS encryption",
                             IsEncrypted = false,
                             Key = "SMTP_EnableSSL",
-                            LastModified = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LastModified = new DateTime(2025, 10, 27, 16, 1, 14, 326, DateTimeKind.Utc).AddTicks(3251),
                             LastModifiedBy = "System",
                             Value = "true"
                         });

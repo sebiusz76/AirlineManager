@@ -156,6 +156,9 @@ try
 #endif
         ;
 
+    // Register Configuration Service
+    builder.Services.AddScoped<AirlineManager.Services.IConfigurationService, AirlineManager.Services.ConfigurationService>();
+
     var app = builder.Build();
 
     // Apply any pending migrations at startup

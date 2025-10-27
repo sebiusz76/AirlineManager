@@ -1,0 +1,114 @@
+@model IEnumerable<AirlineManager.Models.Domain.AppConfiguration>
+
+@{
+	ViewData["Title"] = "Configuration";
+	var categories = ViewBag.Categories as List<string> ?? new List<string>();
+	var selectedCategory = ViewBag.SelectedCategory as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h1>Application Configuration</h1>
+</div>
+
+<div class="row mb-3">
+	<div class="col-md-12">
+		<div class="btn-group" role="group">
+			<a asp-action="Index" class="btn btn-outline-primary @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")">
+				All Categories
+			</a>
+			@foreach (var cat in categories)
+			{
+				<a asp-action="Index" asp-route-category="@cat" 
+					class="btn btn-outline-primary @(cat == selectedCategory ? "active" : "")">
+					@cat
+				</a>
+			}
+		</div>
+		@if (selectedCategory == "SMTP")
+		{
+			<form asp-action="TestSmtp" method="post" class="d-inline-block ms-2">
+				@Html.AntiForgeryToken()
+				<button type="submit" class="btn btn-success">
+					<i class="bi bi-envelope-check"></i> Test SMTP
+				</button>
+			</form>
+		}
+	</div>
+</div>
+
+@if (!Model.Any())
+{
+	<div class="alert alert-info">
+		No configuration entries found.
+	</div>
+}
+else
+{
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="width: 15%;">Category</th>
+					<th style="width: 25%;">Key</th>
+					<th style="width: 30%;">Value</th>
+					<th style="width: 20%;">Description</th>
+					<th style="width: 10%;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var config in Model)
+				{
+					<tr>
+						<td>
+							<span class="badge bg-primary">@config.Category</span>
+						</td>
+						<td>
+							<strong>@config.Key</strong>
+						</td>
+						<td>
+							@if (config.IsEncrypted)
+							{
+								<span class="text-muted">
+									<i class="bi bi-lock-fill"></i> ••••••••
+								</span>
+							}
+							else if (config.Value.Length > 50)
+							{
+								<small>@config.Value.Substring(0, 50)...</small>
+							}
+							else
+							{
+								<small>@config.Value</small>
+							}
+						</td>
+						<td>
+							<small class="text-muted">@config.Description</small>
+						</td>
+						<td>
+							<a asp-action="Edit" asp-route-id="@config.Id" class="btn btn-sm btn-primary">
+								<i class="bi bi-pencil"></i> Edit
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="5" class="border-0 p-0 pb-2">
+							<small class="text-muted ms-2">
+								Last modified: @config.LastModified.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+								@if (!string.IsNullOrEmpty(config.LastModifiedBy))
+								{
+									<text> by @config.LastModifiedBy</text>
+								}
+							</small>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+<div class="alert alert-warning mt-4">
+	<strong>Security Note:</strong> Configuration values marked with 
+	<i class="bi bi-lock-fill"></i> are encrypted in the database. 
+	Always use strong encryption keys in production and store them securely (e.g., Azure Key Vault, AWS Secrets Manager).
+</div>
