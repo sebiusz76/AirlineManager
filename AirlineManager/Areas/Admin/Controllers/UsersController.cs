@@ -1,3 +1,4 @@
+﻿using AirlineManager.DataAccess.Data;
 using AirlineManager.Models.Domain;
 using AirlineManager.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace AirlineManager.Areas.Admin.Controllers
 {
@@ -14,12 +16,36 @@ namespace AirlineManager.Areas.Admin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
         private readonly string[] _roleOrder = new[] { "User", "Moderator", "Admin", "SuperAdmin" };
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
+        }
+
+        private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return;
+
+            var auditLog = new UserAuditLog
+            {
+                UserId = userId,
+                UserEmail = userEmail,
+                ModifiedBy = currentUser.Id,
+                ModifiedByEmail = currentUser.Email ?? "unknown",
+                ModifiedAt = DateTime.UtcNow,
+                Action = action,
+                Changes = changes,
+                OldValues = oldValues != null ? JsonSerializer.Serialize(oldValues) : null,
+                NewValues = newValues != null ? JsonSerializer.Serialize(newValues) : null
+            };
+
+            _context.UserAuditLogs.Add(auditLog);
+            await _context.SaveChangesAsync();
         }
 
         private string GetHighestRole(IEnumerable<string> roles)
@@ -202,6 +228,16 @@ namespace AirlineManager.Areas.Admin.Controllers
                 }
             }
 
+            // Capture old values for audit
+            var oldValues = new
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = targetHighestBefore,
+                IsLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow
+            };
+
             // Update basic info
             user.Email = model.Email;
             user.UserName = model.Email;
@@ -232,6 +268,26 @@ namespace AirlineManager.Areas.Admin.Controllers
                 await _userManager.ResetAccessFailedCountAsync(user);
             }
 
+            // Capture new values for audit
+            var newValues = new
+            {
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Role = model.SelectedRole,
+                IsLockedOut = model.IsLockedOut
+            };
+
+            // Build changes summary
+            var changesList = new List<string>();
+            if (oldValues.Email != newValues.Email) changesList.Add($"Email: {oldValues.Email} → {newValues.Email}");
+            if (oldValues.FirstName != newValues.FirstName) changesList.Add($"FirstName: {oldValues.FirstName} → {newValues.FirstName}");
+            if (oldValues.LastName != newValues.LastName) changesList.Add($"LastName: {oldValues.LastName} → {newValues.LastName}");
+            if (oldValues.Role != newValues.Role) changesList.Add($"Role: {oldValues.Role} → {newValues.Role}");
+            if (oldValues.IsLockedOut != newValues.IsLockedOut) changesList.Add($"IsLockedOut: {oldValues.IsLockedOut} → {newValues.IsLockedOut}");
+
+            await LogUserChange(user.Id, user.Email, "Updated", oldValues, newValues, string.Join("; ", changesList));
+
             // Set TempData for success toast
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "User updated successfully.";
@@ -255,7 +311,20 @@ namespace AirlineManager.Areas.Admin.Controllers
                 return Forbid();
             }
 
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRole = GetHighestRole(userRoles);
+
+            var oldValues = new
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Role = userRole
+            };
+
             await _userManager.DeleteAsync(user);
+
+            await LogUserChange(user.Id, user.Email, "Deleted", oldValues, null);
 
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "User deleted successfully.";
@@ -284,6 +353,8 @@ namespace AirlineManager.Areas.Admin.Controllers
             await _userManager.SetTwoFactorEnabledAsync(user, false);
             await _userManager.ResetAuthenticatorKeyAsync(user);
             await _userManager.UpdateSecurityStampAsync(user);
+
+            await LogUserChange(user.Id, user.Email, "2FADisabled");
 
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = $"Two-factor authentication disabled for {user.Email}.";
@@ -341,9 +412,30 @@ namespace AirlineManager.Areas.Admin.Controllers
             user.MustChangePassword = true;
             await _userManager.UpdateAsync(user);
 
+            await LogUserChange(user.Id, user.Email, "PasswordReset", null, new { MustChangePassword = true });
+
             TempData["ToastType"] = "success";
             TempData["ToastMessage"] = "Password updated successfully. User will be required to change it at next login.";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AuditLog(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var auditLogs = await _context.UserAuditLogs
+                .Where(log => log.UserId == id)
+                .OrderByDescending(log => log.ModifiedAt)
+                .ToListAsync();
+
+            ViewBag.UserEmail = user.Email;
+            ViewBag.UserId = id;
+
+            return View(auditLogs);
         }
     }
 }

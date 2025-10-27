@@ -73,6 +73,8 @@
 				<td>
 					<a asp-area="Admin" asp-controller="Users" asp-action="Edit"
 						asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
+					<a asp-area="Admin" asp-controller="Users" asp-action="AuditLog"
+						asp-route-id="@user.Id" class="btn btn-sm btn-secondary">Audit Log</a>
 					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
 						asp-route-id="@user.Id" class="btn btn-sm btn-warning">Set Password</a>
 					@if (isSuperAdmin && user.TwoFactorEnabled)
