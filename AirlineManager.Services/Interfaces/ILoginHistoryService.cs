@@ -1,4 +1,4 @@
-namespace AirlineManager.Services
+namespace AirlineManager.Services.Interfaces
 {
     public interface ILoginHistoryService
     {

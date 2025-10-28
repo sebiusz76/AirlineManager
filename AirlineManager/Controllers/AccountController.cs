@@ -1,6 +1,7 @@
 ﻿using AirlineManager.DataAccess.Data;
 using AirlineManager.Models.Domain;
 using AirlineManager.Models.ViewModel;
+using AirlineManager.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,7 @@ namespace AirlineManager.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly AirlineManager.Services.IEmailService _emailService;
-        private readonly AirlineManager.Services.ILoginHistoryService _loginHistoryService;
+        private readonly ILoginHistoryService _loginHistoryService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -28,7 +29,7 @@ namespace AirlineManager.Controllers
             ILogger<AccountController> logger,
             ApplicationDbContext context,
             AirlineManager.Services.IEmailService emailService,
-            AirlineManager.Services.ILoginHistoryService loginHistoryService)
+            ILoginHistoryService loginHistoryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;

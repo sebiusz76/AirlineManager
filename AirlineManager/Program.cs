@@ -1,6 +1,8 @@
 using AirlineManager.DataAccess.Data;
 using AirlineManager.Middleware;
 using AirlineManager.Models.Domain;
+using AirlineManager.Services.Implementations;
+using AirlineManager.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -163,7 +165,7 @@ try
     builder.Services.AddScoped<AirlineManager.Services.IEmailService, AirlineManager.Services.EmailService>();
 
     // Register Login History Service
-    builder.Services.AddScoped<AirlineManager.Services.ILoginHistoryService, AirlineManager.Services.LoginHistoryService>();
+    builder.Services.AddScoped<ILoginHistoryService, LoginHistoryService>();
 
     var app = builder.Build();
 

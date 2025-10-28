@@ -1,8 +1,9 @@
 using AirlineManager.DataAccess.Data;
 using AirlineManager.Models.Domain;
+using AirlineManager.Services.Interfaces;
 using UAParser;
 
-namespace AirlineManager.Services
+namespace AirlineManager.Services.Implementations
 {
     public class LoginHistoryService : ILoginHistoryService
     {
