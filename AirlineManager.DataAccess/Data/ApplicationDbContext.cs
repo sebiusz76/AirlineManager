@@ -13,6 +13,7 @@ namespace AirlineManager.DataAccess.Data
         public DbSet<ApplicationLog> ApplicationLogs { get; set; }
         public DbSet<UserAuditLog> UserAuditLogs { get; set; }
         public DbSet<AppConfiguration> AppConfigurations { get; set; }
+        public DbSet<UserLoginHistory> UserLoginHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -63,6 +64,27 @@ namespace AirlineManager.DataAccess.Data
                 entity.Property(e => e.LastModifiedBy).HasMaxLength(256);
                 entity.HasIndex(e => e.Key).IsUnique();
                 entity.HasIndex(e => e.Category);
+            });
+
+            builder.Entity<UserLoginHistory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.UserId).IsRequired().HasMaxLength(450);
+                entity.Property(e => e.UserEmail).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.LoginTime).IsRequired();
+                entity.Property(e => e.IpAddress).HasMaxLength(45);
+                entity.Property(e => e.UserAgent).HasMaxLength(500);
+                entity.Property(e => e.Browser).HasMaxLength(100);
+                entity.Property(e => e.OperatingSystem).HasMaxLength(100);
+                entity.Property(e => e.Device).HasMaxLength(100);
+                entity.Property(e => e.Country).HasMaxLength(100);
+                entity.Property(e => e.City).HasMaxLength(100);
+                entity.Property(e => e.IsSuccessful).IsRequired();
+                entity.Property(e => e.FailureReason).HasMaxLength(500);
+                entity.Property(e => e.RequiredTwoFactor).IsRequired();
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.LoginTime);
+                entity.HasIndex(e => e.IsSuccessful);
             });
 
             // Seed default SMTP configuration

@@ -110,6 +110,12 @@
 								</a>
 							</li>
 							<li>
+								<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="LoginHistory"
+								   asp-route-id="@user.Id">
+									<i class="bi bi-shield-lock"></i> Login History
+								</a>
+							</li>
+							<li>
 								<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
 								   asp-route-id="@user.Id">
 									<i class="bi bi-key"></i> Set Password

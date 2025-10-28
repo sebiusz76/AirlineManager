@@ -162,6 +162,9 @@ try
     // Register Email Service
     builder.Services.AddScoped<AirlineManager.Services.IEmailService, AirlineManager.Services.EmailService>();
 
+    // Register Login History Service
+    builder.Services.AddScoped<AirlineManager.Services.ILoginHistoryService, AirlineManager.Services.LoginHistoryService>();
+
     var app = builder.Build();
 
     // Apply any pending migrations at startup

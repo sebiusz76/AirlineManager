@@ -15,4 +15,8 @@
     <ProjectReference Include="..\AirlineManager.DataAccess\AirlineManager.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="UAParser" Version="3.1.47" />
+  </ItemGroup>
+
 </Project>
