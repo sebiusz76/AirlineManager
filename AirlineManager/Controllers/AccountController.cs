@@ -22,6 +22,7 @@ namespace AirlineManager.Controllers
         private readonly AirlineManager.Services.IEmailService _emailService;
         private readonly ILoginHistoryService _loginHistoryService;
         private readonly ISessionManagementService _sessionManagementService;
+        private readonly IPasswordExpirationService _passwordExpirationService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -31,7 +32,8 @@ namespace AirlineManager.Controllers
             ApplicationDbContext context,
             AirlineManager.Services.IEmailService emailService,
             ILoginHistoryService loginHistoryService,
-            ISessionManagementService sessionManagementService)
+            ISessionManagementService sessionManagementService,
+            IPasswordExpirationService passwordExpirationService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,6 +43,7 @@ namespace AirlineManager.Controllers
             _emailService = emailService;
             _loginHistoryService = loginHistoryService;
             _sessionManagementService = sessionManagementService;
+            _passwordExpirationService = passwordExpirationService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -81,7 +84,8 @@ namespace AirlineManager.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 FirstName = model.FirstName,
-                LastName = model.LastName
+                LastName = model.LastName,
+                PasswordChangedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -569,6 +573,10 @@ namespace AirlineManager.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
 
+            // Check password expiration
+            var daysUntilExpiration = await _passwordExpirationService.GetDaysUntilExpirationAsync(user);
+            var isPasswordExpired = await _passwordExpirationService.IsPasswordExpiredAsync(user);
+
             // prepare two-factor info
             var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
             string? authenticatorUri = null;
@@ -600,6 +608,9 @@ namespace AirlineManager.Controllers
                     RecoveryCodesLeft = recoveryCodesLeft
                 }
             };
+
+            ViewBag.DaysUntilPasswordExpiration = daysUntilExpiration;
+            ViewBag.IsPasswordExpired = isPasswordExpired;
 
             return View(model);
         }
@@ -850,6 +861,9 @@ namespace AirlineManager.Controllers
                 };
                 return View("Profile", compositeErr);
             }
+
+            // Update password changed date
+            await _passwordExpirationService.UpdatePasswordChangedDateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
 
@@ -1123,8 +1137,10 @@ namespace AirlineManager.Controllers
                 if (user.MustChangePassword)
                 {
                     user.MustChangePassword = false;
-                    await _userManager.UpdateAsync(user);
                 }
+
+                // Update password changed date
+                await _passwordExpirationService.UpdatePasswordChangedDateAsync(user);
 
                 _logger.LogInformation("Password reset successfully for user {Email}", user.Email);
 
@@ -1143,8 +1159,18 @@ namespace AirlineManager.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult ChangePassword()
+        public async Task<IActionResult> ChangePassword()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var isExpired = await _passwordExpirationService.IsPasswordExpiredAsync(user);
+            var daysUntilExpiration = await _passwordExpirationService.GetDaysUntilExpirationAsync(user);
+
+            ViewBag.IsPasswordExpired = isExpired;
+            ViewBag.DaysUntilPasswordExpiration = daysUntilExpiration;
+            ViewBag.MustChangePassword = user.MustChangePassword;
+
             return View();
         }
 
@@ -1195,7 +1221,9 @@ namespace AirlineManager.Controllers
             }
 
             user.MustChangePassword = false;
-            await _userManager.UpdateAsync(user);
+
+            // Update password changed date
+            await _passwordExpirationService.UpdatePasswordChangedDateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
 

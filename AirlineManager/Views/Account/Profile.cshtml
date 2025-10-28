@@ -2,9 +2,27 @@
 
 @{
 	ViewData["Title"] = "Profile";
+	var daysUntilExpiration = ViewBag.DaysUntilPasswordExpiration as int?;
+	var isPasswordExpired = ViewBag.IsPasswordExpired as bool? ?? false;
 }
 
 <h1>Profile</h1>
+
+@if (isPasswordExpired)
+{
+	<div class="alert alert-danger">
+		<i class="bi bi-shield-exclamation"></i> <strong>Your password has expired!</strong>
+		Please <a asp-action="ChangePassword" class="alert-link">change your password</a> as soon as possible.
+	</div>
+}
+else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && daysUntilExpiration.Value > 0)
+{
+	<div class="alert alert-warning">
+		<i class="bi bi-exclamation-triangle"></i> <strong>Password expiring soon!</strong>
+		Your password will expire in <strong>@daysUntilExpiration.Value day(s)</strong>.
+		<a asp-action="ChangePassword" class="alert-link">Change it now</a> to avoid interruption.
+	</div>
+}
 
 <!-- Hidden antiforgery token for AJAX requests -->
 <form id="antiforgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
@@ -113,16 +131,21 @@
 
 	<div class="tab-pane fade" id="twofactor" role="tabpanel" aria-labelledby="twofactor-tab">
 		<h4>Two-factor authentication</h4>
-		@if (Model.TwoFactor != null && Model.TwoFactor.Is2faEnabled)
+		@{
+			var twoFactor = Model.TwoFactor;
+			var is2faEnabled = twoFactor?.Is2faEnabled ?? false;
+			var recoveryCodesLeft = twoFactor?.RecoveryCodesLeft as int?;
+		}
+		@if (is2faEnabled)
 		{
 			<div class="alert alert-success">
 				<strong>Two-factor authentication is enabled.</strong>
 			</div>
 			<p>Your account is protected with two-factor authentication using an authenticator app.</p>
-			
-			@if (Model.TwoFactor.RecoveryCodesLeft != null)
+
+			@if (recoveryCodesLeft != null)
 			{
-				var codesLeft = Model.TwoFactor.RecoveryCodesLeft;
+				var codesLeft = recoveryCodesLeft.Value;
 				if (codesLeft == 0)
 				{
 					<div class="alert alert-danger">
@@ -142,7 +165,7 @@
 					</div>
 				}
 			}
-			
+
 			<div class="mb-3">
 				<button id="tfResetRecovery" class="btn btn-warning">Reset recovery codes</button>
 				<button id="tfDisable" class="btn btn-danger ms-2">Disable 2FA</button>
@@ -198,218 +221,218 @@
 	<script src="~/lib/qrcodejs/qrcode.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
-	(function(){
-		var recoveryCodesModal;
-		var currentRecoveryCodes = [];
+		(function(){
+			var recoveryCodesModal;
+			var currentRecoveryCodes = [];
 
-		function getRequestVerificationToken() {
-			var el = document.querySelector('#antiforgeryForm input[name="__RequestVerificationToken"]');
-			return el ? el.value : '';
-		}
-
-		function renderQr(uri) {
-			var container = document.getElementById('tfQr');
-			container.innerHTML = '';
-			new QRCode(container, { text: uri, width:200, height:200 });
-		}
-
-		function showToast(message, type) {
-			var icon = type === 'success' ? 'success' : type === 'danger' ? 'error' : 'info';
-			Swal.fire({
-				toast: true,
-				position: 'top-end',
-				icon: icon,
-				title: message,
-				showConfirmButton: false,
-				timer: 3000,
-				timerProgressBar: true
-			});
-		}
-
-		function showRecoveryCodesModal(codes) {
-			currentRecoveryCodes = codes || [];
-			var pre = document.getElementById('modalRecoveryCodes');
-			pre.innerText = currentRecoveryCodes.join('\n');
-			
-			if (!recoveryCodesModal) {
-				recoveryCodesModal = new bootstrap.Modal(document.getElementById('recoveryCodesModal'));
+			function getRequestVerificationToken() {
+				var el = document.querySelector('#antiforgeryForm input[name="__RequestVerificationToken"]');
+				return el ? el.value : '';
 			}
-			recoveryCodesModal.show();
-		}
 
-		function copyRecoveryCodesToClipboard() {
-			var text = currentRecoveryCodes.join('\n');
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				navigator.clipboard.writeText(text).then(function(){
-					showToast('Recovery codes copied to clipboard.', 'success');
-				}).catch(function(err){
-					showToast('Failed to copy: ' + err.message, 'danger');
+			function renderQr(uri) {
+				var container = document.getElementById('tfQr');
+				container.innerHTML = '';
+				new QRCode(container, { text: uri, width:200, height:200 });
+			}
+
+			function showToast(message, type) {
+				var icon = type === 'success' ? 'success' : type === 'danger' ? 'error' : 'info';
+				Swal.fire({
+					toast: true,
+					position: 'top-end',
+					icon: icon,
+					title: message,
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true
 				});
-			} else {
-				var textarea = document.createElement('textarea');
-				textarea.value = text;
-				textarea.style.position = 'fixed';
-				textarea.style.opacity = '0';
-				document.body.appendChild(textarea);
-				textarea.select();
-				try {
-					document.execCommand('copy');
-					showToast('Recovery codes copied to clipboard.', 'success');
-				} catch(err) {
-					showToast('Failed to copy.', 'danger');
+			}
+
+			function showRecoveryCodesModal(codes) {
+				currentRecoveryCodes = codes || [];
+				var pre = document.getElementById('modalRecoveryCodes');
+				pre.innerText = currentRecoveryCodes.join('\n');
+
+				if (!recoveryCodesModal) {
+					recoveryCodesModal = new bootstrap.Modal(document.getElementById('recoveryCodesModal'));
 				}
-				document.body.removeChild(textarea);
+				recoveryCodesModal.show();
 			}
-		}
 
-		function downloadRecoveryCodes() {
-			var text = currentRecoveryCodes.join('\n');
-			var blob = new Blob([text], { type: 'text/plain' });
-			var url = URL.createObjectURL(blob);
-			var a = document.createElement('a');
-			a.href = url;
-			a.download = 'recovery-codes-' + new Date().toISOString().split('T')[0] + '.txt';
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
-			showToast('Recovery codes downloaded.', 'success');
-		}
-
-		document.getElementById('btnCopyRecoveryCodes').addEventListener('click', copyRecoveryCodesToClipboard);
-		document.getElementById('btnDownloadRecoveryCodes').addEventListener('click', downloadRecoveryCodes);
-
-		var tfConfigureBtn = document.getElementById('tfConfigure');
-		if(tfConfigureBtn) {
-			tfConfigureBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				fetch('/Account/Generate2faAjax', {
-					method: 'POST',
-					credentials: 'same-origin',
-					headers: { 'RequestVerificationToken': getRequestVerificationToken() }
-				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
-				.then(function(res){
-					if(res.success) {
-						document.getElementById('tfArea').style.display = 'block';
-						renderQr(res.authenticatorUri);
-						document.getElementById('tfKey').innerText = (res.sharedKey||'').replace(/(.{4})/g,'$1 ').trim();
-						document.getElementById('tfFeedback').style.display = 'none';
-					} else {
-						document.getElementById('tfFeedback').innerText = res.message||'Failed to generate key.';
-						document.getElementById('tfFeedback').style.display = 'block';
+			function copyRecoveryCodesToClipboard() {
+				var text = currentRecoveryCodes.join('\n');
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(text).then(function(){
+						showToast('Recovery codes copied to clipboard.', 'success');
+					}).catch(function(err){
+						showToast('Failed to copy: ' + err.message, 'danger');
+					});
+				} else {
+					var textarea = document.createElement('textarea');
+					textarea.value = text;
+					textarea.style.position = 'fixed';
+					textarea.style.opacity = '0';
+					document.body.appendChild(textarea);
+					textarea.select();
+					try {
+						document.execCommand('copy');
+						showToast('Recovery codes copied to clipboard.', 'success');
+					} catch(err) {
+						showToast('Failed to copy.', 'danger');
 					}
-				}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
-			});
-		}
+					document.body.removeChild(textarea);
+				}
+			}
 
-		var tfEnableBtn = document.getElementById('tfEnable');
-		if(tfEnableBtn) {
-			tfEnableBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				var code = document.getElementById('tfCode').value.trim();
-				if(!code){ document.getElementById('tfFeedback').innerText='Enter verification code.'; document.getElementById('tfFeedback').style.display='block'; return; }
-				fetch('/Account/EnableSecondFactorAjax', {
-					method: 'POST',
-					credentials: 'same-origin',
-					headers: { 'Content-Type':'application/json', 'RequestVerificationToken': getRequestVerificationToken() },
-					body: JSON.stringify({ VerificationCode: code })
-				}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
-				.then(function(res){
-					if(res.success){
-						if(res.recovery){
-							showRecoveryCodesModal(res.recovery);
-							showToast('Two-factor authentication enabled successfully!', 'success');
+			function downloadRecoveryCodes() {
+				var text = currentRecoveryCodes.join('\n');
+				var blob = new Blob([text], { type: 'text/plain' });
+				var url = URL.createObjectURL(blob);
+				var a = document.createElement('a');
+				a.href = url;
+				a.download = 'recovery-codes-' + new Date().toISOString().split('T')[0] + '.txt';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+				showToast('Recovery codes downloaded.', 'success');
+			}
+
+			document.getElementById('btnCopyRecoveryCodes').addEventListener('click', copyRecoveryCodesToClipboard);
+			document.getElementById('btnDownloadRecoveryCodes').addEventListener('click', downloadRecoveryCodes);
+
+			var tfConfigureBtn = document.getElementById('tfConfigure');
+			if(tfConfigureBtn) {
+				tfConfigureBtn.addEventListener('click', function(e){
+					e.preventDefault();
+					fetch('/Account/Generate2faAjax', {
+						method: 'POST',
+						credentials: 'same-origin',
+						headers: { 'RequestVerificationToken': getRequestVerificationToken() }
+					}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+					.then(function(res){
+						if(res.success) {
+							document.getElementById('tfArea').style.display = 'block';
+							renderQr(res.authenticatorUri);
+							document.getElementById('tfKey').innerText = (res.sharedKey||'').replace(/(.{4})/g,'$1 ').trim();
+							document.getElementById('tfFeedback').style.display = 'none';
+						} else {
+							document.getElementById('tfFeedback').innerText = res.message||'Failed to generate key.';
+							document.getElementById('tfFeedback').style.display = 'block';
 						}
-						setTimeout(function(){ location.reload(); }, 3000);
-					} else {
-						document.getElementById('tfFeedback').innerText = res.message||'Failed to enable.';
-						document.getElementById('tfFeedback').style.display = 'block';
-					}
-				}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
-			});
-		}
-
-		var tfDisableBtn = document.getElementById('tfDisable');
-		if(tfDisableBtn) {
-			tfDisableBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				Swal.fire({
-					title: 'Disable Two-Factor Authentication?',
-					text: 'You will need to reconfigure it to use authenticator apps again.',
-					icon: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#d33',
-					cancelButtonColor: '#3085d6',
-					confirmButtonText: 'Yes, disable it',
-					cancelButtonText: 'Cancel'
-				}).then(function(result) {
-					if (result.isConfirmed) {
-						var form = document.createElement('form'); 
-						form.method='post'; 
-						form.action='/Account/DisableTwoFactorSelf';
-						var token = getRequestVerificationToken();
-						if(token){ 
-							var inp = document.createElement('input'); 
-							inp.type='hidden'; 
-							inp.name='__RequestVerificationToken'; 
-							inp.value=token; 
-							form.appendChild(inp); 
-						}
-						document.body.appendChild(form); 
-						form.submit();
-					}
+					}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
 				});
-			});
-		}
+			}
 
-		var tfResetRecoveryBtn = document.getElementById('tfResetRecovery');
-		if(tfResetRecoveryBtn) {
-			tfResetRecoveryBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				Swal.fire({
-					title: 'Reset Recovery Codes?',
-					text: 'This will invalidate your existing recovery codes and generate new ones.',
-					icon: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#f0ad4e',
-					cancelButtonColor: '#6c757d',
-					confirmButtonText: 'Yes, reset them',
-					cancelButtonText: 'Cancel'
-				}).then(function(result) {
-					if (result.isConfirmed) {
-						fetch('/Account/ResetRecoveryCodesAjax', {
-							method: 'POST',
-							credentials: 'same-origin',
-							headers: { 'RequestVerificationToken': getRequestVerificationToken() }
-						}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
-						.then(function(res){
-							if(res.success && res.recovery){
+			var tfEnableBtn = document.getElementById('tfEnable');
+			if(tfEnableBtn) {
+				tfEnableBtn.addEventListener('click', function(e){
+					e.preventDefault();
+					var code = document.getElementById('tfCode').value.trim();
+					if(!code){ document.getElementById('tfFeedback').innerText='Enter verification code.'; document.getElementById('tfFeedback').style.display='block'; return; }
+					fetch('/Account/EnableSecondFactorAjax', {
+						method: 'POST',
+						credentials: 'same-origin',
+						headers: { 'Content-Type':'application/json', 'RequestVerificationToken': getRequestVerificationToken() },
+						body: JSON.stringify({ VerificationCode: code })
+					}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+					.then(function(res){
+						if(res.success){
+							if(res.recovery){
 								showRecoveryCodesModal(res.recovery);
-								showToast('Recovery codes have been reset successfully!', 'success');
-							} else {
-								showToast(res.message || 'Failed to reset recovery codes.', 'danger');
+								showToast('Two-factor authentication enabled successfully!', 'success');
 							}
-						}).catch(function(err){ showToast(err.message || 'Request failed.', 'danger'); });
-					}
+							setTimeout(function(){ location.reload(); }, 3000);
+						} else {
+							document.getElementById('tfFeedback').innerText = res.message||'Failed to enable.';
+							document.getElementById('tfFeedback').style.display = 'block';
+						}
+					}).catch(function(err){ document.getElementById('tfFeedback').innerText = err.message||'Request failed.'; document.getElementById('tfFeedback').style.display = 'block'; });
 				});
-			});
-		}
+			}
 
-		(function activateTab() {
-			var active = '@TempData["ActiveTab"]' || window.location.hash.replace('#', '');
-			if (active) {
-				var triggerEl = document.querySelector('#' + active + '-tab');
-				if (triggerEl) {
-					var tab = new bootstrap.Tab(triggerEl);
-					tab.show();
-					var target = document.querySelector(triggerEl.getAttribute('data-bs-target'));
-					if (target) {
-						var input = target.querySelector('input');
-						if (input) input.focus();
+			var tfDisableBtn = document.getElementById('tfDisable');
+			if(tfDisableBtn) {
+				tfDisableBtn.addEventListener('click', function(e){
+					e.preventDefault();
+					Swal.fire({
+						title: 'Disable Two-Factor Authentication?',
+						text: 'You will need to reconfigure it to use authenticator apps again.',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#d33',
+						cancelButtonColor: '#3085d6',
+						confirmButtonText: 'Yes, disable it',
+						cancelButtonText: 'Cancel'
+					}).then(function(result) {
+						if (result.isConfirmed) {
+							var form = document.createElement('form');
+							form.method='post';
+							form.action='/Account/DisableTwoFactorSelf';
+							var token = getRequestVerificationToken();
+							if(token){
+								var inp = document.createElement('input');
+								inp.type='hidden';
+								inp.name='__RequestVerificationToken';
+								inp.value=token;
+								form.appendChild(inp);
+							}
+							document.body.appendChild(form);
+							form.submit();
+						}
+					});
+				});
+			}
+
+			var tfResetRecoveryBtn = document.getElementById('tfResetRecovery');
+			if(tfResetRecoveryBtn) {
+				tfResetRecoveryBtn.addEventListener('click', function(e){
+					e.preventDefault();
+					Swal.fire({
+						title: 'Reset Recovery Codes?',
+						text: 'This will invalidate your existing recovery codes and generate new ones.',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#f0ad4e',
+						cancelButtonColor: '#6c757d',
+						confirmButtonText: 'Yes, reset them',
+						cancelButtonText: 'Cancel'
+					}).then(function(result) {
+						if (result.isConfirmed) {
+							fetch('/Account/ResetRecoveryCodesAjax', {
+								method: 'POST',
+								credentials: 'same-origin',
+								headers: { 'RequestVerificationToken': getRequestVerificationToken() }
+							}).then(function(r){ if(!r.ok) return r.text().then(t=>{throw new Error(t||('Status '+r.status));}); return r.json(); })
+							.then(function(res){
+								if(res.success && res.recovery){
+									showRecoveryCodesModal(res.recovery);
+									showToast('Recovery codes have been reset successfully!', 'success');
+								} else {
+									showToast(res.message || 'Failed to reset recovery codes.', 'danger');
+								}
+							}).catch(function(err){ showToast(err.message || 'Request failed.', 'danger'); });
+						}
+					});
+				});
+			}
+
+			(function activateTab() {
+				var active = '@TempData["ActiveTab"]' || window.location.hash.replace('#', '');
+				if (active) {
+					var triggerEl = document.querySelector('#' + active + '-tab');
+					if (triggerEl) {
+						var tab = new bootstrap.Tab(triggerEl);
+						tab.show();
+						var target = document.querySelector(triggerEl.getAttribute('data-bs-target'));
+						if (target) {
+							var input = target.querySelector('input');
+							if (input) input.focus();
+						}
 					}
 				}
-			}
+			})();
 		})();
-	})();
 	</script>
 }

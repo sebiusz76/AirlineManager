@@ -180,6 +180,9 @@ try
     // Register Session Management Service
     builder.Services.AddScoped<ISessionManagementService, SessionManagementService>();
 
+    // Register Password Expiration Service
+    builder.Services.AddScoped<IPasswordExpirationService, PasswordExpirationService>();
+
     // Register Session Cleanup Background Service
     builder.Services.AddHostedService<AirlineManager.Services.Background.SessionCleanupService>();
 
