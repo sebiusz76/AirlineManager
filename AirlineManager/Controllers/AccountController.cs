@@ -21,6 +21,7 @@ namespace AirlineManager.Controllers
         private readonly ApplicationDbContext _context;
         private readonly AirlineManager.Services.IEmailService _emailService;
         private readonly ILoginHistoryService _loginHistoryService;
+        private readonly ISessionManagementService _sessionManagementService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -29,7 +30,8 @@ namespace AirlineManager.Controllers
             ILogger<AccountController> logger,
             ApplicationDbContext context,
             AirlineManager.Services.IEmailService emailService,
-            ILoginHistoryService loginHistoryService)
+            ILoginHistoryService loginHistoryService,
+            ISessionManagementService sessionManagementService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -38,6 +40,7 @@ namespace AirlineManager.Controllers
             _context = context;
             _emailService = emailService;
             _loginHistoryService = loginHistoryService;
+            _sessionManagementService = sessionManagementService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -270,6 +273,23 @@ namespace AirlineManager.Controllers
                             userAgent,
                             requiredTwoFactor: false
                         );
+
+                        // Create session
+                        var sessionId = HttpContext.Session.Id;
+                        if (string.IsNullOrEmpty(sessionId))
+                        {
+                            // Generate unique session ID if not available
+                            sessionId = Guid.NewGuid().ToString();
+                        }
+
+                        await _sessionManagementService.CreateOrUpdateSessionAsync(
+                            user.Id,
+                            user.Email!,
+                            sessionId,
+                            ipAddress,
+                            userAgent,
+                            model.RememberMe
+                        );
                     }
 
                     // after successful sign-in, check flag
@@ -414,6 +434,24 @@ namespace AirlineManager.Controllers
                         userAgent,
                         requiredTwoFactor: true
                     );
+
+                    // Create session
+                    var sessionId = HttpContext.Session.Id;
+                    if (string.IsNullOrEmpty(sessionId))
+                    {
+                        // Generate unique session ID if not available
+                        sessionId = Guid.NewGuid().ToString();
+                    }
+
+                    await _sessionManagementService.CreateOrUpdateSessionAsync(
+                        user.Id,
+                        user.Email!,
+                        sessionId,
+                        ipAddress,
+                        userAgent,
+                        model.RememberMe
+                    );
+
                     return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home"));
                 }
 
@@ -442,6 +480,23 @@ namespace AirlineManager.Controllers
                     ipAddress,
                     userAgent,
                     requiredTwoFactor: true
+                );
+
+                // Create session
+                var sessionId = HttpContext.Session.Id;
+                if (string.IsNullOrEmpty(sessionId))
+                {
+                    // Generate unique session ID if not available
+                    sessionId = Guid.NewGuid().ToString();
+                }
+
+                await _sessionManagementService.CreateOrUpdateSessionAsync(
+                    user.Id,
+                    user.Email!,
+                    sessionId,
+                    ipAddress,
+                    userAgent,
+                    model.RememberMe
                 );
 
                 return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home"));
@@ -887,14 +942,83 @@ namespace AirlineManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var sessionId = HttpContext.Session.Id;
+                if (string.IsNullOrEmpty(sessionId))
+                {
+                    sessionId = Guid.NewGuid().ToString();
+                }
+
+                await _sessionManagementService.TerminateSessionAsync(sessionId);
+            }
+
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
-        private IActionResult RedirectionToLocal(string returnUrl)
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ActiveSessions()
         {
-            if (Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
-            return RedirectToAction("Index", "Home");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var sessions = await _sessionManagementService.GetActiveSessionsAsync(user.Id);
+            var currentSessionId = HttpContext.Session.Id;
+            if (string.IsNullOrEmpty(currentSessionId))
+            {
+                currentSessionId = Guid.NewGuid().ToString();
+            }
+
+            ViewBag.CurrentSessionId = currentSessionId;
+
+            return View(sessions);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TerminateSession(string sessionId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var session = await _sessionManagementService.GetSessionByIdAsync(sessionId);
+            if (session == null || session.UserId != user.Id)
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Session not found or access denied.";
+                return RedirectToAction(nameof(ActiveSessions));
+            }
+
+            await _sessionManagementService.TerminateSessionAsync(sessionId);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Session terminated successfully.";
+            return RedirectToAction(nameof(ActiveSessions));
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TerminateOtherSessions()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var currentSessionId = HttpContext.Session.Id;
+            if (string.IsNullOrEmpty(currentSessionId))
+            {
+                currentSessionId = Guid.NewGuid().ToString();
+            }
+
+            await _sessionManagementService.TerminateOtherSessionsAsync(user.Id, currentSessionId);
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "All other sessions have been terminated.";
+            return RedirectToAction(nameof(ActiveSessions));
         }
 
         [HttpGet]
