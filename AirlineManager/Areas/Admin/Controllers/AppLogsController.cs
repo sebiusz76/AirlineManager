@@ -7,11 +7,11 @@ namespace AirlineManager.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public class LogsController : Controller
+    public class AppLogsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public LogsController(ApplicationDbContext context)
+        public AppLogsController(ApplicationDbContext context)
         {
             _context = context;
         }

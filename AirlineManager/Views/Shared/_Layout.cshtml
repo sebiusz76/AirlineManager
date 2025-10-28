@@ -44,13 +44,13 @@
 									</a>
 									<ul class="dropdown-menu">
 										<li>
-											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard</a>
 										</li>
 										<li>
-											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="bi bi-people"></i> Users</a>
 										</li>
 										<li>
-											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Logs" asp-action="Index">Logs</a>
+											<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="AppLogs" asp-action="Index"><i class="bi bi-card-text"></i> Logs</a>
 										</li>
 										@if (User.IsInRole("SuperAdmin"))
 										{
