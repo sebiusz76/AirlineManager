@@ -13,5 +13,6 @@ namespace AirlineManager.Models.ViewModel
         public bool IsLockedOut { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool TwoFactorEnabled { get; set; }
+        public bool EmailConfirmed { get; set; }
     }
 }

@@ -138,7 +138,8 @@ namespace AirlineManager.Areas.Admin.Controllers
                     Role = highest ?? "User",
                     IsLockedOut = isLocked,
                     LockoutEnd = user.LockoutEnd,
-                    TwoFactorEnabled = twoFactorEnabled
+                    TwoFactorEnabled = twoFactorEnabled,
+                    EmailConfirmed = user.EmailConfirmed
                 });
             }
 

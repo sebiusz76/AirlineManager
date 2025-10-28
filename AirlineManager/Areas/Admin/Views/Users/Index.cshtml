@@ -42,6 +42,7 @@
 			<th>Email</th>
 			<th>Name</th>
 			<th>Role</th>
+			<th>Activated</th>
 			<th>Locked</th>
 			@if (isSuperAdmin)
 			{
@@ -56,27 +57,46 @@
 				<td>@user.Email</td>
 				<td>@user.FirstName @user.LastName</td>
 				<td>@user.Role</td>
-				<td>@(user.IsLockedOut ? "Yes" : "No")</td>
+				<td>
+					@if (user.EmailConfirmed)
+					{
+						<span class="badge rounded-pill bg-success">Yes</span>
+					}
+					else
+					{
+						<span class="badge rounded-pill bg-warning">No</span>
+					}
+				</td>
+				<td>
+					@if (user.IsLockedOut)
+					{
+						<span class="badge rounded-pill bg-danger">Yes</span>
+					}
+					else
+					{
+						<span class="badge rounded-pill bg-success">No</span>
+					}
+				</td>
 				@if (isSuperAdmin)
 				{
 					<td>
 						@if (user.TwoFactorEnabled)
 						{
-							<span class="badge bg-success">Enabled</span>
+							<span class="badge rounded-pill bg-success">Enabled</span>
 						}
 						else
 						{
-							<span class="badge bg-secondary">Disabled</span>
+							<span class="badge rounded-pill bg-secondary">Disabled</span>
 						}
 					</td>
 				}
 				<td>
 					<a asp-area="Admin" asp-controller="Users" asp-action="Edit"
-						asp-route-id="@user.Id" class="btn btn-sm btn-primary">Edit</a>
+						asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Edit</a>
 					<a asp-area="Admin" asp-controller="Users" asp-action="AuditLog"
-						asp-route-id="@user.Id" class="btn btn-sm btn-secondary">Audit Log</a>
+					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Audit Log</a>
 					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
-						asp-route-id="@user.Id" class="btn btn-sm btn-warning">Set Password</a>
+					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Set Password</a>
 					@if (isSuperAdmin && user.TwoFactorEnabled)
 					{
 						<form asp-area="Admin" asp-controller="Users" asp-action="DisableTwoFactor"
