@@ -14,6 +14,7 @@ namespace AirlineManager.DataAccess.Data
         public DbSet<UserAuditLog> UserAuditLogs { get; set; }
         public DbSet<AppConfiguration> AppConfigurations { get; set; }
         public DbSet<UserLoginHistory> UserLoginHistories { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -85,6 +86,30 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => e.LoginTime);
                 entity.HasIndex(e => e.IsSuccessful);
+            });
+
+            builder.Entity<UserSession>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.UserId).IsRequired().HasMaxLength(450);
+                entity.Property(e => e.UserEmail).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.SessionId).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.LastActivityAt).IsRequired();
+                entity.Property(e => e.ExpiresAt);
+                entity.Property(e => e.IpAddress).HasMaxLength(45);
+                entity.Property(e => e.UserAgent).HasMaxLength(500);
+                entity.Property(e => e.Browser).HasMaxLength(100);
+                entity.Property(e => e.OperatingSystem).HasMaxLength(100);
+                entity.Property(e => e.Device).HasMaxLength(100);
+                entity.Property(e => e.Country).HasMaxLength(100);
+                entity.Property(e => e.City).HasMaxLength(100);
+                entity.Property(e => e.IsActive).IsRequired();
+                entity.Property(e => e.IsPersistent).IsRequired();
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.SessionId).IsUnique();
+                entity.HasIndex(e => e.IsActive);
+                entity.HasIndex(e => e.ExpiresAt);
             });
 
             // Seed default SMTP configuration

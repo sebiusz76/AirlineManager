@@ -1,0 +1,192 @@
+@model IEnumerable<AirlineManager.Models.Domain.UserSession>
+
+@{
+	ViewData["Title"] = "Active Sessions";
+	var currentSessionId = ViewBag.CurrentSessionId as string;
+}
+
+<h1><i class="bi bi-display"></i> Active Sessions</h1>
+<p class="text-muted">Manage your active sessions across different devices and browsers.</p>
+
+<div class="alert alert-info">
+	<i class="bi bi-info-circle"></i> You can view all devices and locations where you're currently signed in. For security, you can sign out of sessions that you don't recognize.
+</div>
+
+@if (Model.Any())
+{
+	<div class="row">
+		@foreach (var session in Model)
+		{
+			var isCurrentSession = session.SessionId == currentSessionId;
+			var cardClass = isCurrentSession ? "border-primary" : "";
+			
+			<div class="col-md-6 col-lg-4 mb-4">
+				<div class="card @cardClass h-100">
+					@if (isCurrentSession)
+					{
+						<div class="card-header bg-primary text-white">
+							<i class="bi bi-check-circle-fill"></i> Current Session
+						</div>
+					}
+					<div class="card-body">
+						<h5 class="card-title">
+							@if (!string.IsNullOrEmpty(session.Browser))
+							{
+								<i class="bi bi-browser-chrome"></i> @session.Browser
+							}
+							else
+							{
+<i class="bi bi-question-circle"></i> <text>Unknown Browser</text>
+							}
+						</h5>
+						
+						<div class="mb-2">
+							<small class="text-muted">
+								<i class="bi bi-pc-display"></i> 
+								@if (!string.IsNullOrEmpty(session.OperatingSystem))
+								{
+									@session.OperatingSystem
+								}
+								else
+								{
+									<span>Unknown OS</span>
+								}
+								@if (!string.IsNullOrEmpty(session.Device))
+								{
+									<text> - @session.Device</text>
+								}
+							</small>
+						</div>
+
+						<div class="mb-2">
+							<small class="text-muted">
+								<i class="bi bi-geo-alt"></i>
+								@if (!string.IsNullOrEmpty(session.City) || !string.IsNullOrEmpty(session.Country))
+								{
+									@if (!string.IsNullOrEmpty(session.City))
+									{
+										@session.City<text>, </text>
+									}
+									@if (!string.IsNullOrEmpty(session.Country))
+									{
+										@session.Country
+									}
+								}
+								else
+								{
+									<span>Unknown location</span>
+								}
+							</small>
+						</div>
+
+						@if (!string.IsNullOrEmpty(session.IpAddress))
+						{
+							<div class="mb-2">
+								<small class="text-muted">
+									<i class="bi bi-hdd-network"></i> IP: <code>@session.IpAddress</code>
+								</small>
+							</div>
+						}
+
+						<div class="mb-2">
+							<small class="text-muted">
+								<i class="bi bi-clock"></i> 
+								Signed in: @session.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+							</small>
+						</div>
+
+						<div class="mb-2">
+							<small class="text-muted">
+								<i class="bi bi-activity"></i> 
+								Last activity: @session.LastActivityAt.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+							</small>
+						</div>
+
+						@if (session.IsPersistent)
+						{
+							<div class="mb-2">
+								<span class="badge bg-success">
+									<i class="bi bi-shield-check"></i> Remember Me
+								</span>
+							</div>
+						}
+
+						@if (session.ExpiresAt.HasValue)
+						{
+							<div class="mb-2">
+								<small class="text-muted">
+									<i class="bi bi-hourglass-split"></i>
+									Expires: @session.ExpiresAt.Value.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
+								</small>
+							</div>
+						}
+					</div>
+					<div class="card-footer">
+						@if (!isCurrentSession)
+						{
+							<form asp-action="TerminateSession" method="post" style="display: inline;">
+								@Html.AntiForgeryToken()
+								<input type="hidden" name="sessionId" value="@session.SessionId" />
+								<button type="submit" class="btn btn-sm btn-outline-danger" 
+										onclick="return confirm('Are you sure you want to sign out of this session?');">
+									<i class="bi bi-x-circle"></i> Sign Out
+								</button>
+							</form>
+						}
+						else
+						{
+							<span class="text-muted">
+								<i class="bi bi-shield-lock"></i> This is your current session
+							</span>
+						}
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if (Model.Count() > 1)
+	{
+		<div class="mt-4">
+			<div class="card border-warning">
+				<div class="card-body">
+					<h5 class="card-title text-warning">
+						<i class="bi bi-exclamation-triangle"></i> Sign Out of All Other Sessions
+					</h5>
+					<p class="card-text">
+						If you want to sign out of all sessions except your current one, click the button below. 
+						This is useful if you think someone else may have access to your account.
+					</p>
+					<form asp-action="TerminateOtherSessions" method="post">
+						@Html.AntiForgeryToken()
+						<button type="submit" class="btn btn-warning" 
+								onclick="return confirm('Are you sure you want to sign out of all other sessions? You will remain signed in on this device.');">
+							<i class="bi bi-power"></i> Sign Out of All Other Sessions
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<div class="alert alert-info">
+		<i class="bi bi-info-circle"></i> No active sessions found. This may indicate that session tracking is not properly configured.
+	</div>
+}
+
+<div class="mt-4">
+	<a asp-action="Profile" class="btn btn-outline-secondary">
+		<i class="bi bi-arrow-left"></i> Back to Profile
+	</a>
+</div>
+
+@section Scripts {
+	<script>
+		// Auto-refresh page every 2 minutes to show updated session activity
+		setTimeout(function() {
+			location.reload();
+		}, 120000);
+	</script>
+}

@@ -156,7 +156,17 @@ try
 #if DEBUG
         .AddRazorRuntimeCompilation()
 #endif
-        ;
+      ;
+
+    // Add session support
+    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
     // Register Configuration Service
     builder.Services.AddScoped<AirlineManager.Services.IConfigurationService, AirlineManager.Services.ConfigurationService>();
@@ -166,6 +176,12 @@ try
 
     // Register Login History Service
     builder.Services.AddScoped<ILoginHistoryService, LoginHistoryService>();
+
+    // Register Session Management Service
+    builder.Services.AddScoped<ISessionManagementService, SessionManagementService>();
+
+    // Register Session Cleanup Background Service
+    builder.Services.AddHostedService<AirlineManager.Services.Background.SessionCleanupService>();
 
     var app = builder.Build();
 
@@ -214,8 +230,14 @@ try
 
     app.UseRouting();
 
+    // Add session middleware
+    app.UseSession();
+
     // Add authentication and authorization
     app.UseAuthentication();
+
+    // Update session activity
+    app.UseMiddleware<SessionActivityMiddleware>();
 
     // Middleware to force password change
     app.UseMiddleware<RequirePasswordChangeMiddleware>();

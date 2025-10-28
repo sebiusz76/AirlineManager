@@ -5,48 +5,53 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        var appUser = await UserManager.GetUserAsync(User);
-        var displayName = appUser != null ? $"{appUser.FirstName} {appUser.LastName}" : User.Identity?.Name;
+	@if (SignInManager.IsSignedIn(User))
+	{
+		var appUser = await UserManager.GetUserAsync(User);
+		var displayName = appUser != null ? $"{appUser.FirstName} {appUser.LastName}" : User.Identity?.Name;
 
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle"></i> @displayName
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
-                        <i class="bi bi-person"></i> Profile
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="LoginHistory">
-                        <i class="bi bi-shield-lock"></i> Login History
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
-                        <button type="submit" class="dropdown-item text-dark">
-                            <i class="bi bi-box-arrow-right"></i> Logout
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Public" asp-controller="Account" asp-action="Register">
-                <i class="bi bi-person-plus"></i> Register
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Public" asp-controller="Account" asp-action="Login">
-                <i class="bi bi-box-arrow-in-right"></i> Login
-            </a>
-        </li>
-    }
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+				<i class="bi bi-person-circle"></i> @displayName
+			</a>
+			<ul class="dropdown-menu dropdown-menu-end">
+				<li>
+					<a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
+						<i class="bi bi-person"></i> Profile
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ActiveSessions">
+						<i class="bi bi-display"></i> Active Sessions
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="LoginHistory">
+						<i class="bi bi-shield-lock"></i> Login History
+					</a>
+				</li>
+				<li><hr class="dropdown-divider"></li>
+				<li>
+					<form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
+						<button type="submit" class="dropdown-item text-dark">
+							<i class="bi bi-box-arrow-right"></i> Logout
+						</button>
+					</form>
+				</li>
+			</ul>
+		</li>
+	}
+	else
+	{
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-area="Public" asp-controller="Account" asp-action="Register">
+				<i class="bi bi-person-plus"></i> Register
+			</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-area="Public" asp-controller="Account" asp-action="Login">
+				<i class="bi bi-box-arrow-in-right"></i> Login
+			</a>
+		</li>
+	}
 </ul>
