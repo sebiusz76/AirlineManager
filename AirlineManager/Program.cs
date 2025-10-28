@@ -78,15 +78,15 @@ try
 
     // Add Identity services
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-  {
-      options.Password.RequireDigit = true;
-      options.Password.RequireLowercase = true;
-      options.Password.RequireUppercase = true;
-      options.Password.RequireNonAlphanumeric = false;
-      options.Password.RequiredLength = 8;
-      options.SignIn.RequireConfirmedEmail = false;
-      options.SignIn.RequireConfirmedAccount = false;
-  })
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 8;
+        options.SignIn.RequireConfirmedEmail = true; // Require email confirmation
+        options.SignIn.RequireConfirmedAccount = true; // Require confirmed account
+    })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
@@ -158,6 +158,9 @@ try
 
     // Register Configuration Service
     builder.Services.AddScoped<AirlineManager.Services.IConfigurationService, AirlineManager.Services.ConfigurationService>();
+
+    // Register Email Service
+    builder.Services.AddScoped<AirlineManager.Services.IEmailService, AirlineManager.Services.EmailService>();
 
     var app = builder.Build();
 

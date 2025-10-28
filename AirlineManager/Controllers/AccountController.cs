@@ -17,19 +17,22 @@ namespace AirlineManager.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<AccountController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly AirlineManager.Services.IEmailService _emailService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             ILogger<AccountController> logger,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            AirlineManager.Services.IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _logger = logger;
             _context = context;
+            _emailService = emailService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -80,9 +83,27 @@ namespace AirlineManager.Controllers
                 // Assign the User role by default
                 await _userManager.AddToRoleAsync(user, "User");
 
-                // Sign in the user
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                // Generate email confirmation token
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = Url.Action(
+                    nameof(ConfirmEmail),
+                    "Account",
+                    new { userId = user.Id, token = token },
+                    protocol: Request.Scheme);
+
+                // Send confirmation email
+                try
+                {
+                    await _emailService.SendEmailConfirmationAsync(user.Email, user.FirstName, confirmationLink!);
+                    _logger.LogInformation("Confirmation email sent to {Email}", user.Email);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send confirmation email to {Email}", user.Email);
+                    // Continue with registration even if email fails
+                }
+
+                return RedirectToAction(nameof(RegisterConfirmation));
             }
 
             foreach (var error in result.Errors)
@@ -95,10 +116,125 @@ namespace AirlineManager.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        public IActionResult RegisterConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResendConfirmation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendConfirmation(ResendConfirmationViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                TempData["ToastType"] = "info";
+                TempData["ToastMessage"] = "If an account with this email exists and is not confirmed, a confirmation email will be sent.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (user.EmailConfirmed)
+            {
+                TempData["ToastType"] = "info";
+                TempData["ToastMessage"] = "This email is already confirmed. You can log in now.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            // Generate new confirmation token
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action(
+                nameof(ConfirmEmail),
+                "Account",
+                new { userId = user.Id, token = token },
+                protocol: Request.Scheme);
+
+            // Send confirmation email
+            try
+            {
+                await _emailService.SendEmailConfirmationAsync(user.Email, user.FirstName, confirmationLink!);
+                _logger.LogInformation("Resent confirmation email to {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to resend confirmation email to {Email}", user.Email);
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Failed to send confirmation email. Please try again later.";
+                return View(model);
+            }
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = "Confirmation email sent. Please check your inbox.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Invalid email confirmation link.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "User not found.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (user.EmailConfirmed)
+            {
+                TempData["ToastType"] = "info";
+                TempData["ToastMessage"] = "Email already confirmed. You can log in now.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                // Send welcome email after successful confirmation
+                try
+                {
+                    await _emailService.SendWelcomeEmailAsync(user.Email, user.FirstName, user.LastName);
+                    _logger.LogInformation("Welcome email sent to {Email} after email confirmation", user.Email);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send welcome email to {Email}", user.Email);
+                }
+
+                TempData["ToastType"] = "success";
+                TempData["ToastMessage"] = "Email confirmed successfully! You can now log in.";
+                _logger.LogInformation("Email confirmed for user {Email}", user.Email);
+                return RedirectToAction(nameof(Login));
+            }
+
+            TempData["ToastType"] = "error";
+            TempData["ToastMessage"] = "Email confirmation failed. The link may be expired or invalid.";
+            return RedirectToAction(nameof(Login));
         }
 
         [HttpPost]
@@ -134,6 +270,11 @@ namespace AirlineManager.Controllers
                 else if (result.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, "User account locked out.");
+                    return View(model);
+                }
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "Email not confirmed. Please check your email for the confirmation link.");
                     return View(model);
                 }
                 else
