@@ -68,7 +68,7 @@
 				<input asp-for="Info.LastName" class="form-control" />
 				<span asp-validation-for="Info.LastName" class="text-danger"></span>
 			</div>
-			<button type="submit" class="btn btn-primary">Save info</button>
+			<button type="submit" class="btn btn-outline-primary">Save info</button>
 		</form>
 	</div>
 
@@ -85,7 +85,7 @@
 				<input asp-for="Email.CurrentPassword" class="form-control" />
 				<span asp-validation-for="Email.CurrentPassword" class="text-danger"></span>
 			</div>
-			<button type="submit" class="btn btn-primary">Change email</button>
+			<button type="submit" class="btn btn-outline-primary">Change email</button>
 		</form>
 	</div>
 
@@ -107,7 +107,7 @@
 				<input asp-for="Password.ConfirmPassword" class="form-control" />
 				<span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
 			</div>
-			<button type="submit" class="btn btn-primary">Change password</button>
+			<button type="submit" class="btn btn-outline-primary">Change password</button>
 		</form>
 	</div>
 
@@ -152,7 +152,7 @@
 		{
 			<p>Configure your authenticator app (TOTP) to enable two-factor authentication.</p>
 			<div class="mb-2">
-				<button id="tfConfigure" class="btn btn-primary">Configure Authenticator</button>
+				<button id="tfConfigure" class="btn btn-outline-primary">Configure Authenticator</button>
 			</div>
 		}
 		<div id="tfArea" style="display:none; margin-top:12px;">
@@ -164,7 +164,7 @@
 				<input id="tfCode" class="form-control" autocomplete="one-time-code" />
 			</div>
 			<div class="mt-2">
-				<button id="tfEnable" class="btn btn-success">Enable</button>
+				<button id="tfEnable" class="btn btn-outline-success">Enable</button>
 			</div>
 			<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
 		</div>

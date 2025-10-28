@@ -1,0 +1,206 @@
+@model IEnumerable<AirlineManager.Models.Domain.ApplicationLog>
+
+@{
+	ViewData["Title"] = "Logs";
+	var levels = ViewBag.Levels as List<string> ?? new List<string>();
+	var selectedLevel = ViewBag.SelectedLevel as string;
+	var startDate = ViewBag.StartDate as string;
+	var endDate = ViewBag.EndDate as string;
+	var search = ViewBag.Search as string ?? string.Empty;
+	var currentPage = ViewBag.CurrentPage as int? ?? 1;
+	var pageSize = ViewBag.PageSize as int? ?? 100;
+	var totalPages = ViewBag.TotalPages as int? ?? 0;
+	var totalCount = ViewBag.TotalCount as int? ?? 0;
+	var isSuperAdmin = User.IsInRole("SuperAdmin");
+}
+
+<h1>Application Logs</h1>
+
+<div class="card mb-3">
+	<div class="card-header">
+		<strong>Filters</strong>
+	</div>
+	<div class="card-body">
+		<form method="get" class="row g-3">
+			<div class="col-md-2">
+				<label class="form-label">Log Level</label>
+				<select name="level" class="form-select">
+					<option value="">All Levels</option>
+					@foreach (var lvl in levels)
+					{
+						<option value="@lvl" selected="@(lvl == selectedLevel ? "selected" : null)">@lvl</option>
+					}
+				</select>
+			</div>
+			<div class="col-md-2">
+				<label class="form-label">Start Date</label>
+				<input type="date" name="startDate" value="@startDate" class="form-control" />
+			</div>
+			<div class="col-md-2">
+				<label class="form-label">End Date</label>
+				<input type="date" name="endDate" value="@endDate" class="form-control" />
+			</div>
+			<div class="col-md-4">
+				<label class="form-label">Search</label>
+				<input type="text" name="search" value="@search" class="form-control" placeholder="Search in message or exception..." />
+			</div>
+			<div class="col-md-2 d-flex align-items-end">
+				<button type="submit" class="btn btn-primary me-2">Filter</button>
+				<a asp-action="Index" class="btn btn-secondary">Reset</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<div>
+		<span class="badge bg-info">@totalCount total log(s)</span>
+	</div>
+	<div>
+		<a asp-action="Download" asp-route-level="@selectedLevel" asp-route-startDate="@startDate" asp-route-endDate="@endDate" asp-route-search="@search" class="btn btn-success btn-sm">
+			<i class="bi bi-download"></i> Download
+		</a>
+		@if (isSuperAdmin)
+		{
+			<button type="button" class="btn btn-warning btn-sm ms-2" id="btnDeleteOld">
+				<i class="bi bi-trash"></i> Delete Old (30+ days)
+			</button>
+			<button type="button" class="btn btn-danger btn-sm ms-2" id="btnDeleteAll">
+				<i class="bi bi-trash-fill"></i> Delete All
+			</button>
+		}
+	</div>
+</div>
+
+<div class="table-responsive">
+	<table class="table table-sm table-hover">
+		<thead>
+			<tr>
+				<th style="width: 180px;">Timestamp</th>
+				<th style="width: 80px;">Level</th>
+				<th>Message</th>
+				<th style="width: 50px;"></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var log in Model)
+			{
+				var levelClass = log.Level switch
+				{
+					"Error" => "table-danger",
+					"Warning" => "table-warning",
+					"Fatal" => "table-danger",
+					"Debug" => "table-secondary",
+					_ => ""
+				};
+
+				<tr class="@levelClass">
+					<td class="text-nowrap"><small>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</small></td>
+					<td>
+						<span class="badge bg-@(log.Level == "Error" || log.Level == "Fatal" ? "danger" : log.Level == "Warning" ? "warning" : log.Level == "Debug" ? "secondary" : "info")">
+							@log.Level
+						</span>
+					</td>
+					<td style="max-width: 800px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+						@log.Message
+					</td>
+					<td>
+						@if (!string.IsNullOrEmpty(log.Exception))
+						{
+							<button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#exception-@log.Id">
+								<i class="bi bi-exclamation-triangle"></i>
+							</button>
+						}
+					</td>
+				</tr>
+				@if (!string.IsNullOrEmpty(log.Exception))
+				{
+					<tr>
+						<td colspan="4" class="p-0">
+							<div class="collapse" id="exception-@log.Id">
+								<div class="card card-body bg-light m-2">
+									<strong>Exception:</strong>
+									<pre style="font-size: 11px; margin-bottom: 0; white-space: pre-wrap;">@log.Exception</pre>
+								</div>
+							</div>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+</div>
+
+@if (totalPages > 0)
+{
+	<nav>
+		<ul class="pagination">
+			<li class="page-item @(currentPage == 1 ? "disabled" : "")">
+				<a class="page-link" href="?level=@selectedLevel&startDate=@startDate&endDate=@endDate&search=@search&page=@(currentPage - 1)&pageSize=@pageSize">Previous</a>
+			</li>
+			@for (int p = Math.Max(1, currentPage - 5); p <= Math.Min(totalPages, currentPage + 5); p++)
+			{
+				<li class="page-item @(p == currentPage ? "active" : "")">
+					<a class="page-link" href="?level=@selectedLevel&startDate=@startDate&endDate=@endDate&search=@search&page=@p&pageSize=@pageSize">@p</a>
+				</li>
+			}
+			<li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+				<a class="page-link" href="?level=@selectedLevel&startDate=@startDate&endDate=@endDate&search=@search&page=@(currentPage + 1)&pageSize=@pageSize">Next</a>
+			</li>
+		</ul>
+	</nav>
+}
+
+<form id="deleteOldForm" asp-action="DeleteOldLogs" method="post" style="display: none;">
+	@Html.AntiForgeryToken()
+	<input type="hidden" name="days" value="30" />
+</form>
+
+<form id="deleteAllForm" asp-action="DeleteAll" method="post" style="display: none;">
+	@Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		var btnDeleteOld = document.getElementById('btnDeleteOld');
+		if (btnDeleteOld) {
+			btnDeleteOld.addEventListener('click', function() {
+				Swal.fire({
+					title: 'Delete Old Logs?',
+					text: 'This will permanently delete all log entries older than 30 days.',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#f0ad4e',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, delete them',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						document.getElementById('deleteOldForm').submit();
+					}
+				});
+			});
+		}
+
+		var btnDeleteAll = document.getElementById('btnDeleteAll');
+		if (btnDeleteAll) {
+			btnDeleteAll.addEventListener('click', function() {
+				Swal.fire({
+					title: 'Delete ALL Logs?',
+					html: '<strong>WARNING:</strong> This will permanently delete ALL log entries in the database.<br>This action cannot be undone.',
+					icon: 'error',
+					showCancelButton: true,
+					confirmButtonColor: '#d33',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, delete all',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						document.getElementById('deleteAllForm').submit();
+					}
+				});
+			});
+		}
+	</script>
+}
