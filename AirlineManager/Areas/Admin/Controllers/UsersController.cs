@@ -420,6 +420,51 @@ namespace AirlineManager.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ActivateAccount(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            if (user.EmailConfirmed)
+            {
+                TempData["ToastType"] = "warning";
+                TempData["ToastMessage"] = "This account is already activated.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var oldValues = new
+            {
+                EmailConfirmed = user.EmailConfirmed
+            };
+
+            // Activate the account by confirming the email
+            user.EmailConfirmed = true;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Failed to activate account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var newValues = new
+            {
+                EmailConfirmed = true
+            };
+
+            await LogUserChange(user.Id, user.Email, "AccountActivated", oldValues, newValues, "EmailConfirmed: False → True");
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = $"Account for {user.Email} has been activated successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpGet]
         public async Task<IActionResult> AuditLog(string id)
         {

@@ -9,6 +9,15 @@
         "dist/sweetalert2.all.min.js"
       ],
       "destination": "wwwroot/lib/sweetalert2/"
+    },
+    {
+      "library": "bootstrap-icons@1.11.3",
+      "files": [
+        "font/bootstrap-icons.min.css",
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2"
+      ],
+      "destination": "wwwroot/lib/bootstrap-icons/"
     }
   ]
 }

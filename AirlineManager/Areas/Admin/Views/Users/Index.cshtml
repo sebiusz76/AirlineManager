@@ -91,28 +91,71 @@
 					</td>
 				}
 				<td>
-					<a asp-area="Admin" asp-controller="Users" asp-action="Edit"
-						asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-					<a asp-area="Admin" asp-controller="Users" asp-action="AuditLog"
-					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Audit Log</a>
-					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
-					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Set Password</a>
-					@if (isSuperAdmin && user.TwoFactorEnabled)
-					{
-						<form asp-area="Admin" asp-controller="Users" asp-action="DisableTwoFactor"
-							asp-route-id="@user.Id" method="post" class="d-inline-block">
-							@Html.AntiForgeryToken()
-							<button type="submit" class="btn btn-sm btn-info js-disable-2fa"
-								data-email="@user.Email">Disable 2FA</button>
-						</form>
-					}
-					<form asp-area="Admin" asp-controller="Users" asp-action="Delete"
-						asp-route-id="@user.Id" method="post" class="delete-form"
-						style="display:inline-block;">
-						@Html.AntiForgeryToken()
-						<button type="submit" class="btn btn-sm btn-danger js-delete-user"
-							data-email="@user.Email">Delete</button>
-					</form>
+					<div class="dropdown">
+						<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+								id="dropdownActions@(user.Id)" data-bs-toggle="dropdown" aria-expanded="false">
+							Actions
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="dropdownActions@(user.Id)">
+							<li>
+								<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Edit"
+								   asp-route-id="@user.Id">
+									<i class="bi bi-pencil-square"></i> Edit
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="AuditLog"
+								   asp-route-id="@user.Id">
+									<i class="bi bi-clock-history"></i> Audit Log
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
+								   asp-route-id="@user.Id">
+									<i class="bi bi-key"></i> Set Password
+								</a>
+							</li>
+							@if (!user.EmailConfirmed)
+							{
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<form asp-area="Admin" asp-controller="Users" asp-action="ActivateAccount"
+										asp-route-id="@user.Id" method="post" class="d-inline-block w-100">
+										@Html.AntiForgeryToken()
+										<button type="submit" class="dropdown-item text-success js-activate-account"
+											data-email="@user.Email">
+											<i class="bi bi-check-circle"></i> Activate Account
+										</button>
+									</form>
+								</li>
+							}
+							@if (isSuperAdmin && user.TwoFactorEnabled)
+							{
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<form asp-area="Admin" asp-controller="Users" asp-action="DisableTwoFactor"
+										asp-route-id="@user.Id" method="post" class="d-inline-block w-100">
+										@Html.AntiForgeryToken()
+										<button type="submit" class="dropdown-item text-info js-disable-2fa"
+											data-email="@user.Email">
+											<i class="bi bi-shield-x"></i> Disable 2FA
+										</button>
+									</form>
+								</li>
+							}
+							<li><hr class="dropdown-divider"></li>
+							<li>
+								<form asp-area="Admin" asp-controller="Users" asp-action="Delete"
+									asp-route-id="@user.Id" method="post" class="d-inline-block w-100">
+									@Html.AntiForgeryToken()
+									<button type="submit" class="dropdown-item text-danger js-delete-user"
+										data-email="@user.Email">
+										<i class="bi bi-trash"></i> Delete
+									</button>
+								</form>
+							</li>
+						</ul>
+					</div>
 				</td>
 			</tr>
 		}
@@ -137,6 +180,29 @@
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
+		document.querySelectorAll('.js-activate-account').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var email = this.dataset.email;
+				var form = this.closest('form');
+				
+				Swal.fire({
+					title: 'Activate Account?',
+					html: 'This will activate the account for user <strong>' + email + '</strong>.<br>The user will be able to log in without email confirmation.',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonColor: '#28a745',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, activate it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+		});
+
 		document.querySelectorAll('.js-disable-2fa').forEach(function(btn) {
 			btn.addEventListener('click', function(e) {
 				e.preventDefault();
