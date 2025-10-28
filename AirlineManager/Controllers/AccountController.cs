@@ -900,6 +900,123 @@ namespace AirlineManager.Controllers
         public IActionResult AccessDenied() => View();
 
         [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // Don't reveal whether the user exists or not for security reasons
+            if (user == null || !user.EmailConfirmed)
+            {
+                TempData["ToastType"] = "info";
+                TempData["ToastMessage"] = "If an account with this email exists, a password reset link has been sent.";
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            // Generate password reset token
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = Url.Action(
+                nameof(ResetPassword),
+                "Account",
+                new { email = user.Email, token = token },
+                protocol: Request.Scheme);
+
+            // Send password reset email
+            try
+            {
+                await _emailService.SendPasswordResetEmailAsync(user.Email, resetLink!);
+                _logger.LogInformation("Password reset email sent to {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send password reset email to {Email}", user.Email);
+                // Still redirect to confirmation page for security
+            }
+
+            TempData["ToastType"] = "info";
+            TempData["ToastMessage"] = "If an account with this email exists, a password reset link has been sent.";
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email = null, string token = null)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            {
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "Invalid password reset link.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                Email = email,
+                Token = token
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user doesn't exist
+                TempData["ToastType"] = "success";
+                TempData["ToastMessage"] = "Your password has been reset successfully. You can now log in.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                // If user had MustChangePassword flag, clear it
+                if (user.MustChangePassword)
+                {
+                    user.MustChangePassword = false;
+                    await _userManager.UpdateAsync(user);
+                }
+
+                _logger.LogInformation("Password reset successfully for user {Email}", user.Email);
+
+                TempData["ToastType"] = "success";
+                TempData["ToastMessage"] = "Your password has been reset successfully. You can now log in.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
         [Authorize]
         public IActionResult ChangePassword()
         {
