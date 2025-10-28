@@ -14,5 +14,8 @@ namespace AirlineManager.Models.Domain
 
         // If true, user must change password at next login
         public bool MustChangePassword { get; set; } = false;
+
+        // Date when password was last changed
+        public DateTime? PasswordChangedAt { get; set; }
     }
 }

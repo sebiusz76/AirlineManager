@@ -192,6 +192,17 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 8,
+                    Key = "Security_PasswordExpirationDays",
+                    Value = "90",
+                    Description = "Number of days before password expires (0 = never expires)",
+                    Category = "Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }

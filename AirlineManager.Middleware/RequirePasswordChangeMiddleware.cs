@@ -1,4 +1,5 @@
 using AirlineManager.Models.Domain;
+using AirlineManager.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,16 +14,19 @@ namespace AirlineManager.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, UserManager<ApplicationUser> userManager, IPasswordExpirationService passwordExpirationService)
         {
             var user = context.User;
             if (user?.Identity?.IsAuthenticated == true)
             {
-                var userManager = context.RequestServices.GetService(typeof(UserManager<ApplicationUser>)) as UserManager<ApplicationUser>;
-                if (userManager != null)
+                var appUser = await userManager.GetUserAsync(user);
+                if (appUser != null)
                 {
-                    var appUser = await userManager.GetUserAsync(user);
-                    if (appUser != null && appUser.MustChangePassword)
+                    // Check if password change is required or if password has expired
+                    var mustChange = appUser.MustChangePassword;
+                    var passwordExpired = await passwordExpirationService.IsPasswordExpiredAsync(appUser);
+
+                    if (mustChange || passwordExpired)
                     {
                         var path = context.Request.Path.Value ?? string.Empty;
                         // Allow access to ChangePassword, Logout, AccessDenied, 2FA endpoints and static files
