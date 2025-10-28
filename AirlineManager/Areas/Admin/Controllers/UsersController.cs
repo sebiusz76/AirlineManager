@@ -465,6 +465,50 @@ namespace AirlineManager.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnlockAccount(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var isLockedOut = user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.UtcNow;
+
+            if (!isLockedOut)
+            {
+                TempData["ToastType"] = "warning";
+                TempData["ToastMessage"] = "This account is not locked out.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var oldValues = new
+            {
+                IsLockedOut = true,
+                LockoutEnd = user.LockoutEnd,
+                AccessFailedCount = user.AccessFailedCount
+            };
+
+            // Unlock the account
+            await _userManager.SetLockoutEndDateAsync(user, null);
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            var newValues = new
+            {
+                IsLockedOut = false,
+                LockoutEnd = (DateTimeOffset?)null,
+                AccessFailedCount = 0
+            };
+
+            await LogUserChange(user.Id, user.Email, "AccountUnlocked", oldValues, newValues, "Account manually unlocked by administrator");
+
+            TempData["ToastType"] = "success";
+            TempData["ToastMessage"] = $"Account for {user.Email} has been unlocked successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpGet]
         public async Task<IActionResult> AuditLog(string id)
         {

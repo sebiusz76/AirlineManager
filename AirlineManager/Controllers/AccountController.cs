@@ -23,6 +23,7 @@ namespace AirlineManager.Controllers
         private readonly ILoginHistoryService _loginHistoryService;
         private readonly ISessionManagementService _sessionManagementService;
         private readonly IPasswordExpirationService _passwordExpirationService;
+        private readonly IAccountLockoutService _accountLockoutService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -33,7 +34,8 @@ namespace AirlineManager.Controllers
             AirlineManager.Services.IEmailService emailService,
             ILoginHistoryService loginHistoryService,
             ISessionManagementService sessionManagementService,
-            IPasswordExpirationService passwordExpirationService)
+            IPasswordExpirationService passwordExpirationService,
+            IAccountLockoutService accountLockoutService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,6 +46,7 @@ namespace AirlineManager.Controllers
             _loginHistoryService = loginHistoryService;
             _sessionManagementService = sessionManagementService;
             _passwordExpirationService = passwordExpirationService;
+            _accountLockoutService = accountLockoutService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -262,7 +265,10 @@ namespace AirlineManager.Controllers
                 var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                // Get lockout configuration from database
+                var lockoutEnabled = await _accountLockoutService.IsLockoutEnabledAsync();
+
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: lockoutEnabled);
 
                 if (result.Succeeded)
                 {
@@ -338,6 +344,18 @@ namespace AirlineManager.Controllers
                             requiredTwoFactor: false,
                             failureReason: "Account locked out"
                         );
+
+                        // Get lockout end time
+                        var lockoutEnd = await _userManager.GetLockoutEndDateAsync(user);
+                        if (lockoutEnd.HasValue)
+                        {
+                            var remainingMinutes = (int)(lockoutEnd.Value - DateTimeOffset.UtcNow).TotalMinutes;
+                            if (remainingMinutes > 0)
+                            {
+                                ModelState.AddModelError(string.Empty, $"Account locked out. Please try again in {remainingMinutes} minute(s).");
+                                return View(model);
+                            }
+                        }
                     }
 
                     ModelState.AddModelError(string.Empty, "User account locked out.");
@@ -376,6 +394,20 @@ namespace AirlineManager.Controllers
                             requiredTwoFactor: false,
                             failureReason: "Invalid password"
                         );
+
+                        // Get remaining attempts before lockout
+                        if (lockoutEnabled)
+                        {
+                            var (maxAttempts, durationMinutes) = await _accountLockoutService.GetLockoutConfigurationAsync();
+                            var failedCount = await _userManager.GetAccessFailedCountAsync(user);
+                            var remainingAttempts = maxAttempts - failedCount;
+
+                            if (remainingAttempts > 0 && remainingAttempts <= 3)
+                            {
+                                ModelState.AddModelError(string.Empty, $"Invalid login attempt. You have {remainingAttempts} attempt(s) remaining before your account is locked.");
+                                return View(model);
+                            }
+                        }
                     }
 
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");

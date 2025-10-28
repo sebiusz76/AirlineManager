@@ -203,6 +203,28 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 9,
+                    Key = "Security_MaxFailedLoginAttempts",
+                    Value = "5",
+                    Description = "Maximum number of failed login attempts before account lockout",
+                    Category = "Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 10,
+                    Key = "Security_LockoutDurationMinutes",
+                    Value = "30",
+                    Description = "Duration of account lockout in minutes after max failed attempts",
+                    Category = "Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }
