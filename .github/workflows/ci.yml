@@ -1,38 +1,39 @@
 name: .NET CI
 
 on:
- push:
- branches: [ main, develop ]
- pull_request:
- branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
- build:
- runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
- steps:
- - name: Checkout
- uses: actions/checkout@v4
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
- - name: Setup .NET
- uses: actions/setup-dotnet@v3
- with:
- dotnet-version: '9.0.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
 
- - name: Install LibMan CLI
- run: |
- dotnet tool install -g Microsoft.Web.LibraryManager.Cli || true
- echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+    - name: Install LibMan CLI
+      run: |
+        dotnet tool install -g Microsoft.Web.LibraryManager.Cli || true
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
- - name: LibMan restore
- run: libman restore --project AirlineManager/libman.json
+    - name: LibMan restore
+      working-directory: AirlineManager
+      run: libman restore
 
- - name: Restore NuGet packages
- run: dotnet restore AirlineManager/AirlineManager.csproj
+    - name: Restore NuGet packages
+      run: dotnet restore
 
- - name: Build
- run: dotnet build AirlineManager/AirlineManager.csproj --configuration Release --no-restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
- - name: Run tests (if any)
- run: |
- dotnet test --no-build --verbosity normal || true
+    - name: Run tests (if any)
+      run: |
+        dotnet test --no-build --configuration Release --verbosity normal || true
