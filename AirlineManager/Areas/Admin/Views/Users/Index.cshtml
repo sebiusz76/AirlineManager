@@ -97,6 +97,15 @@
 					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">Audit Log</a>
 					<a asp-area="Admin" asp-controller="Users" asp-action="SetPassword"
 					   asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">Set Password</a>
+					@if (!user.EmailConfirmed)
+					{
+						<form asp-area="Admin" asp-controller="Users" asp-action="ActivateAccount"
+							asp-route-id="@user.Id" method="post" class="d-inline-block">
+							@Html.AntiForgeryToken()
+							<button type="submit" class="btn btn-sm btn-success js-activate-account"
+								data-email="@user.Email">Activate</button>
+						</form>
+					}
 					@if (isSuperAdmin && user.TwoFactorEnabled)
 					{
 						<form asp-area="Admin" asp-controller="Users" asp-action="DisableTwoFactor"
@@ -137,6 +146,29 @@
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
+		document.querySelectorAll('.js-activate-account').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var email = this.dataset.email;
+				var form = this.closest('form');
+				
+				Swal.fire({
+					title: 'Activate Account?',
+					html: 'This will activate the account for user <strong>' + email + '</strong>.<br>The user will be able to log in without email confirmation.',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonColor: '#28a745',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, activate it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+		});
+
 		document.querySelectorAll('.js-disable-2fa').forEach(function(btn) {
 			btn.addEventListener('click', function(e) {
 				e.preventDefault();
