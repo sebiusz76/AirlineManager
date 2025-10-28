@@ -483,5 +483,36 @@ namespace AirlineManager.Areas.Admin.Controllers
 
             return View(auditLogs);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LoginHistory(string id, int page = 1, int pageSize = 20)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 5, 100);
+
+            var query = _context.UserLoginHistories
+               .Where(h => h.UserId == id)
+              .OrderByDescending(h => h.LoginTime);
+
+            var totalCount = await query.CountAsync();
+            var loginHistory = await query
+               .Skip((page - 1) * pageSize)
+   .Take(pageSize)
+          .ToListAsync();
+
+            ViewBag.UserEmail = user.Email;
+            ViewBag.UserId = id;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            return View(loginHistory);
+        }
     }
 }

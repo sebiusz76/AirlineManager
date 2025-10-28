@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
@@ -18,6 +19,7 @@ namespace AirlineManager.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly AirlineManager.Services.IEmailService _emailService;
+        private readonly AirlineManager.Services.ILoginHistoryService _loginHistoryService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -25,7 +27,8 @@ namespace AirlineManager.Controllers
             RoleManager<IdentityRole> roleManager,
             ILogger<AccountController> logger,
             ApplicationDbContext context,
-            AirlineManager.Services.IEmailService emailService)
+            AirlineManager.Services.IEmailService emailService,
+            AirlineManager.Services.ILoginHistoryService loginHistoryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -33,6 +36,7 @@ namespace AirlineManager.Controllers
             _logger = logger;
             _context = context;
             _emailService = emailService;
+            _loginHistoryService = loginHistoryService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -246,12 +250,28 @@ namespace AirlineManager.Controllers
 
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
+                    // Log successful login
+                    if (user != null)
+                    {
+                        await _loginHistoryService.LogLoginAttemptAsync(
+                            user.Id,
+                            user.Email!,
+                            isSuccessful: true,
+                            ipAddress,
+                            userAgent,
+                            requiredTwoFactor: false
+                        );
+                    }
+
                     // after successful sign-in, check flag
-                    var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null && user.MustChangePassword)
                     {
                         return RedirectToAction(nameof(ChangePassword));
@@ -261,24 +281,78 @@ namespace AirlineManager.Controllers
                 }
                 else if (result.RequiresTwoFactor)
                 {
-                    var userFor2fa = await _userManager.FindByEmailAsync(model.Email);
-                    var userIdFor2fa = userFor2fa?.Id;
+                    // Log 2FA required
+                    if (user != null)
+                    {
+                        await _loginHistoryService.LogLoginAttemptAsync(
+                            user.Id,
+                            user.Email!,
+                            isSuccessful: true,
+                            ipAddress,
+                            userAgent,
+                            requiredTwoFactor: true
+                        );
+                    }
+
+                    var userIdFor2fa = user?.Id;
                     TempData["TwoFactorUserId"] = userIdFor2fa;
                     _logger.LogInformation("Login requires two-factor for {Email}, userId={UserId}", model.Email, userIdFor2fa);
                     return RedirectToAction("LoginWith2fa", new { rememberMe = model.RememberMe, returnUrl = returnUrl, userId = userIdFor2fa });
                 }
                 else if (result.IsLockedOut)
                 {
+                    // Log failed login - locked out
+                    if (user != null)
+                    {
+                        await _loginHistoryService.LogLoginAttemptAsync(
+                            user.Id,
+                            user.Email!,
+                            isSuccessful: false,
+                            ipAddress,
+                            userAgent,
+                            requiredTwoFactor: false,
+                            failureReason: "Account locked out"
+                        );
+                    }
+
                     ModelState.AddModelError(string.Empty, "User account locked out.");
                     return View(model);
                 }
                 else if (result.IsNotAllowed)
                 {
+                    // Log failed login - email not confirmed
+                    if (user != null)
+                    {
+                        await _loginHistoryService.LogLoginAttemptAsync(
+                            user.Id,
+                            user.Email!,
+                            isSuccessful: false,
+                            ipAddress,
+                            userAgent,
+                            requiredTwoFactor: false,
+                            failureReason: "Email not confirmed"
+                        );
+                    }
+
                     ModelState.AddModelError(string.Empty, "Email not confirmed. Please check your email for the confirmation link.");
                     return View(model);
                 }
                 else
                 {
+                    // Log failed login - invalid credentials
+                    if (user != null)
+                    {
+                        await _loginHistoryService.LogLoginAttemptAsync(
+                            user.Id,
+                            user.Email!,
+                            isSuccessful: false,
+                            ipAddress,
+                            userAgent,
+                            requiredTwoFactor: false,
+                            failureReason: "Invalid password"
+                        );
+                    }
+
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return View(model);
                 }
@@ -321,16 +395,33 @@ namespace AirlineManager.Controllers
             }
 
             var code = model.TwoFactorCode?.Replace(" ", string.Empty).Replace("-", string.Empty) ?? string.Empty;
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
             if (twoFactorUser != null)
             {
                 var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(code, model.RememberMe, model.RememberMachine);
-                if (result.Succeeded) return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home"));
+
+                if (result.Succeeded)
+                {
+                    // Log successful 2FA login
+                    await _loginHistoryService.LogLoginAttemptAsync(
+                        user.Id,
+                        user.Email!,
+                        isSuccessful: true,
+                        ipAddress,
+                        userAgent,
+                        requiredTwoFactor: true
+                    );
+                    return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home"));
+                }
+
                 if (result.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, "Account locked out.");
                     return View(model);
                 }
+
                 ModelState.AddModelError(string.Empty, "Invalid authentication code.");
                 return View(model);
             }
@@ -341,6 +432,17 @@ namespace AirlineManager.Controllers
                 await _userManager.ResetAccessFailedCountAsync(user);
                 await _signInManager.SignInAsync(user, new AuthenticationProperties { IsPersistent = model.RememberMe });
                 if (model.RememberMachine) await _signInManager.RememberTwoFactorClientAsync(user);
+
+                // Log successful 2FA login
+                await _loginHistoryService.LogLoginAttemptAsync(
+                    user.Id,
+                    user.Email!,
+                    isSuccessful: true,
+                    ipAddress,
+                    userAgent,
+                    requiredTwoFactor: true
+                );
+
                 return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home"));
             }
 
@@ -802,6 +904,34 @@ namespace AirlineManager.Controllers
         public IActionResult ChangePassword()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> LoginHistory(int page = 1, int pageSize = 20)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 5, 100);
+
+            var query = _context.UserLoginHistories
+             .Where(h => h.UserId == user.Id)
+          .OrderByDescending(h => h.LoginTime);
+
+            var totalCount = await query.CountAsync();
+            var loginHistory = await query
+   .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            return View(loginHistory);
         }
 
         [HttpPost]
