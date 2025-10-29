@@ -135,6 +135,20 @@
 									</form>
 								</li>
 							}
+							@if (user.IsLockedOut)
+							{
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<form asp-area="Admin" asp-controller="Users" asp-action="UnlockAccount"
+										asp-route-id="@user.Id" method="post" class="d-inline-block w-100">
+										@Html.AntiForgeryToken()
+										<button type="submit" class="dropdown-item text-warning js-unlock-account"
+											data-email="@user.Email">
+											<i class="bi bi-unlock"></i> Unlock Account
+										</button>
+									</form>
+								</li>
+							}
 							@if (isSuperAdmin && user.TwoFactorEnabled)
 							{
 								<li><hr class="dropdown-divider"></li>
@@ -200,6 +214,29 @@
 					confirmButtonColor: '#28a745',
 					cancelButtonColor: '#6c757d',
 					confirmButtonText: 'Yes, activate it',
+					cancelButtonText: 'Cancel'
+				}).then(function(result) {
+					if (result.isConfirmed) {
+						form.submit();
+					}
+				});
+			});
+		});
+
+		document.querySelectorAll('.js-unlock-account').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var email = this.dataset.email;
+				var form = this.closest('form');
+				
+				Swal.fire({
+					title: 'Unlock Account?',
+					html: 'This will unlock the account for user <strong>' + email + '</strong>.<br>Failed login attempts will be reset.',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonColor: '#ffc107',
+					cancelButtonColor: '#6c757d',
+					confirmButtonText: 'Yes, unlock it',
 					cancelButtonText: 'Cancel'
 				}).then(function(result) {
 					if (result.isConfirmed) {

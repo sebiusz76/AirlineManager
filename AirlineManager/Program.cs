@@ -88,6 +88,11 @@ try
         options.Password.RequiredLength = 8;
         options.SignIn.RequireConfirmedEmail = true; // Require email confirmation
         options.SignIn.RequireConfirmedAccount = true; // Require confirmed account
+
+        // Lockout settings - will be dynamically configured from database
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
     })
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
@@ -182,6 +187,12 @@ try
 
     // Register Password Expiration Service
     builder.Services.AddScoped<IPasswordExpirationService, PasswordExpirationService>();
+
+    // Register Account Lockout Service
+    builder.Services.AddScoped<IAccountLockoutService, AccountLockoutService>();
+
+    // Register Lockout Options Updater
+    builder.Services.AddHostedService<AirlineManager.Middleware.LockoutOptionsUpdater>();
 
     // Register Session Cleanup Background Service
     builder.Services.AddHostedService<AirlineManager.Services.Background.SessionCleanupService>();
