@@ -1,56 +1,142 @@
 ﻿@model AirlineManager.Models.ViewModel.LoginViewModel
 
 @{
-	ViewData["Title"] = "Log in";
+	ViewData["Title"] = "Sign In";
 }
 
-
-<div class="row justify-content-center mt-5">
-	<div class="col-md-6">
-		<div class="card shadow">
-			<div class="card-body">
-				<h1 class="card-title text-center mb-3">
-					Sign in to Airline Manager
-				</h1>
-				<hr />
-				<form asp-action="Login" method="post">
-					@Html.AntiForgeryToken()
-					<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-					<div class="form-floating mb-3">
-						<input asp-for="Email" class="form-control" placeholder="name@example.com" autofocus />
-						<label asp-for="Email"></label>
-						<span asp-validation-for="Email" class="text-danger"></span>
-					</div>
-					<div class="form-floating mb-3">
-						<input asp-for="Password" class="form-control" placeholder="Password" />
-						<label asp-for="Password"></label>
-						<span asp-validation-for="Password" class="text-danger"></span>
-					</div>
-					<div class="form-floating mb-3">
-						<div class="form-check">
-							<input asp-for="RememberMe" class="form-check-input" />
-							<label asp-for="RememberMe" class="form-check-label"></label>
+<div class="auth-container">
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-5 col-md-7">
+				<!-- Login Card -->
+				<div class="auth-card card border-0 shadow-lg">
+					<!-- Header with gradient -->
+					<div class="auth-header text-white text-center py-4" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 15px 15px 0 0;">
+						<div class="mb-3">
+							<i class="bi bi-airplane-engines" style="font-size: 3.5rem;"></i>
 						</div>
+						<h2 class="fw-bold mb-2">Welcome Back</h2>
+						<p class="mb-0 opacity-75">Sign in to Airline Manager</p>
 					</div>
-					<div class="form-floating mb-3">
-						<button type="submit" class="btn btn-outline-primary w-100">Log in</button>
-					</div>					
-				</form>
 
-				<hr />
+					<div class="card-body p-4 p-md-5">
+						<form asp-action="Login" method="post">
+							@Html.AntiForgeryToken()
+							<div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4"></div>
 
-				<div class="form-floating mb-3">
-					<a asp-action="ForgotPassword" class="text-decoration-none">
-						Forgot your password?
+							<!-- Email Input -->
+							<div class="form-floating mb-3">
+								<input asp-for="Email" class="form-control form-control-lg" placeholder="name@example.com" autofocus />
+								<label asp-for="Email">
+									<i class="bi bi-envelope me-2"></i>Email Address
+								</label>
+								<span asp-validation-for="Email" class="text-danger small"></span>
+							</div>
+
+							<!-- Password Input -->
+							<div class="form-floating mb-3">
+								<input asp-for="Password" class="form-control form-control-lg" placeholder="Password" />
+								<label asp-for="Password">
+									<i class="bi bi-lock me-2"></i>Password
+								</label>
+								<span asp-validation-for="Password" class="text-danger small"></span>
+							</div>
+
+							<!-- Remember Me -->
+							<div class="mb-4">
+								<div class="form-check">
+									<input asp-for="RememberMe" class="form-check-input" />
+									<label asp-for="RememberMe" class="form-check-label">
+										Keep me signed in
+									</label>
+								</div>
+							</div>
+
+							<!-- Sign In Button -->
+							<div class="d-grid gap-2 mb-4">
+								<button type="submit" class="btn btn-lg text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+									<i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+								</button>
+							</div>
+
+							<!-- Divider -->
+							<div class="position-relative mb-4">
+								<hr class="text-muted" />
+								<span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+									OR
+								</span>
+							</div>
+
+							<!-- Links -->
+							<div class="text-center">
+								<a asp-action="ForgotPassword" class="text-decoration-none d-block mb-2">
+									<i class="bi bi-key me-1"></i>Forgot your password?
+								</a>
+								<p class="text-muted mb-0">
+									Don't have an account?
+									<a asp-action="Register" class="text-decoration-none fw-bold">
+										Register now <i class="bi bi-arrow-right"></i>
+									</a>
+								</p>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- Back to Home -->
+				<div class="text-center mt-4">
+					<a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">
+						<i class="bi bi-arrow-left me-1"></i>Back to Home
 					</a>
-					<br />
-					<a asp-action="Register" class="text-decoration-none">Register as a new user</a>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<style>
+	.auth-container {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		display: flex;
+		align-items: center;
+		margin: -1rem -15px -60px;
+		padding-bottom: 60px;
+	}
+
+	.auth-card {
+		border-radius: 15px;
+		overflow: hidden;
+		animation: fadeInUp 0.6s ease-out;
+	}
+
+	@@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.form-control:focus {
+		border-color: #2a5298;
+		box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+	}
+
+	.form-check-input:checked {
+		background-color: #2a5298;
+		border-color: #2a5298;
+	}
+
+	.btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+		transition: all 0.3s ease;
+	}
+</style>
 
 @section Scripts {
 	@{
