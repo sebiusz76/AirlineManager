@@ -225,6 +225,72 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 11,
+                    Key = "Security_Password_RequireDigit",
+                    Value = "true",
+                    Description = "Password must contain at least one digit (0-9)",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 12,
+                    Key = "Security_Password_RequireLowercase",
+                    Value = "true",
+                    Description = "Password must contain at least one lowercase letter (a-z)",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 13,
+                    Key = "Security_Password_RequireUppercase",
+                    Value = "true",
+                    Description = "Password must contain at least one uppercase letter (A-Z)",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 14,
+                    Key = "Security_Password_RequireNonAlphanumeric",
+                    Value = "false",
+                    Description = "Password must contain at least one special character (!@#$%^&* etc.)",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 15,
+                    Key = "Security_Password_RequiredLength",
+                    Value = "8",
+                    Description = "Minimum password length",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 16,
+                    Key = "Security_Password_RequiredUniqueChars",
+                    Value = "1",
+                    Description = "Minimum number of unique characters in password",
+                    Category = "Password Security",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }

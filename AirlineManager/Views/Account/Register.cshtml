@@ -16,7 +16,11 @@
                 <hr />
                 <form asp-action="Register" method="post">
                     @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+                    }                    
 
                     <div class="form-floating mb-3">
                         <input asp-for="FirstName" class="form-control" placeholder="Your name" autofocus />
@@ -43,6 +47,21 @@
                         <label asp-for="ConfirmPassword"></label>
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
+                
+                    @* @if (ViewBag.PasswordRequirements != null && ((List<string>)ViewBag.PasswordRequirements).Any())
+                    {
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Password requirements:</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach (var requirement in (List<string>)ViewBag.PasswordRequirements)
+                                {
+                                    <li>@requirement</li>
+                                }
+                            </ul>
+                        </div>
+                    } *@
+
                     <div class="form-floating mb-3">
                         <button type="submit" class="btn btn-outline-primary w-100">Register</button>
                     </div>

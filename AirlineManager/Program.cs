@@ -81,11 +81,14 @@ try
     // Add Identity services
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
-        options.Password.RequireDigit = true;
+        // Password options will be dynamically configured from database
+        options.Password.RequireDigit = true; // Default fallback
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 1;
+
         options.SignIn.RequireConfirmedEmail = true; // Require email confirmation
         options.SignIn.RequireConfirmedAccount = true; // Require confirmed account
 
@@ -94,7 +97,7 @@ try
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;
     })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
+      .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
     // Configure cookie settings
@@ -191,8 +194,14 @@ try
     // Register Account Lockout Service
     builder.Services.AddScoped<IAccountLockoutService, AccountLockoutService>();
 
+    // Register Password Policy Service
+    builder.Services.AddScoped<IPasswordPolicyService, PasswordPolicyService>();
+
     // Register Lockout Options Updater
     builder.Services.AddHostedService<AirlineManager.Middleware.LockoutOptionsUpdater>();
+
+    // Register Password Options Updater
+    builder.Services.AddHostedService<AirlineManager.Middleware.PasswordOptionsUpdater>();
 
     // Register Session Cleanup Background Service
     builder.Services.AddHostedService<AirlineManager.Services.Background.SessionCleanupService>();

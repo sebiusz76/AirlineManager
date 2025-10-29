@@ -24,6 +24,7 @@ namespace AirlineManager.Controllers
         private readonly ISessionManagementService _sessionManagementService;
         private readonly IPasswordExpirationService _passwordExpirationService;
         private readonly IAccountLockoutService _accountLockoutService;
+        private readonly IPasswordPolicyService _passwordPolicyService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -35,7 +36,8 @@ namespace AirlineManager.Controllers
             ILoginHistoryService loginHistoryService,
             ISessionManagementService sessionManagementService,
             IPasswordExpirationService passwordExpirationService,
-            IAccountLockoutService accountLockoutService)
+            IAccountLockoutService accountLockoutService,
+            IPasswordPolicyService passwordPolicyService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -47,6 +49,7 @@ namespace AirlineManager.Controllers
             _sessionManagementService = sessionManagementService;
             _passwordExpirationService = passwordExpirationService;
             _accountLockoutService = accountLockoutService;
+            _passwordPolicyService = passwordPolicyService;
         }
 
         private async Task LogUserChange(string userId, string userEmail, string action, object? oldValues = null, object? newValues = null, string? changes = null)
@@ -73,14 +76,24 @@ namespace AirlineManager.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register() => View();
+        public async Task<IActionResult> Register()
+        {
+            var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
+            ViewBag.PasswordRequirements = passwordRequirements;
+            return View();
+        }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
+                ViewBag.PasswordRequirements = passwordRequirements;
+                return View(model);
+            }
 
             var user = new ApplicationUser
             {
@@ -608,6 +621,7 @@ namespace AirlineManager.Controllers
             // Check password expiration
             var daysUntilExpiration = await _passwordExpirationService.GetDaysUntilExpirationAsync(user);
             var isPasswordExpired = await _passwordExpirationService.IsPasswordExpiredAsync(user);
+            var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
 
             // prepare two-factor info
             var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
@@ -643,6 +657,7 @@ namespace AirlineManager.Controllers
 
             ViewBag.DaysUntilPasswordExpiration = daysUntilExpiration;
             ViewBag.IsPasswordExpired = isPasswordExpired;
+            ViewBag.PasswordRequirements = passwordRequirements;
 
             return View(model);
         }
@@ -1128,7 +1143,7 @@ namespace AirlineManager.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string email = null, string token = null)
+        public async Task<IActionResult> ResetPassword(string email = null, string token = null)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
@@ -1136,6 +1151,9 @@ namespace AirlineManager.Controllers
                 TempData["ToastMessage"] = "Invalid password reset link.";
                 return RedirectToAction(nameof(Login));
             }
+
+            var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
+            ViewBag.PasswordRequirements = passwordRequirements;
 
             var model = new ResetPasswordViewModel
             {
@@ -1151,7 +1169,12 @@ namespace AirlineManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
+                ViewBag.PasswordRequirements = passwordRequirements;
+                return View(model);
+            }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -1198,10 +1221,12 @@ namespace AirlineManager.Controllers
 
             var isExpired = await _passwordExpirationService.IsPasswordExpiredAsync(user);
             var daysUntilExpiration = await _passwordExpirationService.GetDaysUntilExpirationAsync(user);
+            var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
 
             ViewBag.IsPasswordExpired = isExpired;
             ViewBag.DaysUntilPasswordExpiration = daysUntilExpiration;
             ViewBag.MustChangePassword = user.MustChangePassword;
+            ViewBag.PasswordRequirements = passwordRequirements;
 
             return View();
         }
@@ -1239,7 +1264,12 @@ namespace AirlineManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                var passwordRequirements = await _passwordPolicyService.GetPasswordRequirementsAsync();
+                ViewBag.PasswordRequirements = passwordRequirements;
+                return View(model);
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Challenge();
