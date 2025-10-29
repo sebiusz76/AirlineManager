@@ -84,6 +84,31 @@
 			&copy; @DateTime.Now.Year - AirlineManager - <a asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
 		</div>
 	</footer>
+
+	<!-- Cookie Consent Banner -->
+	<div id="cookieConsent" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="cookie-consent-container">
+			<div class="cookie-consent-message">
+				<h5>
+					<i class="bi bi-shield-check"></i> We value your privacy
+				</h5>
+				<p>
+					We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.
+					By clicking "Accept All", you consent to our use of cookies.
+					<a asp-area="" asp-controller="Privacy" asp-action="Index">Learn more</a>
+				</p>
+			</div>
+			<div class="cookie-consent-actions">
+				<button type="button" id="acceptCookies" class="btn btn-cookie-accept">
+					<i class="bi bi-check-circle"></i> Accept All
+				</button>
+				<button type="button" id="declineCookies" class="btn btn-cookie-decline">
+					<i class="bi bi-x-circle"></i> Necessary Only
+				</button>
+			</div>
+		</div>
+	</div>
+
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
