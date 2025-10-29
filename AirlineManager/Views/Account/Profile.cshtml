@@ -1,4 +1,5 @@
 @model AirlineManager.Models.ViewModel.ProfileCompositeViewModel
+@inject Microsoft.AspNetCore.Identity.UserManager<AirlineManager.Models.Domain.ApplicationUser> UserManager
 
 @{
 	ViewData["Title"] = "Profile";
@@ -6,230 +7,522 @@
 	var isPasswordExpired = ViewBag.IsPasswordExpired as bool? ?? false;
 }
 
-<h1>Profile</h1>
-
-@if (isPasswordExpired)
-{
-	<div class="alert alert-danger">
-		<i class="bi bi-shield-exclamation"></i> <strong>Your password has expired!</strong>
-		Please <a asp-action="ChangePassword" class="alert-link">change your password</a> as soon as possible.
-	</div>
-}
-else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && daysUntilExpiration.Value > 0)
-{
-	<div class="alert alert-warning">
-		<i class="bi bi-exclamation-triangle"></i> <strong>Password expiring soon!</strong>
-		Your password will expire in <strong>@daysUntilExpiration.Value day(s)</strong>.
-		<a asp-action="ChangePassword" class="alert-link">Change it now</a> to avoid interruption.
-	</div>
-}
-
-<!-- Hidden antiforgery token for AJAX requests -->
-<form id="antiforgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
-
-<!-- Recovery Codes Modal -->
-<div class="modal fade" id="recoveryCodesModal" tabindex="-1" aria-labelledby="recoveryCodesModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="recoveryCodesModalLabel">Recovery Codes</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="alert alert-warning">
-					<strong>Important!</strong> Save these recovery codes in a safe place. You can use them to sign in if you lose access to your authenticator app.
+<div class="container-fluid pb-5">
+	<!-- Profile Header with Avatar -->
+	<div class="row">
+		<div class="col-12">
+			<div class="card shadow-lg border-0 mb-4" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 15px;">
+				<div class="card-body p-4">
+					<div class="row align-items-center">
+						<div class="col-md-2 text-center mb-3 mb-md-0">
+							<!-- Avatar Section -->
+							<div class="position-relative d-inline-block">
+								@{
+									var user = await UserManager.GetUserAsync(User);
+									var initials = user != null ? $"{user.FirstName[0]}{user.LastName[0]}" : "U";
+									var avatarUrl = user?.AvatarUrl;
+								}
+								<div class="avatar-large" id="profileAvatar">
+									@if (!string.IsNullOrEmpty(avatarUrl))
+									{
+										<img src="@avatarUrl" alt="Avatar" class="avatar-img" />
+									}
+									else
+									{
+										<div class="avatar-initials">@initials</div>
+									}
+								</div>
+								<button type="button" class="btn btn-light btn-sm avatar-edit-btn" data-bs-toggle="modal" data-bs-target="#avatarModal">
+									<i class="bi bi-camera-fill"></i>
+								</button>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<h2 class="text-white mb-2">@user?.FirstName @user?.LastName</h2>
+							<p class="text-white-50 mb-1">
+								<i class="bi bi-envelope me-2"></i>@user?.Email
+							</p>
+							<p class="text-white-50 mb-0">
+								<i class="bi bi-shield-check me-2"></i>
+								@{
+									var roles = await UserManager.GetRolesAsync(user);
+								}
+								@string.Join(", ", roles)
+							</p>
+						</div>
+						<div class="col-md-3 text-md-end">
+							<div class="text-white-50 small">
+								<i class="bi bi-calendar3 me-2"></i>Member since
+							</div>
+							@{
+								// Use PasswordChangedAt as member since date
+								DateTime memberSince = user?.PasswordChangedAt ?? DateTime.UtcNow;
+							}
+							<div class="text-white fw-bold">@memberSince.ToString("MMM dd, yyyy")</div>
+						</div>
+					</div>
 				</div>
-				<pre id="modalRecoveryCodes" class="p-3 bg-light border rounded" style="white-space:pre-wrap; font-family: monospace;"></pre>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" id="btnCopyRecoveryCodes">
-					<i class="bi bi-clipboard"></i> Copy to clipboard
-				</button>
-				<button type="button" class="btn btn-primary" id="btnDownloadRecoveryCodes">
-					<i class="bi bi-download"></i> Download as file
-				</button>
-				<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
-</div>
 
-<ul class="nav nav-tabs" id="profileTabs" role="tablist">
-	<li class="nav-item" role="presentation">
-		<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">Info</button>
-	</li>
-	<li class="nav-item" role="presentation">
-		<button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab" aria-controls="email" aria-selected="false">Email</button>
-	</li>
-	<li class="nav-item" role="presentation">
-		<button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">Password</button>
-	</li>
-	<li class="nav-item" role="presentation">
-		<button class="nav-link" id="twofactor-tab" data-bs-toggle="tab" data-bs-target="#twofactor" type="button" role="tab" aria-controls="twofactor" aria-selected="false">Two-factor authentication</button>
-	</li>
-	<li class="nav-item" role="presentation">
-		<button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab" aria-controls="export" aria-selected="false">Export / Delete</button>
-	</li>
-</ul>
+	@if (isPasswordExpired)
+	{
+		<div class="alert alert-danger alert-dismissible fade show">
+			<i class="bi bi-shield-exclamation"></i> <strong>Your password has expired!</strong>
+			Please <a asp-action="ChangePassword" class="alert-link">change your password</a> as soon as possible.
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
+	else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && daysUntilExpiration.Value > 0)
+	{
+		<div class="alert alert-warning alert-dismissible fade show">
+			<i class="bi bi-exclamation-triangle"></i> <strong>Password expiring soon!</strong>
+			Your password will expire in <strong>@daysUntilExpiration.Value day(s)</strong>.
+			<a asp-action="ChangePassword" class="alert-link">Change it now</a> to avoid interruption.
+			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		</div>
+	}
 
-<div class="tab-content mt-3" id="profileTabsContent">
-	<div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-		<form asp-action="ProfileInfo" method="post" class="edit-form">
-			@Html.AntiForgeryToken()
-			<div class="mb-3">
-				<label asp-for="Info.FirstName" class="form-label"></label>
-				<input asp-for="Info.FirstName" class="form-control" />
-				<span asp-validation-for="Info.FirstName" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Info.LastName" class="form-label"></label>
-				<input asp-for="Info.LastName" class="form-control" />
-				<span asp-validation-for="Info.LastName" class="text-danger"></span>
-			</div>
-			<button type="submit" class="btn btn-outline-primary">Save info</button>
-		</form>
-	</div>
+	<!-- Hidden antiforgery token for AJAX requests -->
+	<form id="antiforgeryForm" style="display:none;">@Html.AntiForgeryToken()</form>
 
-	<div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
-		<form asp-action="ProfileEmail" method="post" class="edit-form">
-			@Html.AntiForgeryToken()
-			<div class="mb-3">
-				<label asp-for="Email.Email" class="form-label"></label>
-				<input asp-for="Email.Email" class="form-control" />
-				<span asp-validation-for="Email.Email" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Email.CurrentPassword" class="form-label"></label>
-				<input asp-for="Email.CurrentPassword" class="form-control" />
-				<span asp-validation-for="Email.CurrentPassword" class="text-danger"></span>
-			</div>
-			<button type="submit" class="btn btn-outline-primary">Change email</button>
-		</form>
-	</div>
-
-	<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
-		<form asp-action="ProfilePassword" method="post" class="edit-form">
-			@Html.AntiForgeryToken()
-			<div class="mb-3">
-				<label asp-for="Password.CurrentPassword" class="form-label"></label>
-				<input asp-for="Password.CurrentPassword" class="form-control" />
-				<span asp-validation-for="Password.CurrentPassword" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Password.NewPassword" class="form-label"></label>
-				<input asp-for="Password.NewPassword" class="form-control" />
-				<span asp-validation-for="Password.NewPassword" class="text-danger"></span>
-			</div>
-			<div class="mb-3">
-				<label asp-for="Password.ConfirmPassword" class="form-label"></label>
-				<input asp-for="Password.ConfirmPassword" class="form-control" />
-				<span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
-			</div>
-
-			@if (ViewBag.PasswordRequirements != null && ((List<string>)ViewBag.PasswordRequirements).Any())
-			{
-				<div class="alert alert-info mb-3">
-					<i class="bi bi-info-circle"></i>
-					<strong>Password requirements:</strong>
-					<ul class="mb-0 mt-2">
-						@foreach (var requirement in (List<string>)ViewBag.PasswordRequirements)
+	<!-- Avatar Upload Modal -->
+	<div class="modal fade" id="avatarModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="avatarModalLabel">
+						<i class="bi bi-camera"></i> Change Avatar
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="text-muted">Choose an option to update your profile picture:</p>
+					<div class="d-grid gap-2">
+						<button type="button" class="btn btn-outline-primary" onclick="alert('Upload image functionality - to be implemented')">
+							<i class="bi bi-upload me-2"></i>Upload Image
+						</button>
+						<button type="button" class="btn btn-outline-secondary" onclick="alert('Choose from gallery - to be implemented')">
+							<i class="bi bi-images me-2"></i>Choose from Gallery
+						</button>
+						@if (!string.IsNullOrEmpty(avatarUrl))
 						{
-							<li>@requirement</li>
+							<button type="button" class="btn btn-outline-danger" onclick="removeAvatar()">
+								<i class="bi bi-trash me-2"></i>Remove Avatar
+							</button>
 						}
-					</ul>
+					</div>
+					<div class="mt-3">
+						<small class="text-muted">
+							<i class="bi bi-info-circle"></i>
+							Supported formats: JPG, PNG, GIF (max 2MB)
+						</small>
+					</div>
 				</div>
-			}
-
-			<button type="submit" class="btn btn-outline-primary">Change password</button>
-		</form>
-	</div>
-
-	<div class="tab-pane fade" id="twofactor" role="tabpanel" aria-labelledby="twofactor-tab">
-		<h4>Two-factor authentication</h4>
-		@{
-			var twoFactor = Model.TwoFactor;
-			var is2faEnabled = twoFactor?.Is2faEnabled ?? false;
-			var recoveryCodesLeft = twoFactor?.RecoveryCodesLeft as int?;
-		}
-		@if (is2faEnabled)
-		{
-			<div class="alert alert-success">
-				<strong>Two-factor authentication is enabled.</strong>
 			</div>
-			<p>Your account is protected with two-factor authentication using an authenticator app.</p>
-
-			@if (recoveryCodesLeft != null)
-			{
-				var codesLeft = recoveryCodesLeft.Value;
-				if (codesLeft == 0)
-				{
-					<div class="alert alert-danger">
-						<strong>Warning!</strong> You have no recovery codes left. Generate new recovery codes immediately to avoid being locked out.
-					</div>
-				}
-				else if (codesLeft <= 3)
-				{
-					<div class="alert alert-warning">
-						<strong>Warning!</strong> You have only <strong>@codesLeft</strong> recovery code(s) left. Consider generating new recovery codes.
-					</div>
-				}
-				else
-				{
-					<div class="alert alert-info">
-						You have <strong>@codesLeft</strong> recovery code(s) remaining.
-					</div>
-				}
-			}
-
-			<div class="mb-3">
-				<button id="tfResetRecovery" class="btn btn-warning">Reset recovery codes</button>
-				<button id="tfDisable" class="btn btn-danger ms-2">Disable 2FA</button>
-			</div>
-		}
-		else
-		{
-			<p>Configure your authenticator app (TOTP) to enable two-factor authentication.</p>
-			<div class="mb-2">
-				<button id="tfConfigure" class="btn btn-outline-primary">Configure Authenticator</button>
-			</div>
-		}
-		<div id="tfArea" style="display:none; margin-top:12px;">
-			<div id="tfQr" style="width:200px;height:200px;"></div>
-			<div class="mt-2"><strong>Authentication key</strong></div>
-			<pre id="tfKey" class="p-2 bg-light" style="max-width:320px; white-space:pre-wrap;"></pre>
-			<div class="mt-2">
-				<label for="tfCode">Verification code</label>
-				<input id="tfCode" class="form-control" autocomplete="one-time-code" />
-			</div>
-			<div class="mt-2">
-				<button id="tfEnable" class="btn btn-outline-success">Enable</button>
-			</div>
-			<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
 		</div>
 	</div>
 
-	<div class="tab-pane fade" id="export" role="tabpanel" aria-labelledby="export-tab">
-		<h4>Download your data</h4>
-		<p>You can download all data related to your account as a JSON file. This will include your profile, roles and related entities.</p>
-		<form asp-action="ExportData" method="post">
-			@Html.AntiForgeryToken()
-			<button type="submit" class="btn btn-outline-primary">Download my data</button>
-		</form>
-
-		<hr />
-		<h4>Delete account</h4>
-		<p>Deleting your account will remove your user data. This action is irreversible.</p>
-		<form asp-action="DeleteAccount" method="post" class="delete-form">
-			@Html.AntiForgeryToken()
-			<div class="mb-3">
-				<label asp-for="Delete.CurrentPassword" class="form-label"></label>
-				<input asp-for="Delete.CurrentPassword" class="form-control" />
-				<span asp-validation-for="Delete.CurrentPassword" class="text-danger"></span>
+	<!-- Recovery Codes Modal -->
+	<div class="modal fade" id="recoveryCodesModal" tabindex="-1" aria-labelledby="recoveryCodesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="recoveryCodesModalLabel">Recovery Codes</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-warning">
+						<strong>Important!</strong> Save these recovery codes in a safe place. You can use them to sign in if you lose access to your authenticator app.
+					</div>
+					<pre id="modalRecoveryCodes" class="p-3 bg-light border rounded" style="white-space:pre-wrap; font-family: monospace;"></pre>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" id="btnCopyRecoveryCodes">
+						<i class="bi bi-clipboard"></i> Copy to clipboard
+					</button>
+					<button type="button" class="btn btn-primary" id="btnDownloadRecoveryCodes">
+						<i class="bi bi-download"></i> Download as file
+					</button>
+					<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
 			</div>
-			<button type="submit" class="btn btn-danger">Delete my account</button>
-		</form>
+		</div>
+	</div>
+
+	<ul class="nav nav-tabs nav-tabs-custom" id="profileTabs" role="tablist">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+				<i class="bi bi-person-circle me-2"></i>Info
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">
+				<i class="bi bi-envelope me-2"></i>Email
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab">
+				<i class="bi bi-lock me-2"></i>Password
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="twofactor-tab" data-bs-toggle="tab" data-bs-target="#twofactor" type="button" role="tab">
+				<i class="bi bi-shield-lock me-2"></i>Two-Factor
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab">
+				<i class="bi bi-download me-2"></i>Export / Delete
+			</button>
+		</li>
+	</ul>
+
+	<div class="tab-content mt-4" id="profileTabsContent">
+		<div class="tab-pane fade show active" id="info" role="tabpanel">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-person-badge text-primary me-2"></i>Personal Information
+					</h5>
+					<form asp-action="ProfileInfo" method="post" class="edit-form">
+						@Html.AntiForgeryToken()
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label asp-for="Info.FirstName" class="form-label fw-bold"></label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input asp-for="Info.FirstName" class="form-control" />
+								</div>
+								<span asp-validation-for="Info.FirstName" class="text-danger small"></span>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label asp-for="Info.LastName" class="form-label fw-bold"></label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input asp-for="Info.LastName" class="form-control" />
+								</div>
+								<span asp-validation-for="Info.LastName" class="text-danger small"></span>
+							</div>
+						</div>
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-check-circle me-2"></i>Save Changes
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="email" role="tabpanel">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-envelope-at text-primary me-2"></i>Email Address
+					</h5>
+					<form asp-action="ProfileEmail" method="post" class="edit-form">
+						@Html.AntiForgeryToken()
+						<div class="mb-3">
+							<label asp-for="Email.Email" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-envelope"></i></span>
+								<input asp-for="Email.Email" class="form-control" />
+							</div>
+							<span asp-validation-for="Email.Email" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Email.CurrentPassword" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-key"></i></span>
+								<input asp-for="Email.CurrentPassword" class="form-control" type="password" />
+							</div>
+							<span asp-validation-for="Email.CurrentPassword" class="text-danger small"></span>
+							<small class="text-muted">Required to confirm your identity</small>
+						</div>
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-check-circle me-2"></i>Update Email
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="password" role="tabpanel">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-shield-lock text-primary me-2"></i>Change Password
+					</h5>
+					<form asp-action="ProfilePassword" method="post" class="edit-form">
+						@Html.AntiForgeryToken()
+						<div class="mb-3">
+							<label asp-for="Password.CurrentPassword" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-key"></i></span>
+								<input asp-for="Password.CurrentPassword" class="form-control" type="password" />
+							</div>
+							<span asp-validation-for="Password.CurrentPassword" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Password.NewPassword" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-lock"></i></span>
+								<input asp-for="Password.NewPassword" class="form-control" type="password" />
+							</div>
+							<span asp-validation-for="Password.NewPassword" class="text-danger small"></span>
+						</div>
+						<div class="mb-3">
+							<label asp-for="Password.ConfirmPassword" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+								<input asp-for="Password.ConfirmPassword" class="form-control" type="password" />
+							</div>
+							<span asp-validation-for="Password.ConfirmPassword" class="text-danger small"></span>
+						</div>
+
+						@if (ViewBag.PasswordRequirements != null && ((List<string>)ViewBag.PasswordRequirements).Any())
+						{
+							<div class="alert alert-info">
+								<i class="bi bi-info-circle"></i>
+								<strong>Password requirements:</strong>
+								<ul class="mb-0 mt-2 small">
+									@foreach (var requirement in (List<string>)ViewBag.PasswordRequirements)
+									{
+										<li>@requirement</li>
+									}
+								</ul>
+							</div>
+						}
+
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-check-circle me-2"></i>Change Password
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="twofactor" role="tabpanel">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-shield-check text-primary me-2"></i>Two-Factor Authentication
+					</h5>
+					@{
+						var twoFactor = Model.TwoFactor;
+						var is2faEnabled = twoFactor?.Is2faEnabled ?? false;
+						var recoveryCodesLeft = twoFactor?.RecoveryCodesLeft as int?;
+					}
+					@if (is2faEnabled)
+					{
+						<div class="alert alert-success">
+							<i class="bi bi-check-circle-fill"></i> <strong>Two-factor authentication is enabled.</strong>
+						</div>
+						<p>Your account is protected with two-factor authentication using an authenticator app.</p>
+
+						@if (recoveryCodesLeft != null)
+						{
+							var codesLeft = recoveryCodesLeft.Value;
+							if (codesLeft == 0)
+							{
+								<div class="alert alert-danger">
+									<strong>Warning!</strong> You have no recovery codes left. Generate new recovery codes immediately to avoid being locked out.
+								</div>
+							}
+							else if (codesLeft <= 3)
+							{
+								<div class="alert alert-warning">
+									<strong>Warning!</strong> You have only <strong>@codesLeft</strong> recovery code(s) left. Consider generating new recovery codes.
+								</div>
+							}
+							else
+							{
+								<div class="alert alert-info">
+									You have <strong>@codesLeft</strong> recovery code(s) remaining.
+								</div>
+							}
+						}
+
+						<div class="mb-3">
+							<button id="tfResetRecovery" class="btn btn-warning">
+								<i class="bi bi-arrow-clockwise me-2"></i>Reset Recovery Codes
+							</button>
+							<button id="tfDisable" class="btn btn-danger ms-2">
+								<i class="bi bi-x-circle me-2"></i>Disable 2FA
+							</button>
+						</div>
+					}
+					else
+					{
+						<p>Configure your authenticator app (TOTP) to enable two-factor authentication.</p>
+						<div class="mb-2">
+							<button id="tfConfigure" class="btn btn-primary">
+								<i class="bi bi-shield-plus me-2"></i>Configure Authenticator
+							</button>
+						</div>
+					}
+					<div id="tfArea" style="display:none; margin-top:12px;">
+						<div id="tfQr" style="width:200px;height:200px;"></div>
+						<div class="mt-2"><strong>Authentication key</strong></div>
+						<pre id="tfKey" class="p-2 bg-light" style="max-width:320px; white-space:pre-wrap;"></pre>
+						<div class="mt-2">
+							<label for="tfCode">Verification code</label>
+							<input id="tfCode" class="form-control" autocomplete="one-time-code" />
+						</div>
+						<div class="mt-2">
+							<button id="tfEnable" class="btn btn-success">
+								<i class="bi bi-check-circle me-2"></i>Enable
+							</button>
+						</div>
+						<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="export" role="tabpanel">
+			<div class="card shadow-sm border-0 mb-4">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-download text-primary me-2"></i>Download Your Data
+					</h5>
+					<p>You can download all data related to your account as a JSON file. This will include your profile, roles and related entities.</p>
+					<form asp-action="ExportData" method="post">
+						@Html.AntiForgeryToken()
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-file-earmark-arrow-down me-2"></i>Download My Data
+						</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="card shadow-sm border-danger">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4 text-danger">
+						<i class="bi bi-exclamation-triangle me-2"></i>Delete Account
+					</h5>
+					<p>Deleting your account will remove your user data. <strong>This action is irreversible.</strong></p>
+					<form asp-action="DeleteAccount" method="post" class="delete-form">
+						@Html.AntiForgeryToken()
+						<div class="mb-3">
+							<label asp-for="Delete.CurrentPassword" class="form-label fw-bold"></label>
+							<div class="input-group">
+								<span class="input-group-text"><i class="bi bi-key"></i></span>
+								<input asp-for="Delete.CurrentPassword" class="form-control" type="password" />
+							</div>
+							<span asp-validation-for="Delete.CurrentPassword" class="text-danger small"></span>
+							<small class="text-muted">Required to confirm your identity</small>
+						</div>
+						<button type="submit" class="btn btn-danger">
+							<i class="bi bi-trash me-2"></i>Delete My Account
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+
+<style>
+	.avatar-large {
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 4px solid rgba(255, 255, 255, 0.3);
+		position: relative;
+		overflow: hidden;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	}
+
+	.avatar-initials {
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: white;
+	}
+
+	.avatar-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.avatar-edit-btn {
+		position: absolute;
+		bottom: 0;
+		right: -10px;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		padding: 0;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		border: 2px solid white;
+	}
+
+		.avatar-edit-btn:hover {
+			transform: scale(1.1);
+			transition: transform 0.2s;
+		}
+
+	.nav-tabs-custom {
+		border-bottom: 2px solid #dee2e6;
+	}
+
+		.nav-tabs-custom .nav-link {
+			border: none;
+			color: #6c757d;
+			padding: 1rem 1.5rem;
+			font-weight: 500;
+			transition: all 0.3s;
+		}
+
+			.nav-tabs-custom .nav-link:hover {
+				color: #1e3c72;
+				background-color: #f8f9fa;
+			}
+
+			.nav-tabs-custom .nav-link.active {
+				color: #1e3c72;
+				border-bottom: 3px solid #1e3c72;
+				background-color: transparent;
+			}
+
+	.card {
+		transition: transform 0.2s;
+		border: 2px solid #e0e0e0 !important;
+	}
+
+		.card:hover {
+			transform: translateY(-2px);
+			border-color: #1e3c72 !important;
+		}
+
+	.input-group-text {
+		background-color: #f8f9fa;
+		border-right: none;
+	}
+
+	.input-group .form-control {
+		border-left: none;
+	}
+
+		.input-group .form-control:focus {
+			box-shadow: none;
+			border-color: #ced4da;
+		}
+
+	.input-group:focus-within .input-group-text {
+		border-color: #80bdff;
+		background-color: #e7f3ff;
+	}
+
+	.input-group:focus-within .form-control {
+		border-color: #80bdff;
+	}
+</style>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
@@ -314,8 +607,8 @@ else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && days
 				showToast('Recovery codes downloaded.', 'success');
 			}
 
-			document.getElementById('btnCopyRecoveryCodes').addEventListener('click', copyRecoveryCodesToClipboard);
-			document.getElementById('btnDownloadRecoveryCodes').addEventListener('click', downloadRecoveryCodes);
+			document.getElementById('btnCopyRecoveryCodes')?.addEventListener('click', copyRecoveryCodesToClipboard);
+			document.getElementById('btnDownloadRecoveryCodes')?.addEventListener('click', downloadRecoveryCodes);
 
 			var tfConfigureBtn = document.getElementById('tfConfigure');
 			if(tfConfigureBtn) {
@@ -449,5 +742,24 @@ else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && days
 				}
 			})();
 		})();
+
+		// Remove avatar function (placeholder)
+		function removeAvatar() {
+			Swal.fire({
+				title: 'Remove Avatar?',
+				text: 'This will remove your current profile picture.',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				cancelButtonColor: '#6c757d',
+				confirmButtonText: 'Yes, remove it',
+				cancelButtonText: 'Cancel'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// TODO: Implement avatar removal
+					Swal.fire('Not Implemented', 'Avatar removal functionality will be added soon.', 'info');
+				}
+			});
+		}
 	</script>
 }
