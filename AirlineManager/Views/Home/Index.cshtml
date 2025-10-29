@@ -1,8 +1,377 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Airline Manager - Microsoft Flight Simulator";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Hero Section -->
+<div class="hero-section bg-gradient-primary text-white py-5 mb-5 mt-5" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+	<div class="container py-5">
+		<div class="row align-items-center">
+			<div class="col-lg-7 p-5">
+				<h1 class="display-3 fw-bold mb-3">
+					Airline Manager
+				</h1>
+				<p class="lead mb-4">
+					Professional Virtual Airline Management System for Microsoft Flight Simulator
+				</p>
+				<p class="mb-4">
+					Take control of your virtual airline operations. Manage flights, track performance,
+					coordinate crew members, and build your aviation empire in the immersive world of MSFS.
+				</p>
+				@if (!User.Identity.IsAuthenticated)
+				{
+					<div class="d-flex gap-3 flex-wrap">
+						<a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg">
+							Get Started
+						</a>
+						<a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg">
+							Sign In
+						</a>
+					</div>
+				}
+				else
+				{
+					<a asp-area="User" asp-controller="UserTest" asp-action="Index" class="btn btn-light btn-lg">
+						Go to Dashboard
+					</a>
+				}
+			</div>
+			<div class="col-lg-5 text-center d-none d-lg-block">
+				<i class="bi bi-airplane-engines" style="font-size: 15rem; opacity: 0.3;"></i>
+			</div>
+		</div>
+	</div>
 </div>
+
+<!-- Features Section -->
+<div class="container mb-5">
+	<div class="text-center mb-5">
+		<h2 class="display-5 fw-bold mb-3">
+			<i class="bi bi-star"></i> Key Features
+		</h2>
+		<p class="lead text-muted">
+			Everything you need to run a successful virtual airline
+		</p>
+	</div>
+
+	<div class="row g-4">
+		<!-- Feature 1 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-primary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Flight Scheduling</h4>
+					<p class="card-text text-muted">
+						Plan and schedule flights across your network. Create routes, assign aircraft,
+						and manage your airline's operations efficiently.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature 2 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-success bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-airplane" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Fleet Management</h4>
+					<p class="card-text text-muted">
+						Manage your aircraft fleet, track maintenance schedules, monitor aircraft
+						performance, and optimize your aviation assets.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature 3 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-info bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-people" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Crew Management</h4>
+					<p class="card-text text-muted">
+						Coordinate your pilots and crew members. Track qualifications, manage
+						schedules, and ensure proper crew assignments for every flight.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature 4 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-warning bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Analytics & Reports</h4>
+					<p class="card-text text-muted">
+						Track your airline's performance with detailed analytics. Monitor revenue,
+						flight statistics, and operational metrics in real-time.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature 5 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-danger bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-globe" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Route Network</h4>
+					<p class="card-text text-muted">
+						Build and expand your route network. Connect airports worldwide and create
+						a comprehensive network of destinations for your airline.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Feature 6 -->
+		<div class="col-md-6 col-lg-4">
+			<div class="card h-100 border-0 shadow-sm hover-lift">
+				<div class="card-body text-center p-4">
+					<div class="feature-icon bg-secondary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+						<i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+					</div>
+					<h4 class="card-title mb-3">Security & Compliance</h4>
+					<p class="card-text text-muted">
+						Enterprise-grade security with role-based access control, audit logs,
+						and compliance features to protect your airline's data.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-light py-5 mb-5" style="border-radius: 15px;">
+	<div class="container">
+		<div class="row text-center g-4">
+			<div class="col-6 col-md-3">
+				<div class="stat-item">
+					<h2 class="display-4 fw-bold text-primary mb-2">
+						<i class="bi bi-airplane-fill"></i>
+					</h2>
+					<h3 class="fw-bold">1,000+</h3>
+					<p class="text-muted mb-0">Active Flights</p>
+				</div>
+			</div>
+			<div class="col-6 col-md-3">
+				<div class="stat-item">
+					<h2 class="display-4 fw-bold text-success mb-2">
+						<i class="bi bi-people-fill"></i>
+					</h2>
+					<h3 class="fw-bold">500+</h3>
+					<p class="text-muted mb-0">Pilots</p>
+				</div>
+			</div>
+			<div class="col-6 col-md-3">
+				<div class="stat-item">
+					<h2 class="display-4 fw-bold text-info mb-2">
+						<i class="bi bi-geo-alt-fill"></i>
+					</h2>
+					<h3 class="fw-bold">200+</h3>
+					<p class="text-muted mb-0">Destinations</p>
+				</div>
+			</div>
+			<div class="col-6 col-md-3">
+				<div class="stat-item">
+					<h2 class="display-4 fw-bold text-warning mb-2">
+						<i class="bi bi-trophy-fill"></i>
+					</h2>
+					<h3 class="fw-bold">5,000+</h3>
+					<p class="text-muted mb-0">Hours Flown</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MSFS Integration Section -->
+<div class="container mb-5">
+	<div class="card border-0 shadow-lg overflow-hidden">
+		<div class="row g-0">
+			<div class="col-lg-6 bg-dark text-white p-5 d-flex flex-column justify-content-center">
+				<h2 class="display-6 fw-bold mb-4">
+					Microsoft Flight Simulator Integration
+				</h2>
+				<p class="lead mb-4">
+					Seamlessly integrate with MSFS to track your flights in real-time.
+				</p>
+				<ul class="list-unstyled">
+					<li class="mb-3">
+						<i class="bi bi-check-circle-fill text-success me-2"></i>
+						Automatic flight tracking and logging
+					</li>
+					<li class="mb-3">
+						<i class="bi bi-check-circle-fill text-success me-2"></i>
+						Real-time aircraft telemetry
+					</li>
+					<li class="mb-3">
+						<i class="bi bi-check-circle-fill text-success me-2"></i>
+						ACARS data integration
+					</li>
+					<li class="mb-3">
+						<i class="bi bi-check-circle-fill text-success me-2"></i>
+						Automated logbook entries
+					</li>
+					<li class="mb-3">
+						<i class="bi bi-check-circle-fill text-success me-2"></i>
+						SimConnect API support
+					</li>
+				</ul>
+			</div>
+			<div class="col-lg-6 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 400px;">
+				<div class="d-flex align-items-center justify-content-center h-100 p-5">
+					<i class="bi bi-joystick" style="font-size: 12rem; opacity: 0.3; color: white;"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- CTA Section -->
+@if (!User.Identity.IsAuthenticated)
+{
+	<div class="container mb-5">
+		<div class="card border-0 shadow-lg text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+			<div class="card-body p-5 text-white">
+				<h2 class="display-5 fw-bold mb-3">Ready to Take Off?</h2>
+				<p class="lead mb-4">
+					Join thousands of virtual pilots managing their airlines with our platform
+				</p>
+				<div class="d-flex gap-3 justify-content-center flex-wrap">
+					<a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg">
+						Create Free Account
+					</a>
+					<a href="#features" class="btn btn-outline-light btn-lg">
+						Learn More
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<!-- Footer Info Section -->
+<div class="container mb-5">
+	<div class="row g-4">
+		<div class="col-md-4">
+			<div class="card border-0 h-100 bg-light">
+				<div class="card-body">
+					<h5 class="card-title">
+						Secure & Reliable
+					</h5>
+					<p class="card-text text-muted">
+						Enterprise-grade security with 2FA, audit logs, and role-based access control.
+						Your data is protected with industry-standard encryption.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card border-0 h-100 bg-light">
+				<div class="card-body">
+					<h5 class="card-title">
+						Cloud-Based
+					</h5>
+					<p class="card-text text-muted">
+						Access your airline from anywhere. Our cloud-based platform ensures your data
+						is always available and automatically backed up.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card border-0 h-100 bg-light">
+				<div class="card-body">
+					<h5 class="card-title">
+						Support
+					</h5>
+					<p class="card-text text-muted">
+						Our dedicated support team is here to help. Get assistance via email,
+						live chat, or our comprehensive knowledge base.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.hover-lift {
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+	}
+
+		.hover-lift:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+		}
+
+	.stat-item {
+		padding: 20px;
+		transition: transform 0.3s ease;
+	}
+
+		.stat-item:hover {
+			transform: scale(1.1);
+		}
+
+	.feature-icon {
+		transition: transform 0.3s ease;
+	}
+
+	.card:hover .feature-icon {
+		transform: rotate(10deg) scale(1.1);
+	}
+
+	.hero-section {
+		position: relative;
+		overflow: hidden;
+	}
+
+		.hero-section::before {
+			position: absolute;
+			top: -50%;
+			right: -50%;
+			width: 200%;
+			height: 200%;
+			background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+			animation: pulse 15s ease-in-out infinite;
+		}
+
+	@@keyframes pulse {
+		0%, 100% {
+			transform: scale(1);
+			opacity: 0.3;
+		}
+
+		50% {
+			transform: scale(1.2);
+			opacity: 0.5;
+		}
+	}
+
+	.card {
+		transition: all 0.3s ease;
+	}
+
+	@@media (max-width: 768px) {
+		.display-3 {
+			font-size: 2.5rem;
+		}
+
+		.display-5 {
+			font-size: 2rem;
+		}
+	}
+</style>

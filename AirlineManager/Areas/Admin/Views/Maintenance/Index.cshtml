@@ -1,0 +1,319 @@
+@{
+	ViewData["Title"] = "Maintenance Mode Management";
+	var enabled = ViewBag.MaintenanceEnabled as bool? ?? false;
+	var message = ViewBag.MaintenanceMessage as string;
+	var estimatedEnd = ViewBag.EstimatedEnd as string;
+}
+
+<div class="container-fluid">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h1><i class="bi bi-tools"></i> Maintenance Mode Management</h1>
+		<div>
+			<a asp-area="Admin" asp-controller="Configuration" asp-action="Index" class="btn btn-outline-secondary">
+				<i class="bi bi-gear"></i> Configuration
+			</a>
+		</div>
+	</div>
+
+	<!-- Alert for SuperAdmin -->
+	@if (enabled)
+	{
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<h5 class="alert-heading">
+				<i class="bi bi-exclamation-triangle-fill"></i> Maintenance Mode is Active
+			</h5>
+			<p class="mb-0">
+				The site is currently in maintenance mode. Only SuperAdmins can access the application.
+				Regular users will see the maintenance page.
+			</p>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
+	<!-- Current Status Card -->
+	<div class="card mb-4 @(enabled ? "border-warning" : "border-success")">
+		<div class="card-header @(enabled ? "bg-warning" : "bg-success") text-white">
+			<h5 class="mb-0">
+				<i class="bi bi-@(enabled ? "exclamation-triangle" : "check-circle")"></i>
+				Current Status
+			</h5>
+		</div>
+		<div class="card-body">
+			<div class="row align-items-center">
+				<div class="col-md-8">
+					<h3 class="mb-3">
+						Maintenance Mode:
+						<span class="badge @(enabled ? "bg-warning text-dark" : "bg-success")">
+							@(enabled ? "ENABLED" : "DISABLED")
+						</span>
+					</h3>
+					<p class="mb-0">
+						@if (enabled)
+						{
+							<text>
+								The site is currently under maintenance. Only SuperAdmin users can access the application.
+								All other users will be redirected to the maintenance page.
+							</text>
+						}
+						else
+						{
+							<text>
+								The site is fully operational and accessible to all users.
+							</text>
+						}
+					</p>
+				</div>
+				<div class="col-md-4 text-end">
+					@if (enabled)
+					{
+						<form asp-action="DisableMaintenance" method="post" class="d-inline" id="disableMaintenanceForm">
+							@Html.AntiForgeryToken()
+							<button type="button" class="btn btn-success btn-lg" id="btnDisableMaintenance">
+								<i class="bi bi-play-circle"></i> Disable Maintenance Mode
+							</button>
+						</form>
+					}
+					else
+					{
+						<button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal" data-bs-target="#enableMaintenanceModal">
+							<i class="bi bi-pause-circle"></i> Enable Maintenance Mode
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@if (enabled)
+	{
+		<!-- Current Configuration Card -->
+		<div class="card mb-4">
+			<div class="card-header bg-primary text-white">
+				<h5 class="mb-0">
+					<i class="bi bi-gear"></i> Current Configuration
+				</h5>
+			</div>
+			<div class="card-body">
+				<dl class="row mb-0">
+					<dt class="col-sm-3">Maintenance Message:</dt>
+					<dd class="col-sm-9">
+						<div class="alert alert-info mb-0">
+							@message
+						</div>
+					</dd>
+
+					@if (!string.IsNullOrEmpty(estimatedEnd))
+					{
+						<dt class="col-sm-3 mt-3">Estimated Completion:</dt>
+						<dd class="col-sm-9 mt-3">
+							<span class="badge bg-secondary">@estimatedEnd</span>
+						</dd>
+					}
+				</dl>
+
+				<hr />
+
+				<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateMessageModal">
+					<i class="bi bi-pencil"></i> Update Message
+				</button>
+			</div>
+		</div>
+
+		<!-- Preview Card -->
+		<div class="card">
+			<div class="card-header bg-secondary text-white">
+				<h5 class="mb-0">
+					<i class="bi bi-eye"></i> Preview
+				</h5>
+			</div>
+			<div class="card-body">
+				<p class="text-muted">
+					This is how the maintenance page appears to regular users:
+				</p>
+				<a href="/Maintenance" target="_blank" class="btn btn-outline-primary">
+					<i class="bi bi-box-arrow-up-right"></i> Open Maintenance Page
+				</a>
+			</div>
+		</div>
+	}
+	else
+	{
+		<!-- Information Card -->
+		<div class="card">
+			<div class="card-header">
+				<h5 class="mb-0">
+					<i class="bi bi-info-circle"></i> About Maintenance Mode
+				</h5>
+			</div>
+			<div class="card-body">
+				<h6>What is Maintenance Mode?</h6>
+				<p>
+					Maintenance mode temporarily restricts access to the application while you perform updates,
+					backups, or other maintenance tasks. During maintenance mode:
+				</p>
+				<ul>
+					<li>Only <strong>SuperAdmin</strong> users can access the application</li>
+					<li>All other users are redirected to a maintenance page</li>
+					<li>Users see a customizable message explaining the maintenance</li>
+					<li>You can optionally provide an estimated completion time</li>
+				</ul>
+
+				<h6 class="mt-4">When to Use Maintenance Mode:</h6>
+				<ul>
+					<li>Performing database updates or migrations</li>
+					<li>Deploying major application updates</li>
+					<li>Running system backups or maintenance tasks</li>
+					<li>Investigating and fixing critical issues</li>
+					<li>Performing server maintenance or upgrades</li>
+				</ul>
+
+				<div class="alert alert-warning">
+					<i class="bi bi-exclamation-triangle"></i>
+					<strong>Important:</strong> Make sure to test your changes before disabling maintenance mode.
+					SuperAdmin access allows you to verify everything works correctly.
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+<!-- Enable Maintenance Modal -->
+<div class="modal fade" id="enableMaintenanceModal" tabindex="-1" aria-labelledby="enableMaintenanceModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form asp-action="EnableMaintenance" method="post">
+				@Html.AntiForgeryToken()
+				<div class="modal-header bg-warning">
+					<h5 class="modal-title" id="enableMaintenanceModalLabel">
+						<i class="bi bi-exclamation-triangle"></i> Enable Maintenance Mode
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-warning">
+						<strong>Warning:</strong> Enabling maintenance mode will restrict access to SuperAdmin users only.
+						All other users will be redirected to the maintenance page.
+					</div>
+
+					<div class="mb-3">
+						<label for="message" class="form-label">Maintenance Message</label>
+						<textarea class="form-control" id="message" name="message" rows="3" placeholder="We are currently performing scheduled maintenance. Please check back soon.">@message</textarea>
+						<small class="form-text text-muted">This message will be displayed to users on the maintenance page.</small>
+					</div>
+
+					<div class="mb-3">
+						<label for="estimatedEnd" class="form-label">Estimated Completion Time (Optional)</label>
+						<input type="text" class="form-control" id="estimatedEnd" name="estimatedEnd" value="@estimatedEnd" placeholder="e.g., 2:00 PM EST, In 2 hours, etc.">
+						<small class="form-text text-muted">Leave empty if you don't know when maintenance will complete.</small>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-warning">
+						<i class="bi bi-pause-circle"></i> Enable Maintenance Mode
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Update Message Modal -->
+<div class="modal fade" id="updateMessageModal" tabindex="-1" aria-labelledby="updateMessageModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form asp-action="UpdateMessage" method="post">
+				@Html.AntiForgeryToken()
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="updateMessageModalLabel">
+						<i class="bi bi-pencil"></i> Update Maintenance Message
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="updateMessage" class="form-label">Maintenance Message</label>
+						<textarea class="form-control" id="updateMessage" name="message" rows="3">@message</textarea>
+						<small class="form-text text-muted">This message will be displayed to users on the maintenance page.</small>
+					</div>
+
+					<div class="mb-3">
+						<label for="updateEstimatedEnd" class="form-label">Estimated Completion Time</label>
+						<input type="text" class="form-control" id="updateEstimatedEnd" name="estimatedEnd" value="@estimatedEnd" placeholder="e.g., 2:00 PM EST, In 2 hours, etc.">
+						<small class="form-text text-muted">Leave empty to remove the estimated completion time.</small>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">
+						<i class="bi bi-check-circle"></i> Update Message
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		// Auto-dismiss alerts after 5 seconds
+		setTimeout(function () {
+			var alerts = document.querySelectorAll('.alert-dismissible');
+			alerts.forEach(function (alert) {
+				var bsAlert = new bootstrap.Alert(alert);
+				bsAlert.close();
+			});
+		}, 5000);
+
+		// Disable Maintenance Mode confirmation with SweetAlert2
+		document.getElementById('btnDisableMaintenance')?.addEventListener('click', function (e) {
+			e.preventDefault();
+
+			Swal.fire({
+				title: 'Disable Maintenance Mode?',
+				html: 'Are you sure you want to disable maintenance mode?<br><strong>This will make the site accessible to all users.</strong>',
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonColor: '#28a745',
+				cancelButtonColor: '#6c757d',
+				confirmButtonText: '<i class="bi bi-play-circle"></i> Yes, Disable',
+				cancelButtonText: '<i class="bi bi-x-circle"></i> Cancel',
+				focusCancel: true
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// Show loading
+					Swal.fire({
+						title: 'Disabling Maintenance Mode...',
+						text: 'Please wait',
+						icon: 'info',
+						allowOutsideClick: false,
+						allowEscapeKey: false,
+						showConfirmButton: false,
+						willOpen: () => {
+							Swal.showLoading();
+						}
+					});
+
+					// Submit form
+					document.getElementById('disableMaintenanceForm').submit();
+				}
+			});
+		});
+
+		// Enable Maintenance Mode - enhance modal submission
+		document.querySelector('#enableMaintenanceModal form')?.addEventListener('submit', function(e) {
+			// Show loading when enabling
+			const submitBtn = this.querySelector('button[type="submit"]');
+			submitBtn.disabled = true;
+			submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enabling...';
+		});
+
+		// Update Message - enhance modal submission
+		document.querySelector('#updateMessageModal form')?.addEventListener('submit', function(e) {
+			// Show loading when updating
+			const submitBtn = this.querySelector('button[type="submit"]');
+			submitBtn.disabled = true;
+			submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+		});
+	</script>
+}

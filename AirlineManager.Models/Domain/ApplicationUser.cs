@@ -12,6 +12,10 @@ namespace AirlineManager.Models.Domain
         [Required]
         public string LastName { get; set; }
 
+        // Avatar URL (can store relative path or full URL)
+        [MaxLength(500)]
+        public string? AvatarUrl { get; set; }
+
         // If true, user must change password at next login
         public bool MustChangePassword { get; set; } = false;
 

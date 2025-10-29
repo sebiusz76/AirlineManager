@@ -346,6 +346,39 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 22,
+                    Key = "Maintenance_Mode_Enabled",
+                    Value = "false",
+                    Description = "Enable maintenance mode (only SuperAdmin can access the site)",
+                    Category = "Maintenance",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 23,
+                    Key = "Maintenance_Mode_Message",
+                    Value = "We are currently performing scheduled maintenance. Please check back soon.",
+                    Description = "Message displayed to users during maintenance mode",
+                    Category = "Maintenance",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 24,
+                    Key = "Maintenance_Mode_EstimatedEnd",
+                    Value = "",
+                    Description = "Estimated end time of maintenance (leave empty if unknown)",
+                    Category = "Maintenance",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }
