@@ -1,0 +1,35 @@
+LICENCJA OPROGRAMOWANIA — "Airline Manager"
+
+Copyright (c) 2025 [Właściciel praw autorskich]
+
+Niniejsza licencja reguluje korzystanie z aplikacji „Airline Manager” oraz całego jej kodu źródłowego.
+
+1. PRAWA AUTORSKIE
+   Całość aplikacji „Airline Manager”, w tym kod źródłowy, grafika,
+   dokumentacja i inne elementy, jest chroniona prawem autorskim. 
+   Wszelkie prawa zastrzeżone.
+
+2. DOSTĘPNOŚĆ KODU
+   Kod źródłowy może być udostępniany do wglądu lub analizy, lecz jego
+   pobieranie, kopiowanie, modyfikowanie lub wykorzystywanie w jakiejkolwiek
+   formie wymaga pisemnej zgody właściciela praw autorskich.
+
+3. ZAKAZ BEZUPRAWNIONEGO UŻYTKU
+   Zabrania się korzystania z kodu źródłowego lub aplikacji bez uzyskania
+   uprzedniej zgody autora. Dotyczy to również tworzenia prac pochodnych,
+   komercyjnego wykorzystania oraz publicznego rozpowszechniania.
+
+4. BRAK GWARANCJI
+   Oprogramowanie dostarczane jest „tak jak jest”, bez jakiejkolwiek
+   gwarancji, wyraźnej lub dorozumianej. Autor nie ponosi odpowiedzialności
+   za żadne szkody wynikające z użytkowania oprogramowania.
+
+5. ZMIANY W LICENCJI
+   Właściciel praw autorskich zastrzega sobie prawo do zmiany treści
+   niniejszej licencji w dowolnym momencie.
+
+Korzystając z dowolnej części aplikacji „Airline Manager”, użytkownik
+akceptuje powyższe warunki licencyjne.
+
+Właściciel: Sebastian Stachurski
+Kontakt: sstachurski@gmail.com

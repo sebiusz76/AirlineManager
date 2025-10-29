@@ -1,0 +1,35 @@
+SOFTWARE LICENSE — "Airline Manager"
+
+Copyright (c) 2025 [Copyright Owner]
+
+This license regulates the use of the “Airline Manager” application and all of its source code.
+
+1. COPYRIGHT
+   The entire “Airline Manager” application, including its source code,
+   graphics, documentation, and all other components, is copyrighted.
+   All rights reserved.
+
+2. SOURCE CODE AVAILABILITY
+   The source code may be made available for review or analysis, but
+   downloading, copying, modifying, or using it in any form requires
+   written permission from the copyright owner.
+
+3. PROHIBITION OF UNAUTHORIZED USE
+   Unauthorized use of the source code or application is strictly
+   prohibited. This includes creating derivative works, commercial use,
+   or any form of public distribution without prior authorization.
+
+4. NO WARRANTY
+   The software is provided “as is”, without any warranties, express or
+   implied. The author is not liable for any damages resulting from the
+   use of this software.
+
+5. LICENSE MODIFICATION
+   The copyright owner reserves the right to modify the terms of this
+   license at any time.
+
+By using any part of the “Airline Manager” application, the user agrees to
+the above license terms.
+
+Owner: Sebastian Stachurski
+Contact: sstachurski@gmail.com
