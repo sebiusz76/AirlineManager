@@ -268,6 +268,9 @@ try
     // Update session activity
     app.UseMiddleware<SessionActivityMiddleware>();
 
+    // Maintenance mode middleware (before authorization)
+    app.UseMiddleware<MaintenanceModeMiddleware>();
+
     // Middleware to force password change
     app.UseMiddleware<RequirePasswordChangeMiddleware>();
 

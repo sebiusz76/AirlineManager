@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject AirlineManager.Services.IConfigurationService ConfigService
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -12,6 +13,18 @@
 	<link rel="stylesheet" href="~/lib/sweetalert2/dist/sweetalert2.min.css" />
 </head>
 <body>
+	@if (User.Identity.IsAuthenticated && User.IsInRole("SuperAdmin"))
+	{
+		var maintenanceEnabled = await ConfigService.GetValueAsync<bool>("Maintenance_Mode_Enabled") ?? false;
+		if (maintenanceEnabled)
+		{
+			<div class="alert alert-warning mb-0 text-center" style="border-radius: 0; border-left: 0; border-right: 0; border-top: 0;">
+				<strong><i class="bi bi-exclamation-triangle-fill"></i> MAINTENANCE MODE ACTIVE</strong> -
+				Only SuperAdmin users can access the site.
+				<a asp-area="Admin" asp-controller="Maintenance" asp-action="Index" class="alert-link"><u>Manage Maintenance Mode</u></a>
+			</div>
+		}
+	}
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
@@ -63,6 +76,11 @@
 											<li>
 												<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="DataRetention" asp-action="Index">
 													<i class="bi bi-trash"></i> Data Retention
+												</a>
+											</li>
+											<li>
+												<a class="dropdown-item text-dark" asp-area="Admin" asp-controller="Maintenance" asp-action="Index">
+													<i class="bi bi-tools"></i> Maintenance Mode
 												</a>
 											</li>
 										}
