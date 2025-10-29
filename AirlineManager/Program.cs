@@ -197,6 +197,9 @@ try
     // Register Password Policy Service
     builder.Services.AddScoped<IPasswordPolicyService, PasswordPolicyService>();
 
+    // Register Data Retention Service
+    builder.Services.AddScoped<IDataRetentionService, DataRetentionService>();
+
     // Register Lockout Options Updater
     builder.Services.AddHostedService<AirlineManager.Middleware.LockoutOptionsUpdater>();
 
@@ -205,6 +208,9 @@ try
 
     // Register Session Cleanup Background Service
     builder.Services.AddHostedService<AirlineManager.Services.Background.SessionCleanupService>();
+
+    // Register Data Retention Cleanup Background Service
+    builder.Services.AddHostedService<AirlineManager.Services.Background.DataRetentionCleanupService>();
 
     var app = builder.Build();
 

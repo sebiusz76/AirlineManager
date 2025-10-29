@@ -1,0 +1,350 @@
+@using AirlineManager.Services.Interfaces
+@{
+	ViewData["Title"] = "Data Retention Management";
+	var config = ViewBag.Configuration as DataRetentionConfiguration;
+	var stats = ViewBag.Statistics as DataRetentionStatistics;
+}
+
+<div class="container-fluid">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h1><i class="bi bi-trash"></i> Data Retention Management</h1>
+		<div>
+			<a asp-area="Admin" asp-controller="Configuration" asp-action="Index" class="btn btn-outline-secondary">
+				<i class="bi bi-gear"></i> Configure Retention Policies
+			</a>
+		</div>
+	</div>
+
+	@if (config != null)
+	{
+		<!-- Configuration Overview -->
+		<div class="card mb-4">
+			<div class="card-header">
+				<h5 class="mb-0"><i class="bi bi-info-circle"></i> Current Retention Policies</h5>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card bg-light">
+							<div class="card-body">
+								<h6 class="card-title text-muted">Application Logs</h6>
+								<h3 class="mb-0">
+									@if (config.ApplicationLogsDays == 0)
+									{
+										<span class="text-success">Forever</span>
+									}
+									else
+									{
+										<span>@config.ApplicationLogsDays days</span>
+									}
+								</h3>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card bg-light">
+							<div class="card-body">
+								<h6 class="card-title text-muted">Login History</h6>
+								<h3 class="mb-0">
+									@if (config.LoginHistoryDays == 0)
+									{
+										<span class="text-success">Forever</span>
+									}
+									else
+									{
+										<span>@config.LoginHistoryDays days</span>
+									}
+								</h3>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card bg-light">
+							<div class="card-body">
+								<h6 class="card-title text-muted">Audit Logs</h6>
+								<h3 class="mb-0">
+									@if (config.AuditLogsDays == 0)
+									{
+										<span class="text-success">Forever</span>
+									}
+									else
+									{
+										<span>@config.AuditLogsDays days</span>
+									}
+								</h3>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card bg-light">
+							<div class="card-body">
+								<h6 class="card-title text-muted">Inactive Sessions</h6>
+								<h3 class="mb-0">
+									@if (config.InactiveSessionsDays == 0)
+									{
+										<span class="text-success">Forever</span>
+									}
+									else
+									{
+										<span>@config.InactiveSessionsDays days</span>
+									}
+								</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="alert @(config.EnableAutoCleanup ? "alert-success" : "alert-warning") mb-0">
+					<i class="bi bi-@(config.EnableAutoCleanup ? "check-circle" : "exclamation-triangle")"></i>
+					<strong>Auto Cleanup:</strong>
+					@if (config.EnableAutoCleanup)
+					{
+						<text>Enabled - Cleanup runs automatically every 24 hours</text>
+					}
+					else
+					{
+						<text>Disabled - Manual cleanup required</text>
+					}
+				</div>
+			</div>
+		</div>
+	}
+
+	@if (stats != null)
+	{
+		<!-- Statistics -->
+		<div class="card mb-4">
+			<div class="card-header">
+				<h5 class="mb-0"><i class="bi bi-bar-chart"></i> Data Statistics</h5>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<!-- Application Logs -->
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card border-primary">
+							<div class="card-header bg-primary text-white">
+								<h6 class="mb-0">Application Logs</h6>
+							</div>
+							<div class="card-body">
+								<dl class="row mb-0">
+									<dt class="col-sm-6">Total Records:</dt>
+									<dd class="col-sm-6">@stats.ApplicationLogsTotal.ToString("N0")</dd>
+
+									<dt class="col-sm-6">To Delete:</dt>
+									<dd class="col-sm-6">
+										<span class="badge bg-danger">@stats.ApplicationLogsToDelete.ToString("N0")</span>
+									</dd>
+
+									<dt class="col-sm-6">Oldest Record:</dt>
+									<dd class="col-sm-6">
+										@if (stats.OldestApplicationLog.HasValue)
+										{
+											<small>@stats.OldestApplicationLog.Value.ToLocalTime().ToString("MMM dd, yyyy")</small>
+										}
+										else
+										{
+											<text>-</text>
+										}
+									</dd>
+								</dl>
+								<form asp-action="CleanupApplicationLogs" method="post" class="mt-3">
+									@Html.AntiForgeryToken()
+									<button type="submit" class="btn btn-sm btn-outline-danger w-100"
+											onclick="return confirm('Are you sure you want to delete @stats.ApplicationLogsToDelete application log records?')">
+										<i class="bi bi-trash"></i> Clean Up Now
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<!-- Login History -->
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card border-info">
+							<div class="card-header bg-info text-white">
+								<h6 class="mb-0">Login History</h6>
+							</div>
+							<div class="card-body">
+								<dl class="row mb-0">
+									<dt class="col-sm-6">Total Records:</dt>
+									<dd class="col-sm-6">@stats.LoginHistoryTotal.ToString("N0")</dd>
+
+									<dt class="col-sm-6">To Delete:</dt>
+									<dd class="col-sm-6">
+										<span class="badge bg-danger">@stats.LoginHistoryToDelete.ToString("N0")</span>
+									</dd>
+
+									<dt class="col-sm-6">Oldest Record:</dt>
+									<dd class="col-sm-6">
+										@if (stats.OldestLoginHistory.HasValue)
+										{
+											<small>@stats.OldestLoginHistory.Value.ToLocalTime().ToString("MMM dd, yyyy")</small>
+										}
+										else
+										{
+											<text>-</text>
+										}
+									</dd>
+								</dl>
+								<form asp-action="CleanupLoginHistory" method="post" class="mt-3">
+									@Html.AntiForgeryToken()
+									<button type="submit" class="btn btn-sm btn-outline-danger w-100"
+											onclick="return confirm('Are you sure you want to delete @stats.LoginHistoryToDelete login history records?')">
+										<i class="bi bi-trash"></i> Clean Up Now
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<!-- Audit Logs -->
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card border-warning">
+							<div class="card-header bg-warning text-dark">
+								<h6 class="mb-0">Audit Logs</h6>
+							</div>
+							<div class="card-body">
+								<dl class="row mb-0">
+									<dt class="col-sm-6">Total Records:</dt>
+									<dd class="col-sm-6">@stats.AuditLogsTotal.ToString("N0")</dd>
+
+									<dt class="col-sm-6">To Delete:</dt>
+									<dd class="col-sm-6">
+										<span class="badge bg-danger">@stats.AuditLogsToDelete.ToString("N0")</span>
+									</dd>
+
+									<dt class="col-sm-6">Oldest Record:</dt>
+									<dd class="col-sm-6">
+										@if (stats.OldestAuditLog.HasValue)
+										{
+											<small>@stats.OldestAuditLog.Value.ToLocalTime().ToString("MMM dd, yyyy")</small>
+										}
+										else
+										{
+											<text>-</text>
+										}
+									</dd>
+								</dl>
+								<form asp-action="CleanupAuditLogs" method="post" class="mt-3">
+									@Html.AntiForgeryToken()
+									<button type="submit" class="btn btn-sm btn-outline-danger w-100"
+											onclick="return confirm('Are you sure you want to delete @stats.AuditLogsToDelete audit log records?')">
+										<i class="bi bi-trash"></i> Clean Up Now
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<!-- Inactive Sessions -->
+					<div class="col-md-6 col-lg-3 mb-3">
+						<div class="card border-secondary">
+							<div class="card-header bg-secondary text-white">
+								<h6 class="mb-0">Inactive Sessions</h6>
+							</div>
+							<div class="card-body">
+								<dl class="row mb-0">
+									<dt class="col-sm-6">Total Inactive:</dt>
+									<dd class="col-sm-6">@stats.InactiveSessionsTotal.ToString("N0")</dd>
+
+									<dt class="col-sm-6">To Delete:</dt>
+									<dd class="col-sm-6">
+										<span class="badge bg-danger">@stats.InactiveSessionsToDelete.ToString("N0")</span>
+									</dd>
+
+									<dt class="col-sm-6">Oldest Inactive:</dt>
+									<dd class="col-sm-6">
+										@if (stats.OldestInactiveSession.HasValue)
+										{
+											<small>@stats.OldestInactiveSession.Value.ToLocalTime().ToString("MMM dd, yyyy")</small>
+										}
+										else
+										{
+											<text>-</text>
+										}
+									</dd>
+								</dl>
+								<form asp-action="CleanupInactiveSessions" method="post" class="mt-3">
+									@Html.AntiForgeryToken()
+									<button type="submit" class="btn btn-sm btn-outline-danger w-100"
+											onclick="return confirm('Are you sure you want to delete @stats.InactiveSessionsToDelete inactive session records?')">
+										<i class="bi bi-trash"></i> Clean Up Now
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Summary -->
+				<div class="alert alert-info mb-0">
+					<div class="row align-items-center">
+						<div class="col-md-8">
+							<strong><i class="bi bi-info-circle"></i> Summary:</strong>
+							Total of <strong>@stats.TotalRecords.ToString("N0")</strong> records in database.
+							<strong>@stats.TotalToDelete.ToString("N0")</strong> records can be deleted based on current retention policies.
+						</div>
+						<div class="col-md-4 text-end">
+							<form asp-action="RunCleanup" method="post" class="d-inline">
+								@Html.AntiForgeryToken()
+								<button type="submit" class="btn btn-danger"
+										onclick="return confirm('Are you sure you want to run full cleanup? This will delete @stats.TotalToDelete records.')">
+									<i class="bi bi-trash3"></i> Run Full Cleanup
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+
+	<!-- Information Card -->
+	<div class="card">
+		<div class="card-header">
+			<h5 class="mb-0"><i class="bi bi-question-circle"></i> About Data Retention</h5>
+		</div>
+		<div class="card-body">
+			<h6>What is Data Retention?</h6>
+			<p>
+				Data retention policies automatically delete old records to comply with privacy regulations (GDPR, CCPA)
+				and optimize database performance. You can configure retention periods for different types of data.
+			</p>
+
+			<h6 class="mt-3">Retention Categories:</h6>
+			<ul>
+				<li><strong>Application Logs:</strong> System logs including errors, warnings, and information messages.</li>
+				<li><strong>Login History:</strong> Records of user login attempts (successful and failed).</li>
+				<li><strong>Audit Logs:</strong> Records of user account changes and administrative actions.</li>
+				<li><strong>Inactive Sessions:</strong> Old session records from logged-out or expired sessions.</li>
+			</ul>
+
+			<h6 class="mt-3">Best Practices:</h6>
+			<ul>
+				<li>Keep audit logs for at least 1 year for security compliance</li>
+				<li>Retain login history for 3-6 months for security analysis</li>
+				<li>Application logs can be deleted after 90 days unless needed for debugging</li>
+				<li>Set retention period to 0 to keep data forever (not recommended)</li>
+			</ul>
+
+			<div class="alert alert-warning mb-0">
+				<i class="bi bi-exclamation-triangle"></i>
+				<strong>Important:</strong> Deleted data cannot be recovered. Make sure to backup important data before running cleanup.
+				Configure retention policies in <a asp-area="Admin" asp-controller="Configuration" asp-action="Index" class="alert-link">Configuration Management</a>.
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		// Confirmation for cleanup actions
+		document.querySelectorAll('form[asp-action^="Cleanup"]').forEach(form => {
+		  form.addEventListener('submit', function(e) {
+			 const button = this.querySelector('button[type="submit"]');
+		  button.disabled = true;
+			button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+		   });
+		   });
+	</script>
+}

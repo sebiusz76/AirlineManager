@@ -291,6 +291,61 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 17,
+                    Key = "DataRetention_ApplicationLogs_Days",
+                    Value = "90",
+                    Description = "Number of days to retain application logs (0 = keep forever)",
+                    Category = "Data Retention",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 18,
+                    Key = "DataRetention_LoginHistory_Days",
+                    Value = "180",
+                    Description = "Number of days to retain login history (0 = keep forever)",
+                    Category = "Data Retention",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 19,
+                    Key = "DataRetention_AuditLogs_Days",
+                    Value = "365",
+                    Description = "Number of days to retain audit logs (0 = keep forever)",
+                    Category = "Data Retention",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 20,
+                    Key = "DataRetention_InactiveSessions_Days",
+                    Value = "30",
+                    Description = "Number of days to retain inactive sessions (0 = keep forever)",
+                    Category = "Data Retention",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 21,
+                    Key = "DataRetention_EnableAutoCleanup",
+                    Value = "true",
+                    Description = "Enable automatic cleanup of old data based on retention policies",
+                    Category = "Data Retention",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }
