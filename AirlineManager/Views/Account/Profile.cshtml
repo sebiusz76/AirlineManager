@@ -125,6 +125,21 @@ else if (daysUntilExpiration.HasValue && daysUntilExpiration.Value <= 14 && days
 				<input asp-for="Password.ConfirmPassword" class="form-control" />
 				<span asp-validation-for="Password.ConfirmPassword" class="text-danger"></span>
 			</div>
+
+			@if (ViewBag.PasswordRequirements != null && ((List<string>)ViewBag.PasswordRequirements).Any())
+			{
+				<div class="alert alert-info mb-3">
+					<i class="bi bi-info-circle"></i>
+					<strong>Password requirements:</strong>
+					<ul class="mb-0 mt-2">
+						@foreach (var requirement in (List<string>)ViewBag.PasswordRequirements)
+						{
+							<li>@requirement</li>
+						}
+					</ul>
+				</div>
+			}
+
 			<button type="submit" class="btn btn-outline-primary">Change password</button>
 		</form>
 	</div>
