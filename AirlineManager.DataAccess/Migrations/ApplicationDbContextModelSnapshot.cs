@@ -181,7 +181,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 11,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Password must contain at least one digit (0-9)",
                             IsEncrypted = false,
                             Key = "Security_Password_RequireDigit",
@@ -192,7 +192,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 12,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Password must contain at least one lowercase letter (a-z)",
                             IsEncrypted = false,
                             Key = "Security_Password_RequireLowercase",
@@ -203,7 +203,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 13,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Password must contain at least one uppercase letter (A-Z)",
                             IsEncrypted = false,
                             Key = "Security_Password_RequireUppercase",
@@ -214,7 +214,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 14,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Password must contain at least one special character (!@#$%^&* etc.)",
                             IsEncrypted = false,
                             Key = "Security_Password_RequireNonAlphanumeric",
@@ -225,7 +225,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 15,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Minimum password length",
                             IsEncrypted = false,
                             Key = "Security_Password_RequiredLength",
@@ -236,7 +236,7 @@ namespace AirlineManager.DataAccess.Migrations
                         new
                         {
                             Id = 16,
-                            Category = "Security",
+                            Category = "Password Security",
                             Description = "Minimum number of unique characters in password",
                             IsEncrypted = false,
                             Key = "Security_Password_RequiredUniqueChars",
