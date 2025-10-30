@@ -1,0 +1,629 @@
+/* ===================================
+   MODERN GLOBAL DESIGN SYSTEM
+   AirlineManager - Consistent UI/UX
+   =================================== */
+
+:root {
+    /* Primary Gradient Colors */
+    --gradient-primary-start: #667eea;
+    --gradient-primary-end: #764ba2;
+    --gradient-secondary-start: #f093fb;
+    --gradient-secondary-end: #f5576c;
+    --gradient-success-start: #11998e;
+    --gradient-success-end: #38ef7d;
+    --gradient-warning-start: #f7b733;
+    --gradient-warning-end: #fc4a1a;
+    --gradient-danger-start: #eb3349;
+    --gradient-danger-end: #f45c43;
+    --gradient-info-start: #4facfe;
+    --gradient-info-end: #00f2fe;
+    /* Accent Colors */
+    --accent-primary: #f093fb;
+    --accent-secondary: #667eea;
+    --accent-glow: rgba(102, 126, 234, 0.3);
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 15px 50px rgba(0, 0, 0, 0.2);
+    --shadow-glow: 0 6px 20px var(--accent-glow);
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-xxl: 24px;
+    --radius-pill: 50px;
+    /* Transitions */
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    /* Typography */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+}
+
+/* Dark Theme Overrides */
+[data-bs-theme="dark"],
+[data-bs-theme="dark-slate"],
+[data-bs-theme="dark-midnight"] {
+    --gradient-primary-start: #4a5568;
+    --gradient-primary-end: #2d3748;
+    --gradient-secondary-start: #805ad5;
+    --gradient-secondary-end: #553c9a;
+    --accent-primary: #9f7aea;
+    --accent-secondary: #6b46c1;
+    --accent-glow: rgba(159, 122, 234, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 15px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* ===================================
+MODERN CARDS
+   =================================== */
+.card-modern {
+    border-radius: var(--radius-xl);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-base);
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+
+    .card-modern:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+.card-gradient {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    color: white;
+}
+
+.card-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-header-modern {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    color: white;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: none;
+    font-weight: var(--font-weight-bold);
+}
+
+.card-body-modern {
+    padding: var(--spacing-lg);
+}
+
+/* ===================================
+   MODERN BUTTONS
+   =================================== */
+.btn-modern {
+    padding: 12px 32px;
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-md);
+    border: none;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-modern:active {
+        transform: translateY(0);
+    }
+
+.btn-gradient-primary {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    color: white;
+}
+
+.btn-gradient-success {
+    background: linear-gradient(135deg, var(--gradient-success-start), var(--gradient-success-end));
+    color: white;
+}
+
+.btn-gradient-warning {
+    background: linear-gradient(135deg, var(--gradient-warning-start), var(--gradient-warning-end));
+    color: white;
+}
+
+.btn-gradient-danger {
+    background: linear-gradient(135deg, var(--gradient-danger-start), var(--gradient-danger-end));
+    color: white;
+}
+
+.btn-gradient-info {
+    background: linear-gradient(135deg, var(--gradient-info-start), var(--gradient-info-end));
+    color: white;
+}
+
+/* Ripple Effect */
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-modern:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ===================================
+   MODERN FORM CONTROLS
+   =================================== */
+.form-control-modern {
+    border-radius: var(--radius-md);
+    border: 2px solid var(--bs-border-color);
+    padding: 0.75rem 1rem;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+    .form-control-modern:focus {
+        border-color: var(--gradient-primary-start);
+        box-shadow: 0 0 0 0.25rem var(--accent-glow);
+        transform: translateY(-1px);
+    }
+
+.input-group-modern {
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-base);
+}
+
+    .input-group-modern:focus-within {
+        box-shadow: var(--shadow-glow);
+        transform: translateY(-1px);
+    }
+
+    .input-group-modern .input-group-text {
+        background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+        color: white;
+        border: none;
+        padding: 0.75rem 1rem;
+    }
+
+    .input-group-modern .form-control {
+        border: none;
+        border-left: 1px solid var(--bs-border-color);
+        padding: 0.75rem 1rem;
+    }
+
+/* ===================================
+   MODERN ALERTS
+   =================================== */
+.alert-modern {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    animation: slideInDown 0.5s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-modern i {
+    font-size: 1.5rem;
+}
+
+.alert-gradient-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-gradient-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.alert-gradient-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.alert-gradient-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+}
+
+/* ===================================
+   MODERN BADGES
+   =================================== */
+.badge-modern {
+    padding: 0.5em 1em;
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.badge-gradient-primary {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    color: white;
+}
+
+.badge-gradient-success {
+    background: linear-gradient(135deg, var(--gradient-success-start), var(--gradient-success-end));
+    color: white;
+}
+
+/* ===================================
+   MODERN TABLES
+   =================================== */
+.table-modern {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+    .table-modern thead {
+        background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+        color: white;
+    }
+
+        .table-modern thead th {
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-weight: var(--font-weight-bold);
+        }
+
+    .table-modern tbody tr {
+        transition: var(--transition-fast);
+    }
+
+        .table-modern tbody tr:hover {
+            background-color: var(--bs-tertiary-bg);
+            transform: scale(1.01);
+        }
+
+    .table-modern tbody td {
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-color: var(--bs-border-color);
+    }
+
+/* ===================================
+   MODERN MODALS
+   =================================== */
+.modal-content-modern {
+    border-radius: var(--radius-xxl);
+    border: none;
+    box-shadow: 0 25px 75px rgba(0, 0, 0, 0.4);
+    animation: modalSlideIn 0.4s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header-modern {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    color: white;
+    border-top-left-radius: var(--radius-xxl);
+    border-top-right-radius: var(--radius-xxl);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: none;
+}
+
+.modal-body-modern {
+    padding: var(--spacing-lg);
+}
+
+.modal-footer-modern {
+    border-top: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* ===================================
+MODERN NAVIGATION
+   =================================== */
+.nav-modern {
+    border-bottom: none;
+    gap: var(--spacing-xs);
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+    .nav-modern .nav-link {
+        border: none;
+        border-radius: var(--radius-lg);
+        padding: 14px 24px;
+        font-weight: var(--font-weight-semibold);
+        color: var(--bs-body-color);
+        background: var(--bs-body-bg);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-base);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .nav-modern .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: var(--bs-primary);
+        }
+
+        .nav-modern .nav-link.active {
+            background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+            color: white;
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-2px);
+        }
+
+/* ===================================
+   MODERN PAGINATION
+   =================================== */
+.pagination-modern .page-link {
+    border-radius: var(--radius-sm);
+    margin: 0 4px;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+}
+
+    .pagination-modern .page-link:hover {
+        background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+.pagination-modern .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    border: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* ===================================
+   MODERN DROPDOWN
+ =================================== */
+.dropdown-menu-modern {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-sm);
+    animation: dropdownFadeIn 0.3s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu-modern .dropdown-item {
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: var(--transition-fast);
+}
+
+    .dropdown-menu-modern .dropdown-item:hover {
+        background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+        color: white;
+        transform: translateX(4px);
+    }
+
+/* ===================================
+   MODERN BREADCRUMBS
+   =================================== */
+.breadcrumb-modern {
+    background: var(--bs-body-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+    .breadcrumb-modern .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        font-size: 1.2rem;
+    }
+
+    .breadcrumb-modern .breadcrumb-item.active {
+        color: var(--gradient-primary-start);
+        font-weight: var(--font-weight-semibold);
+    }
+
+/* ===================================
+   MODERN PROGRESS BARS
+   =================================== */
+.progress-modern {
+    border-radius: var(--radius-pill);
+    height: 12px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-gradient {
+    background: linear-gradient(90deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    border-radius: var(--radius-pill);
+    transition: var(--transition-base);
+}
+
+/* ===================================
+   MODERN TOOLTIPS
+   =================================== */
+.tooltip-modern .tooltip-inner {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    box-shadow: var(--shadow-md);
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+.gradient-text {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hover-lift {
+    transition: var(--transition-base);
+}
+
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glow-effect {
+    box-shadow: var(--shadow-glow);
+}
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+.fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-in-up {
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ===================================
+   RESPONSIVE UTILITIES
+   =================================== */
+@media (max-width: 768px) {
+    .card-modern {
+        border-radius: var(--radius-lg);
+    }
+
+    .btn-modern {
+        width: 100%;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .modal-content-modern {
+        border-radius: var(--radius-lg);
+    }
+}
+
+/* ===================================
+   ACCESSIBILITY
+   =================================== */
+.btn-modern:focus-visible,
+.form-control-modern:focus-visible,
+.nav-modern .nav-link:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
