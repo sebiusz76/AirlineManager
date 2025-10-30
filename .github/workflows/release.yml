@@ -1,0 +1,75 @@
+﻿name: Build and Push AirlineManager to Sebiusz Registry (Release)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Extract metadata
+        run: |
+          echo "VERSION=$(git describe --tags --always)" >> $GITHUB_ENV
+          echo "COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          echo "LATEST_TAG=latest" >> $GITHUB_ENV
+
+      - name: Login to Synology Registry
+        env:
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          echo "${REGISTRY_PASSWORD}" | docker login registry.hub.sebiusz.ovh -u "${REGISTRY_USER}" --password-stdin
+
+      - name: Build Docker image with OCI metadata
+        run: |
+          docker build -f ./AirlineManager/Dockerfile . \
+            --tag registry.hub.sebiusz.ovh/airlinemanager:${VERSION} \
+            --label org.opencontainers.image.title="AirlineManager" \
+            --label org.opencontainers.image.description="ASP.NET 9.0 Virtual Airline Management System for Microsoft Flight Simulator" \
+            --label org.opencontainers.image.version="${VERSION}" \
+            --label org.opencontainers.image.created="${DATE}" \
+            --label org.opencontainers.image.revision="${COMMIT}" \
+            --label org.opencontainers.image.source="https://git.sebiusz.ovh/sebiusz/AirlineManager" \
+            --label org.opencontainers.image.authors="sebiusz <sstachurski@gmail.com>" \
+            --label org.opencontainers.image.documentation="https://hub.sebiusz.ovh/docs/airlinemanager" \
+            --label org.opencontainers.image.url="https://github.com/sebiusz76/AirlineManager" \
+            --label org.opencontainers.image.vendor="Sebiusz"
+
+      - name: Tag image as latest
+        run: docker tag registry.hub.sebiusz.ovh/airlinemanager:${VERSION} registry.hub.sebiusz.ovh/airlinemanager:${LATEST_TAG}
+
+      - name: Inspect image metadata
+        run: |
+          docker inspect registry.hub.sebiusz.ovh/airlinemanager:${VERSION} \
+            --format '{{ json .Config.Labels }}' | jq .
+
+      - name: Push versioned tag to Sebiusz Registry
+        run: docker push registry.hub.sebiusz.ovh/airlinemanager:${VERSION}
+
+      - name: Push latest tag to Sebiusz Registry
+        run: docker push registry.hub.sebiusz.ovh/airlinemanager:${LATEST_TAG}
+
+      - name: Image pushed successfully
+        run: |
+          echo "✅ Docker images pushed successfully!"
+          echo "📦 Version tag: registry.hub.sebiusz.ovh/airlinemanager:${VERSION}"
+          echo "🏷️  Latest tag: registry.hub.sebiusz.ovh/airlinemanager:latest"

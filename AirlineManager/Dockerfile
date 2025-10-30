@@ -12,9 +12,21 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy all project files
 COPY ["AirlineManager/AirlineManager.csproj", "AirlineManager/"]
+COPY ["AirlineManager.Models/AirlineManager.Models.csproj", "AirlineManager.Models/"]
+COPY ["AirlineManager.DataAccess/AirlineManager.DataAccess.csproj", "AirlineManager.DataAccess/"]
+COPY ["AirlineManager.Services/AirlineManager.Services.csproj", "AirlineManager.Services/"]
+COPY ["AirlineManager.Middleware/AirlineManager.Middleware.csproj", "AirlineManager.Middleware/"]
+
+# Restore dependencies
 RUN dotnet restore "./AirlineManager/AirlineManager.csproj"
+
+# Copy all source files
 COPY . .
+
+# Build the main project
 WORKDIR "/src/AirlineManager"
 RUN dotnet build "./AirlineManager.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
