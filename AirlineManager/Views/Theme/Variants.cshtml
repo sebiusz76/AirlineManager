@@ -424,25 +424,5 @@
 </div>
 
 @section Scripts {
-	<script>
-		function applyTheme(theme) {
-			if (window.ThemeManager) {
-				window.ThemeManager.setTheme(theme);
-
-				// Show success toast
-				if (typeof Swal !== 'undefined') {
-					Swal.fire({
-						toast: true,
-						position: 'top-end',
-						icon: 'success',
-						title: 'Theme applied!',
-						text: `${theme} theme has been activated.`,
-						showConfirmButton: false,
-						timer: 2000,
-						timerProgressBar: true
-					});
-				}
-			}
-		}
-	</script>
+	<script src="~/js/views/Theme/Variants.js" asp-append-version="true"></script>
 }
