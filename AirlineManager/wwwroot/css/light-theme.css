@@ -1,0 +1,518 @@
+/* ============================================
+   LIGHT THEME STYLES - MULTIPLE VARIANTS
+ ============================================ */
+
+/* ============================================
+   VARIANT 1: SOFT LIGHT (DEFAULT)
+   Delikatny, ciep³y jasny motyw
+ ============================================ */
+[data-bs-theme="light"],
+[data-bs-theme="light-soft"] {
+    /* Primary background colors */
+    --bs-body-bg: #f8f9fa;
+    --bs-body-color: #212529;
+    --bs-border-color: #dee2e6;
+    /* Custom color variables */
+    --light-bg-primary: #f8f9fa;
+    --light-bg-secondary: #ffffff;
+    --light-bg-tertiary: #f1f3f5;
+    --light-bg-elevated: #ffffff;
+    --light-text-primary: #212529;
+    --light-text-secondary: #495057;
+    --light-text-muted: #6c757d;
+    --light-border: #dee2e6;
+    --light-border-light: #e9ecef;
+    --light-hover: #e9ecef;
+    /* Accent colors */
+    --light-accent-blue: #0d6efd;
+    --light-accent-blue-hover: #0b5ed7;
+    --light-accent-success: #198754;
+    --light-accent-warning: #ffc107;
+    --light-accent-danger: #dc3545;
+}
+
+/* ============================================
+   VARIANT 2: CRISP LIGHT
+   Neutralny, profesjonalny, wysoki kontrast
+ ============================================ */
+[data-bs-theme="light-crisp"] {
+    --bs-body-bg: #f5f7fa;
+    --bs-body-color: #1a202c;
+    --bs-border-color: #cbd5e0;
+    --light-bg-primary: #f5f7fa;
+    --light-bg-secondary: #ffffff;
+    --light-bg-tertiary: #edf2f7;
+    --light-bg-elevated: #ffffff;
+    --light-text-primary: #1a202c;
+    --light-text-secondary: #4a5568;
+    --light-text-muted: #718096;
+    --light-border: #cbd5e0;
+    --light-border-light: #e2e8f0;
+    --light-hover: #edf2f7;
+    --light-accent-blue: #3182ce;
+    --light-accent-blue-hover: #2c5282;
+    --light-accent-success: #38a169;
+    --light-accent-warning: #d69e2e;
+    --light-accent-danger: #e53e3e;
+}
+
+/* ============================================
+   VARIANT 3: WARM LIGHT
+   Ciep³y, przytulny jasny motyw (be¿owy)
+ ============================================ */
+[data-bs-theme="light-warm"] {
+    --bs-body-bg: #faf8f5;
+    --bs-body-color: #2d3748;
+    --bs-border-color: #e6dfd8;
+    --light-bg-primary: #faf8f5;
+    --light-bg-secondary: #ffffff;
+    --light-bg-tertiary: #f4f1ed;
+    --light-bg-elevated: #ffffff;
+    --light-text-primary: #2d3748;
+    --light-text-secondary: #4a5568;
+    --light-text-muted: #718096;
+    --light-border: #e6dfd8;
+    --light-border-light: #f0ebe5;
+    --light-hover: #f4f1ed;
+    --light-accent-blue: #2b6cb0;
+    --light-accent-blue-hover: #2c5282;
+    --light-accent-success: #2f855a;
+    --light-accent-warning: #c05621;
+    --light-accent-danger: #c53030;
+}
+
+/* ============================================
+   COMMON LIGHT THEME STYLES
+   (Applied to all variants)
+ ============================================ */
+[data-bs-theme="light"],
+[data-bs-theme="light-soft"],
+[data-bs-theme="light-crisp"],
+[data-bs-theme="light-warm"] {
+    /* Link colors */
+    --bs-link-color: var(--light-accent-blue);
+    --bs-link-hover-color: var(--light-accent-blue-hover);
+    /* Body */
+    body {
+        background-color: var(--light-bg-primary);
+        color: var(--light-text-primary);
+    }
+    /* Cards */
+    .card {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+        color: var(--light-text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        background-color: var(--light-bg-tertiary);
+        border-bottom-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+    .card-footer {
+        background-color: var(--light-bg-tertiary);
+        border-top-color: var(--light-border);
+    }
+    /* Navbar - keep gradient but adjust for light theme */
+    .navbar {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%) !important;
+    }
+    /* Dropdown menus */
+    .dropdown-menu {
+        background-color: var(--light-bg-elevated);
+        border-color: var(--light-border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        color: var(--light-text-primary);
+    }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: var(--light-hover);
+            color: var(--light-text-primary);
+        }
+
+    .dropdown-divider {
+        border-top-color: var(--light-border);
+    }
+    /* Forms */
+    .form-control,
+    .form-select {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--light-bg-secondary);
+            border-color: var(--light-accent-blue);
+            color: var(--light-text-primary);
+            box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--light-accent-blue) 25%, transparent);
+        }
+
+        .form-control::placeholder {
+            color: var(--light-text-muted);
+        }
+
+    .input-group-text {
+        background-color: var(--light-bg-tertiary);
+        border-color: var(--light-border);
+        color: var(--light-text-secondary);
+    }
+
+    .form-check-input {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+    }
+
+        .form-check-input:checked {
+            background-color: var(--light-accent-blue);
+            border-color: var(--light-accent-blue);
+        }
+    /* Tables */
+    .table {
+        --bs-table-bg: var(--light-bg-secondary);
+        --bs-table-striped-bg: var(--light-bg-tertiary);
+        --bs-table-hover-bg: var(--light-hover);
+        --bs-table-border-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+        .table thead {
+            border-bottom-color: var(--light-border);
+            background-color: var(--light-bg-tertiary);
+        }
+    /* Modals */
+    .modal-content {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+    .modal-header {
+        border-bottom-color: var(--light-border);
+        background-color: var(--light-bg-tertiary);
+    }
+
+    .modal-footer {
+        border-top-color: var(--light-border);
+        background-color: var(--light-bg-tertiary);
+    }
+
+    .btn-close {
+        filter: none;
+    }
+    /* Alerts */
+    .alert {
+        border-color: var(--light-border);
+    }
+
+    .alert-info {
+        background-color: #cfe2ff;
+        border-color: #9ec5fe;
+        color: #052c65;
+    }
+
+    .alert-success {
+        background-color: #d1e7dd;
+        border-color: #a3cfbb;
+        color: #0a3622;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffe69c;
+        color: #664d03;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f1aeb5;
+        color: #58151c;
+    }
+    /* Badges */
+    .badge {
+        background-color: var(--light-bg-tertiary);
+        color: var(--light-text-primary);
+        border: 1px solid var(--light-border);
+    }
+
+        .badge.bg-primary {
+            background-color: var(--light-accent-blue) !important;
+            color: white;
+            border: none;
+        }
+    /* Breadcrumb */
+    .breadcrumb {
+        background-color: var(--light-bg-tertiary);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: var(--light-text-muted);
+    }
+    /* Pagination */
+    .page-link {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+        .page-link:hover {
+            background-color: var(--light-hover);
+            border-color: var(--light-border-light);
+            color: var(--light-text-primary);
+        }
+
+    .page-item.active .page-link {
+        background-color: var(--light-accent-blue);
+        border-color: var(--light-accent-blue);
+    }
+    /* Footer */
+    .footer {
+        background-color: var(--light-bg-secondary);
+        border-top-color: var(--light-border);
+    }
+    /* List groups */
+    .list-group-item {
+        background-color: var(--light-bg-secondary);
+        border-color: var(--light-border);
+        color: var(--light-text-primary);
+    }
+
+        .list-group-item:hover {
+            background-color: var(--light-hover);
+        }
+    /* Tabs */
+    .nav-tabs {
+        border-bottom-color: var(--light-border);
+    }
+
+        .nav-tabs .nav-link {
+            color: var(--light-text-secondary);
+        }
+
+            .nav-tabs .nav-link:hover {
+                border-color: var(--light-border);
+                color: var(--light-text-primary);
+            }
+
+            .nav-tabs .nav-link.active {
+                background-color: var(--light-bg-secondary);
+                border-color: var(--light-border) var(--light-border) var(--light-bg-secondary);
+                color: var(--light-text-primary);
+            }
+    /* Progress bars */
+    .progress {
+        background-color: var(--light-bg-tertiary);
+    }
+    /* Text colors */
+    .text-muted {
+        color: var(--light-text-muted) !important;
+    }
+
+    .text-secondary {
+        color: var(--light-text-secondary) !important;
+    }
+    /* Borders */
+    .border {
+        border-color: var(--light-border) !important;
+    }
+
+    .border-top {
+        border-top-color: var(--light-border) !important;
+    }
+
+    .border-bottom {
+        border-bottom-color: var(--light-border) !important;
+    }
+
+    .border-start {
+        border-left-color: var(--light-border) !important;
+    }
+
+    .border-end {
+        border-right-color: var(--light-border) !important;
+    }
+    /* Buttons */
+    .btn-outline-primary {
+        color: var(--light-accent-blue);
+        border-color: var(--light-accent-blue);
+    }
+
+        .btn-outline-primary:hover {
+            background-color: var(--light-accent-blue);
+            border-color: var(--light-accent-blue);
+            color: white;
+        }
+    /* Cookie consent */
+    #cookieConsent {
+        background-color: var(--light-bg-elevated);
+        border-top: 1px solid var(--light-border);
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    }
+    /* Code blocks */
+    pre,
+    code {
+        background-color: var(--light-bg-tertiary);
+        color: var(--light-text-primary);
+        border: 1px solid var(--light-border);
+    }
+    /* Scrollbar styling for light mode */
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--light-bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--light-border);
+        border-radius: 6px;
+        border: 2px solid var(--light-bg-primary);
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-text-muted);
+        }
+}
+
+/* ============================================
+   SMOOTH TRANSITIONS
+ ============================================ */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions on theme change to prevent flash */
+html[data-bs-theme-transitioning] * {
+    transition: none !important;
+}
+
+/* ============================================
+   LIGHT THEME ICONS
+ ============================================ */
+[data-bs-theme="light"] .bi-sun,
+[data-bs-theme="light-soft"] .bi-sun,
+[data-bs-theme="light-crisp"] .bi-sun,
+[data-bs-theme="light-warm"] .bi-sun {
+    color: #ffc107;
+}
+
+[data-bs-theme="light"] .bi-moon,
+[data-bs-theme="light-soft"] .bi-moon,
+[data-bs-theme="light-crisp"] .bi-moon,
+[data-bs-theme="light-warm"] .bi-moon {
+    color: #0d6efd;
+}
+
+[data-bs-theme="light"] .bi-circle-half,
+[data-bs-theme="light-soft"] .bi-circle-half,
+[data-bs-theme="light-crisp"] .bi-circle-half,
+[data-bs-theme="light-warm"] .bi-circle-half {
+    color: #6f42c1;
+}
+
+/* ============================================
+   VARIANT-SPECIFIC ENHANCEMENTS
+ ============================================ */
+
+/* Soft Light - Enhanced card shadows */
+[data-bs-theme="light-soft"] .card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+    [data-bs-theme="light-soft"] .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+/* Crisp Light - Sharp borders and stronger contrast */
+[data-bs-theme="light-crisp"] .card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-width: 1px;
+}
+
+[data-bs-theme="light-crisp"] .form-control,
+[data-bs-theme="light-crisp"] .form-select {
+    border-width: 1px;
+}
+
+/* Warm Light - Softer shadows with warm tint */
+[data-bs-theme="light-warm"] .card {
+    box-shadow: 0 2px 8px rgba(194, 164, 134, 0.15);
+}
+
+    [data-bs-theme="light-warm"] .card:hover {
+        box-shadow: 0 4px 12px rgba(194, 164, 134, 0.2);
+    }
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+ ============================================ */
+@media (max-width: 768px) {
+    [data-bs-theme="light"],
+    [data-bs-theme="light-soft"],
+    [data-bs-theme="light-crisp"],
+    [data-bs-theme="light-warm"] {
+        /* Reduce shadows on mobile for performance */
+        .card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+ ============================================ */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    [data-bs-theme="light"],
+    [data-bs-theme="light-soft"],
+    [data-bs-theme="light-crisp"],
+    [data-bs-theme="light-warm"] {
+        --light-border: #999999;
+        --light-text-primary: #000000;
+        --light-text-secondary: #333333;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    [data-bs-theme="light"],
+    [data-bs-theme="light-soft"],
+    [data-bs-theme="light-crisp"],
+    [data-bs-theme="light-warm"] {
+        * {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+ ============================================ */
+@media print {
+    [data-bs-theme="light"],
+    [data-bs-theme="light-soft"],
+    [data-bs-theme="light-crisp"],
+    [data-bs-theme="light-warm"] {
+        /* Ensure clean print output */
+        --light-bg-primary: white;
+        --light-bg-secondary: white;
+        --light-bg-tertiary: white;
+        --light-text-primary: black;
+
+        .card {
+            box-shadow: none;
+            border: 1px solid #999;
+        }
+    }
+}

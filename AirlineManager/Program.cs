@@ -200,6 +200,9 @@ try
     // Register Data Retention Service
     builder.Services.AddScoped<IDataRetentionService, DataRetentionService>();
 
+    // Register Theme Service
+    builder.Services.AddScoped<IThemeService, ThemeService>();
+
     // Register Lockout Options Updater
     builder.Services.AddHostedService<AirlineManager.Middleware.LockoutOptionsUpdater>();
 

@@ -379,6 +379,17 @@ namespace AirlineManager.DataAccess.Data
                     IsEncrypted = false,
                     LastModified = seedDate,
                     LastModifiedBy = "System"
+                },
+                new AppConfiguration
+                {
+                    Id = 25,
+                    Key = "Theme_Default",
+                    Value = "auto",
+                    Description = "Default theme for new users and guests (auto, light, or dark)",
+                    Category = "Theme",
+                    IsEncrypted = false,
+                    LastModified = seedDate,
+                    LastModifiedBy = "System"
                 }
             );
         }

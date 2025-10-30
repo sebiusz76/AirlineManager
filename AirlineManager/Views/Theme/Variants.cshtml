@@ -1,0 +1,205 @@
+@{
+	ViewData["Title"] = "Dark Mode Variants";
+}
+
+<div class="container py-5">
+	<div class="row mb-5">
+		<div class="col-12">
+			<h1 class="display-4 mb-3">
+				<i class="bi bi-palette"></i> Dark Mode Variants
+			</h1>
+			<p class="lead">
+				Choose your preferred dark mode style. Each variant is optimized for different preferences and use cases.
+			</p>
+		</div>
+	</div>
+
+	<!-- Theme Comparison Cards -->
+	<div class="row g-4">
+		<!-- Soft Dark -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm" data-theme-preview="dark">
+				<div class="card-header bg-primary text-white">
+					<h5 class="mb-0">
+						<i class="bi bi-moon"></i> Dark (Soft)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #1e1e2e; color: #e5e7eb;">
+							<strong>Primary Background</strong><br>
+							<code>#1e1e2e</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #2a2a3e; color: #e5e7eb;">
+							<strong>Secondary Background</strong><br>
+							<code>#2a2a3e</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>Long reading sessions</li>
+						<li>Reduced eye strain</li>
+						<li>Warm, comfortable feel</li>
+					</ul>
+					<button class="btn btn-primary w-100" onclick="applyTheme('dark')">
+						<i class="bi bi-check-circle"></i> Apply Soft Dark
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Slate Dark -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm" data-theme-preview="dark-slate">
+				<div class="card-header bg-secondary text-white">
+					<h5 class="mb-0">
+						<i class="bi bi-moon-stars"></i> Dark (Slate)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #1a1d23; color: #e4e6eb;">
+							<strong>Primary Background</strong><br>
+							<code>#1a1d23</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #242830; color: #e4e6eb;">
+							<strong>Secondary Background</strong><br>
+							<code>#242830</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>Professional environments</li>
+						<li>Neutral preference</li>
+						<li>Business applications</li>
+					</ul>
+					<button class="btn btn-secondary w-100" onclick="applyTheme('dark-slate')">
+						<i class="bi bi-check-circle"></i> Apply Slate Dark
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Midnight Blue -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm" data-theme-preview="dark-midnight">
+				<div class="card-header text-white" style="background-color: #0d1117;">
+					<h5 class="mb-0">
+						<i class="bi bi-moon-fill"></i> Dark (Midnight)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #0d1117; color: #c9d1d9;">
+							<strong>Primary Background</strong><br>
+							<code>#0d1117</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="p-3 rounded" style="background-color: #161b22; color: #c9d1d9;">
+							<strong>Secondary Background</strong><br>
+							<code>#161b22</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>High contrast preference</li>
+						<li>Modern tech aesthetic</li>
+						<li>OLED screen optimization</li>
+					</ul>
+					<button class="btn btn-dark w-100" onclick="applyTheme('dark-midnight')">
+						<i class="bi bi-check-circle"></i> Apply Midnight Dark
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Feature Comparison -->
+	<div class="row mt-5">
+		<div class="col-12">
+			<h2 class="mb-4">Feature Comparison</h2>
+			<div class="table-responsive">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Feature</th>
+							<th>Soft Dark</th>
+							<th>Slate Dark</th>
+							<th>Midnight Dark</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><strong>Eye Comfort</strong></td>
+							<td><span class="badge bg-success">Excellent</span></td>
+							<td><span class="badge bg-primary">Good</span></td>
+							<td><span class="badge bg-warning text-dark">Moderate</span></td>
+						</tr>
+						<tr>
+							<td><strong>Contrast</strong></td>
+							<td><span class="badge bg-primary">Medium</span></td>
+							<td><span class="badge bg-primary">Medium-High</span></td>
+							<td><span class="badge bg-success">High</span></td>
+						</tr>
+						<tr>
+							<td><strong>Battery Saving (OLED)</strong></td>
+							<td><span class="badge bg-primary">Good</span></td>
+							<td><span class="badge bg-success">Very Good</span></td>
+							<td><span class="badge bg-success">Excellent</span></td>
+						</tr>
+						<tr>
+							<td><strong>Best Time of Day</strong></td>
+							<td>Evening / Night</td>
+							<td>All Day</td>
+							<td>Night</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tips -->
+	<div class="row mt-5">
+		<div class="col-12">
+			<div class="alert alert-info">
+				<h5><i class="bi bi-lightbulb"></i> Tips for Choosing</h5>
+				<ul class="mb-0">
+					<li><strong>Soft Dark:</strong> Recommended for most users. Reduces eye strain during extended use.</li>
+					<li><strong>Slate Dark:</strong> Best for professional settings or if you prefer a neutral gray tone.</li>
+					<li><strong>Midnight Dark:</strong> Choose if you work in very dark environments or prefer maximum contrast.</li>
+					<li><strong>Auto Mode:</strong> Let the system decide based on your OS settings.</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+			  function applyTheme(theme) {
+			if (window.ThemeManager) {
+		  window.ThemeManager.setTheme(theme);
+
+		 // Show success toast
+		if (typeof Swal !== 'undefined') {
+		  Swal.fire({
+			  toast: true,
+			 position: 'top-end',
+			 icon: 'success',
+		  title: 'Theme applied!',
+		  text: 'Your preference has been saved.',
+				showConfirmButton: false,
+		   timer: 2000,
+		 timerProgressBar: true
+					 });
+					  }
+				}
+			  }
+	</script>
+}

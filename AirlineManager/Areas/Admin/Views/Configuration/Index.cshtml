@@ -18,8 +18,8 @@
 			</a>
 			@foreach (var cat in categories)
 			{
-				<a asp-action="Index" asp-route-category="@cat" 
-					class="btn btn-outline-primary @(cat == selectedCategory ? "active" : "")">
+				<a asp-action="Index" asp-route-category="@cat"
+				   class="btn btn-outline-primary @(cat == selectedCategory ? "active" : "")">
 					@cat
 				</a>
 			}
@@ -72,6 +72,40 @@ else
 									<i class="bi bi-lock-fill"></i> ••••••••
 								</span>
 							}
+							else if (config.Key == "Theme_Default")
+							{
+								@switch (config.Value.ToLower())
+								{
+									case "auto":
+										<span class="badge bg-info">
+											<i class="bi bi-circle-half"></i> Auto (System)
+										</span>
+										break;
+									case "light":
+										<span class="badge bg-warning text-dark">
+											<i class="bi bi-sun"></i> Light
+										</span>
+										break;
+									case "dark":
+										<span class="badge bg-dark">
+											<i class="bi bi-moon"></i> Dark (Soft)
+										</span>
+										break;
+									case "dark-slate":
+										<span class="badge" style="background-color: #1a1d23; color: #e4e6eb;">
+											<i class="bi bi-moon-stars"></i> Dark (Slate)
+										</span>
+										break;
+									case "dark-midnight":
+										<span class="badge" style="background-color: #0d1117; color: #c9d1d9;">
+											<i class="bi bi-moon-fill"></i> Dark (Midnight)
+										</span>
+										break;
+									default:
+										<small>@config.Value</small>
+										break;
+								}
+							}
 							else if (config.Value.Length > 50)
 							{
 								<small>@config.Value.Substring(0, 50)...</small>
@@ -108,7 +142,7 @@ else
 }
 
 <div class="alert alert-warning mt-4">
-	<strong>Security Note:</strong> Configuration values marked with 
-	<i class="bi bi-lock-fill"></i> are encrypted in the database. 
+	<strong>Security Note:</strong> Configuration values marked with
+	<i class="bi bi-lock-fill"></i> are encrypted in the database.
 	Always use strong encryption keys in production and store them securely (e.g., Azure Key Vault, AWS Secrets Manager).
 </div>

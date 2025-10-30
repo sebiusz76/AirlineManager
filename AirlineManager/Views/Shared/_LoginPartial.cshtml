@@ -45,6 +45,42 @@
 					</a>
 				</li>
 				<li><hr class="dropdown-divider"></li>
+
+				<!-- Theme Selection Section -->
+				<li class="dropdown-header d-flex justify-content-between align-items-center">
+					<small class="text-muted"><i class="bi bi-palette me-1"></i>APPEARANCE</small>
+					<span class="badge bg-primary" id="currentThemeBadge" style="font-size: 0.65rem;"
+						  data-bs-toggle="tooltip" data-bs-placement="left" title="Current theme">
+						Auto
+					</span>
+				</li>
+				<li class="px-3 py-2">
+					<select class="form-select form-select-sm" id="themeSelect" aria-label="Select theme">
+						<optgroup label="System">
+							<option value="auto" data-icon="bi-circle-half">🔄 Auto (System)</option>
+						</optgroup>
+						<optgroup label="Light Themes">
+							<option value="light" data-icon="bi-sun">☀️ Light (Soft)</option>
+							<option value="light-crisp" data-icon="bi-sun-fill">🌞 Light (Crisp)</option>
+							<option value="light-warm" data-icon="bi-brightness-high">🌅 Light (Warm)</option>
+						</optgroup>
+						<optgroup label="Dark Themes">
+							<option value="dark" data-icon="bi-moon">🌙 Dark (Soft)</option>
+							<option value="dark-slate" data-icon="bi-moon-stars">🌟 Dark (Slate)</option>
+							<option value="dark-midnight" data-icon="bi-moon-fill">🌚 Dark (Midnight)</option>
+						</optgroup>
+					</select>
+					<small class="text-muted d-block mt-1" id="themeDescription">
+						<i class="bi bi-info-circle"></i> <span id="themeDescriptionText">Choose your preferred theme</span>
+					</small>
+				</li>
+				<li class="px-3 pb-2">
+					<a class="btn btn-sm btn-outline-primary w-100" asp-area="" asp-controller="Theme" asp-action="Variants">
+						<i class="bi bi-palette me-1"></i>Compare All Themes
+					</a>
+				</li>
+
+				<li><hr class="dropdown-divider"></li>
 				<li>
 					<form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
 						<button type="submit" class="dropdown-item text-danger">
@@ -71,6 +107,139 @@
 </ul>
 
 <style>
+	.theme-option {
+		cursor: pointer;
+		padding: 0.5rem 1rem;
+		transition: all 0.2s ease;
+	}
+
+		.theme-option:hover {
+			background-color: rgba(0, 0, 0, 0.05);
+		}
+
+		.theme-option.active {
+			background-color: rgba(30, 60, 114, 0.1);
+			font-weight: 600;
+			border-left: 3px solid #1e3c72;
+		}
+
+		.theme-option small {
+			font-size: 0.75rem;
+			opacity: 0.8;
+		}
+
+	/* Theme select styling */
+	#themeSelect {
+		cursor: pointer;
+		transition: all 0.3s ease;
+		border-color: rgba(0, 0, 0, 0.15);
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+		font-weight: 500;
+	}
+
+		#themeSelect:hover {
+			border-color: #1e3c72;
+			box-shadow: 0 2px 8px rgba(30, 60, 114, 0.1);
+			transform: translateY(-1px);
+		}
+
+		#themeSelect:focus {
+			border-color: #1e3c72;
+			box-shadow: 0 0 0 0.25rem rgba(30, 60, 114, 0.25);
+			transform: translateY(0);
+		}
+
+		#themeSelect:active {
+			transform: scale(0.98);
+		}
+
+		#themeSelect option {
+			padding: 8px;
+			font-size: 0.9rem;
+		}
+
+		#themeSelect optgroup {
+			font-weight: 600;
+			font-size: 0.85rem;
+			color: #6c757d;
+			padding: 4px 0;
+		}
+
+	/* Animate theme select on change */
+	@@keyframes selectPulse {
+		0% {
+			transform: scale(1);
+		}
+
+		50% {
+			transform: scale(1.02);
+		}
+
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	#themeSelect.theme-changing {
+		animation: selectPulse 0.3s ease;
+	}
+
+	/* Dark theme adjustments */
+	[data-bs-theme="dark"] .theme-option:hover,
+	[data-bs-theme="dark-soft"] .theme-option:hover,
+	[data-bs-theme="dark-slate"] .theme-option:hover,
+	[data-bs-theme="dark-midnight"] .theme-option:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	[data-bs-theme="dark"] .theme-option.active,
+	[data-bs-theme="dark-soft"] .theme-option.active,
+	[data-bs-theme="dark-slate"] .theme-option.active,
+	[data-bs-theme="dark-midnight"] .theme-option.active {
+		background-color: rgba(96, 165, 250, 0.2);
+		border-left-color: #60a5fa;
+	}
+
+	[data-bs-theme="dark"] #themeSelect,
+	[data-bs-theme="dark-soft"] #themeSelect,
+	[data-bs-theme="dark-slate"] #themeSelect,
+	[data-bs-theme="dark-midnight"] #themeSelect {
+		background-color: var(--dark-bg-tertiary);
+		border-color: var(--dark-border);
+		color: var(--dark-text-primary);
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+	}
+
+		[data-bs-theme="dark"] #themeSelect:hover,
+		[data-bs-theme="dark-soft"] #themeSelect:hover,
+		[data-bs-theme="dark-slate"] #themeSelect:hover,
+		[data-bs-theme="dark-midnight"] #themeSelect:hover {
+			border-color: #60a5fa;
+			box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+		}
+
+		[data-bs-theme="dark"] #themeSelect:focus,
+		[data-bs-theme="dark-soft"] #themeSelect:focus,
+		[data-bs-theme="dark-slate"] #themeSelect:focus,
+		[data-bs-theme="dark-midnight"] #themeSelect:focus {
+			border-color: #60a5fa;
+			box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+		}
+
+	.dropdown-header small {
+		font-weight: 600;
+		letter-spacing: 0.5px;
+	}
+
+	#currentThemeBadge {
+		transition: all 0.3s ease;
+		font-weight: 600;
+	}
+
+		#currentThemeBadge:hover {
+			transform: scale(1.05);
+		}
+
 	.user-avatar {
 		width: 32px;
 		height: 32px;
@@ -116,11 +285,11 @@
 		border: 1px solid rgba(255, 255, 255, 0.3);
 	}
 
-	.btn-nav-register:hover {
-		background-color: rgba(255, 255, 255, 0.2);
-		border-color: rgba(255, 255, 255, 0.5);
-		transform: translateY(-2px);
-	}
+		.btn-nav-register:hover {
+			background-color: rgba(255, 255, 255, 0.2);
+			border-color: rgba(255, 255, 255, 0.5);
+			transform: translateY(-2px);
+		}
 
 	.btn-nav-login {
 		background-color: rgba(255, 255, 255, 0.9);
@@ -128,15 +297,48 @@
 		font-weight: 600;
 	}
 
-	.btn-nav-login:hover {
-		background-color: white;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	}
+		.btn-nav-login:hover {
+			background-color: white;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		}
 
 	/* Wyrównanie przycisków w navbar */
 	.navbar-nav .nav-item {
 		display: flex;
 		align-items: center;
+	}
+
+	/* Enhanced dropdown menu styling */
+	.dropdown-menu-custom {
+		min-width: 280px;
+		max-height: 80vh;
+		overflow-y: auto;
+	}
+
+		.dropdown-menu-custom .dropdown-item {
+			padding: 0.6rem 1rem;
+		}
+
+			.dropdown-menu-custom .dropdown-item i {
+				width: 20px;
+				text-align: center;
+			}
+
+		/* Scrollbar for long dropdown */
+		.dropdown-menu-custom::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		.dropdown-menu-custom::-webkit-scrollbar-thumb {
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 3px;
+		}
+
+	[data-bs-theme="dark"] .dropdown-menu-custom::-webkit-scrollbar-thumb,
+	[data-bs-theme="dark-soft"] .dropdown-menu-custom::-webkit-scrollbar-thumb,
+	[data-bs-theme="dark-slate"] .dropdown-menu-custom::-webkit-scrollbar-thumb,
+	[data-bs-theme="dark-midnight"] .dropdown-menu-custom::-webkit-scrollbar-thumb {
+		background-color: rgba(255, 255, 255, 0.2);
 	}
 </style>

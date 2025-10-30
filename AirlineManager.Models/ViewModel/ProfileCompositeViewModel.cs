@@ -5,6 +5,7 @@ namespace AirlineManager.Models.ViewModel
         public ProfileInfoViewModel Info { get; set; } = new ProfileInfoViewModel();
         public ProfileEmailViewModel Email { get; set; } = new ProfileEmailViewModel();
         public ProfilePasswordViewModel Password { get; set; } = new ProfilePasswordViewModel();
+        public ProfileThemeViewModel Theme { get; set; } = new ProfileThemeViewModel();
         public ProfileDeleteViewModel Delete { get; set; } = new ProfileDeleteViewModel();
 
         // dynamic container for two-factor details (set by controller)
