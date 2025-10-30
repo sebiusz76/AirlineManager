@@ -33,7 +33,7 @@
                 option.addEventListener('click', (e) => {
                     e.preventDefault();
                     const theme = option.getAttribute('data-theme');
-                    this.setTheme(theme);
+                    this.setTheme(theme, true); // Show notification
 
                     // Close the dropdown after selection
                     const dropdownElement = option.closest('.dropdown-menu');
@@ -60,12 +60,12 @@
                         themeSelect.classList.remove('theme-changing');
                     }, 300);
 
-                    this.setTheme(theme);
+                    this.setTheme(theme, true); // Show notification
                 });
             }
         },
 
-        setTheme: function (theme) {
+        setTheme: function (theme, showNotification = true) {
             const htmlElement = document.documentElement;
 
             // Add transitioning class to prevent flash
@@ -99,8 +99,10 @@
             // Save to server if user is authenticated
             this.saveThemePreference(theme);
 
-            // Show subtle notification
-            this.showThemeChangeNotification(theme);
+            // Show subtle notification only if requested and user initiated the change
+            if (showNotification) {
+                this.showThemeChangeNotification(theme);
+            }
         },
 
         updateThemeUI: function () {
@@ -229,7 +231,7 @@
             if (!isAuthenticated) {
                 const savedTheme = localStorage.getItem('guestTheme');
                 if (savedTheme && this.themes[savedTheme]) {
-                    this.setTheme(savedTheme);
+                    this.setTheme(savedTheme, false); // Don't show notification on load
                 }
             }
         },
@@ -254,6 +256,15 @@
 
         // Show theme change notification
         showThemeChangeNotification: function (theme) {
+            // Check if user is authenticated
+            const isAuthenticated = document.getElementById('logoutForm') !== null;
+            
+            // Don't show notification for guest users
+            if (!isAuthenticated) {
+                console.log(`Theme changed to: ${theme} (guest user - no notification)`);
+                return;
+            }
+
             const themeName = this.themes[theme] ? this.themes[theme].name : theme;
 
             // Check if SweetAlert2 is available
