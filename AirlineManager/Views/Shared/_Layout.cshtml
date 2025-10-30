@@ -77,49 +77,10 @@
 							</li>
 							@if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
 							{
-								<li class="nav-item dropdown">
-									<a class="nav-link text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+								<li class="nav-item">
+									<a class="nav-link text-white" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
 										Administration
 									</a>
-									<ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0">
-										<li>
-											<a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
-												<i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard
-											</a>
-										</li>
-										<li>
-											<a class="dropdown-item" asp-area="Admin" asp-controller="Users" asp-action="Index">
-												<i class="bi bi-people me-2 text-success"></i>Users
-											</a>
-										</li>
-										<li>
-											<a class="dropdown-item" asp-area="Admin" asp-controller="AppLogs" asp-action="Index">
-												<i class="bi bi-card-text me-2 text-info"></i>Logs
-											</a>
-										</li>
-										@if (User.IsInRole("SuperAdmin"))
-										{
-											<li><hr class="dropdown-divider"></li>
-											<li class="dropdown-header text-muted small">
-												<i class="bi bi-shield-fill-check me-1"></i>SUPERADMIN ONLY
-											</li>
-											<li>
-												<a class="dropdown-item" asp-area="Admin" asp-controller="Configuration" asp-action="Index">
-													<i class="bi bi-gear me-2 text-warning"></i>Configuration
-												</a>
-											</li>
-											<li>
-												<a class="dropdown-item" asp-area="Admin" asp-controller="DataRetention" asp-action="Index">
-													<i class="bi bi-trash me-2 text-danger"></i>Data Retention
-												</a>
-											</li>
-											<li>
-												<a class="dropdown-item" asp-area="Admin" asp-controller="Maintenance" asp-action="Index">
-													<i class="bi bi-tools me-2 text-secondary"></i>Maintenance Mode
-												</a>
-											</li>
-										}
-									</ul>
 								</li>
 							}
 

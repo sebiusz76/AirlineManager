@@ -1,0 +1,399 @@
+/* ============================================
+   ADMIN LAYOUT STYLES (Bootstrap Dashboard)
+ ============================================ */
+
+/* Sidebar */
+.sidebar {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	padding: 48px 0 0;
+	box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+	height: calc(100vh - 48px);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.sidebar .nav-link {
+	font-weight: 500;
+	color: var(--bs-body-color);
+	padding: 0.5rem 1rem;
+	border-left: 3px solid transparent;
+	transition: var(--transition-normal);
+}
+
+	.sidebar .nav-link:hover {
+		color: var(--bs-primary);
+		background-color: var(--bs-secondary-bg);
+	}
+
+	.sidebar .nav-link.active {
+		color: var(--bs-primary);
+		background-color: var(--bs-secondary-bg);
+		border-left-color: var(--bs-primary);
+		font-weight: 600;
+	}
+
+	.sidebar .nav-link i {
+		width: 20px;
+		display: inline-block;
+	}
+
+.sidebar-heading {
+	font-size: .75rem;
+	letter-spacing: .05em;
+}
+
+/* Header - Fixed width and proper flexbox */
+.navbar {
+	position: sticky;
+	top: 0;
+	width: 100%;
+	z-index: 1020;
+}
+
+.navbar-brand {
+	padding-top: .75rem;
+	padding-bottom: .75rem;
+	background-color: rgba(0, 0, 0, .25);
+	box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+	font-weight: 600;
+	flex-shrink: 0;
+}
+
+/* Fix for navbar expansion issue */
+.navbar .navbar-nav {
+	flex-shrink: 0;
+}
+
+.navbar .nav-item {
+	flex-shrink: 0;
+}
+
+/* Dropdown in header - prevent expansion */
+.navbar .dropdown {
+	position: relative;
+}
+
+.navbar .dropdown-menu {
+	position: absolute;
+	right: 0;
+	left: auto;
+	min-width: 280px;
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+/* Main Content */
+main {
+	padding-top: 48px;
+}
+
+	main h1 {
+		font-size: 2rem;
+		font-weight: 400;
+	}
+
+/* Dark mode adjustments */
+[data-bs-theme="dark"] .sidebar,
+[data-bs-theme="dark-slate"] .sidebar,
+[data-bs-theme="dark-midnight"] .sidebar {
+	box-shadow: inset -1px 0 0 rgba(255, 255, 255, .1);
+}
+
+[data-bs-theme="dark"] .navbar-brand,
+[data-bs-theme="dark-slate"] .navbar-brand,
+[data-bs-theme="dark-midnight"] .navbar-brand {
+	background-color: rgba(255, 255, 255, .05);
+	box-shadow: inset -1px 0 0 rgba(255, 255, 255, .1);
+}
+
+/* Dropdown toggle - fixed styling */
+.navbar .dropdown-toggle {
+	text-decoration: none;
+	padding: 0.5rem 1rem;
+	white-space: nowrap;
+	border: none;
+	background: transparent;
+}
+
+	.navbar .dropdown-toggle:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+		border-radius: var(--radius-md);
+	}
+
+	.navbar .dropdown-toggle:focus {
+		outline: none;
+		box-shadow: none;
+	}
+
+/* Prevent text wrapping in dropdown button */
+.navbar .dropdown-toggle span {
+	display: inline-block;
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+}
+
+/* Mobile responsive */
+@media (max-width: 767.98px) {
+	.sidebar {
+		position: static;
+		padding: 0;
+		box-shadow: none;
+	}
+
+	.sidebar-sticky {
+		height: auto;
+	}
+
+	main {
+		padding-top: 0;
+	}
+
+	.navbar-brand {
+		background-color: transparent;
+		box-shadow: none;
+	}
+
+	.navbar .dropdown-toggle span {
+		max-width: 150px;
+	}
+}
+
+/* Page Actions Toolbar */
+.btn-toolbar {
+	gap: 0.5rem;
+}
+
+/* Maintenance Alert */
+.maintenance-alert {
+	position: relative;
+	z-index: 1030;
+	border-radius: 0;
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar-sticky::-webkit-scrollbar {
+	width: 6px;
+}
+
+.sidebar-sticky::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.sidebar-sticky::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
+}
+
+[data-bs-theme="dark"] .sidebar-sticky::-webkit-scrollbar-thumb,
+[data-bs-theme="dark-slate"] .sidebar-sticky::-webkit-scrollbar-thumb,
+[data-bs-theme="dark-midnight"] .sidebar-sticky::-webkit-scrollbar-thumb {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes slideInLeft {
+	from {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.sidebar {
+	animation: slideInLeft 0.3s ease-out;
+}
+
+/* Border bottom enhancement */
+.border-bottom {
+	border-bottom: 1px solid var(--bs-border-color) !important;
+}
+
+/* Sticky top enhancement */
+.sticky-top {
+	position: sticky;
+	top: 0;
+	z-index: 1020;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	border: 1px solid var(--bs-border-color);
+}
+
+.dropdown-item {
+	padding: 0.6rem 1rem;
+	transition: var(--transition-fast);
+}
+
+	.dropdown-item:hover {
+		background-color: var(--bs-secondary-bg);
+	}
+
+	.dropdown-item i {
+		width: 20px;
+		display: inline-block;
+		text-align: center;
+	}
+
+.dropdown-header {
+	font-weight: 600;
+	color: var(--bs-body-color);
+	padding: 0.5rem 1rem;
+}
+
+.dropdown-divider {
+	margin: 0.5rem 0;
+}
+
+/* Fix for dropdown button form */
+.dropdown-item.p-0 .btn-link {
+	width: 100%;
+	text-align: left;
+	padding: 0.5rem 1rem;
+	color: var(--bs-body-color);
+	text-decoration: none;
+}
+
+	.dropdown-item.p-0 .btn-link:hover {
+		color: var(--bs-body-color);
+		background-color: transparent;
+	}
+
+/* ============================================
+   USER MENU STYLES (from _LoginPartial)
+ ============================================ */
+
+/* User avatars */
+.user-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 0.875rem;
+	color: white;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-avatar-large {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.5rem;
+	color: white;
+	border: 3px solid #f0f0f0;
+}
+
+[data-bs-theme="dark"] .user-avatar-large,
+[data-bs-theme="dark-slate"] .user-avatar-large,
+[data-bs-theme="dark-midnight"] .user-avatar-large {
+	border-color: #2d3748;
+}
+
+/* Enhanced dropdown menu styling */
+.dropdown-menu-custom {
+	min-width: 280px;
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+	.dropdown-menu-custom .dropdown-item {
+		padding: 0.6rem 1rem;
+	}
+
+		.dropdown-menu-custom .dropdown-item i {
+			width: 20px;
+			text-align: center;
+		}
+
+	/* Scrollbar for long dropdown */
+	.dropdown-menu-custom::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.dropdown-menu-custom::-webkit-scrollbar-thumb {
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 3px;
+	}
+
+[data-bs-theme="dark"] .dropdown-menu-custom::-webkit-scrollbar-thumb,
+[data-bs-theme="dark-slate"] .dropdown-menu-custom::-webkit-scrollbar-thumb,
+[data-bs-theme="dark-midnight"] .dropdown-menu-custom::-webkit-scrollbar-thumb {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Theme badge */
+.theme-badge-small {
+	font-size: 0.65rem;
+}
+
+/* Theme select styling */
+#themeSelect {
+	cursor: pointer;
+	transition: var(--transition-all);
+	border-color: rgba(0, 0, 0, 0.15);
+	font-weight: 500;
+}
+
+	#themeSelect:hover {
+		border-color: var(--bs-primary);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		transform: translateY(-1px);
+	}
+
+	#themeSelect:focus {
+		border-color: var(--bs-primary);
+		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	}
+
+[data-bs-theme="dark"] #themeSelect,
+[data-bs-theme="dark-slate"] #themeSelect,
+[data-bs-theme="dark-midnight"] #themeSelect {
+	background-color: var(--bs-secondary-bg);
+	border-color: var(--bs-border-color);
+	color: var(--bs-body-color);
+}
+
+	[data-bs-theme="dark"] #themeSelect:hover,
+	[data-bs-theme="dark-slate"] #themeSelect:hover,
+	[data-bs-theme="dark-midnight"] #themeSelect:hover {
+		border-color: #60a5fa;
+		box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+	}
+
+.dropdown-header small {
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+
+#currentThemeBadge {
+	transition: var(--transition-all);
+	font-weight: 600;
+}
+
+	#currentThemeBadge:hover {
+		transform: scale(1.05);
+	}
