@@ -229,6 +229,18 @@ namespace AirlineManager.Areas.Admin.Controllers
                 }
             }
 
+            // Check if this is the last SuperAdmin and prevent role change
+            if (targetHighestBefore == "SuperAdmin" && model.SelectedRole != "SuperAdmin")
+            {
+                var superAdmins = await _userManager.GetUsersInRoleAsync("SuperAdmin");
+                if (superAdmins.Count <= 1)
+                {
+                    ModelState.AddModelError("SelectedRole", "Cannot change role of the last SuperAdmin. At least one SuperAdmin must exist in the system.");
+                    model.AllRoles = GetAllowedRolesForCurrentUser(currentHighest);
+                    return View(model);
+                }
+            }
+
             // Capture old values for audit
             var oldValues = new
             {
@@ -309,11 +321,25 @@ namespace AirlineManager.Areas.Admin.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!string.IsNullOrEmpty(currentUserId) && currentUserId == user.Id)
             {
-                return Forbid();
+                TempData["ToastType"] = "error";
+                TempData["ToastMessage"] = "You cannot delete your own account.";
+                return RedirectToAction(nameof(Index));
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var userRole = GetHighestRole(userRoles);
+
+            // Check if this is the last SuperAdmin
+            if (userRole == "SuperAdmin")
+            {
+                var superAdmins = await _userManager.GetUsersInRoleAsync("SuperAdmin");
+                if (superAdmins.Count <= 1)
+                {
+                    TempData["ToastType"] = "error";
+                    TempData["ToastMessage"] = "Cannot delete the last SuperAdmin. At least one SuperAdmin must exist in the system.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
 
             var oldValues = new
             {
