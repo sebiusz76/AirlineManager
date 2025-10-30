@@ -2,8 +2,12 @@
 	ViewData["Title"] = "Airline Manager - Microsoft Flight Simulator";
 }
 
+@section Styles {
+	<link rel="stylesheet" href="~/css/views/Home/Index.css" asp-append-version="true" />
+}
+
 <!-- Hero Section -->
-<div class="hero-section bg-gradient-primary text-white py-5 mb-5 mt-5" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+<div class="hero-section hero-section-gradient bg-gradient-primary text-white py-5 mb-5 mt-5">
 	<div class="container py-5">
 		<div class="row align-items-center">
 			<div class="col-lg-7 p-5">
@@ -36,7 +40,7 @@
 				}
 			</div>
 			<div class="col-lg-5 text-center d-none d-lg-block">
-				<i class="bi bi-airplane-engines" style="font-size: 15rem; opacity: 0.3;"></i>
+				<i class="bi bi-airplane-engines hero-icon"></i>
 			</div>
 		</div>
 	</div>
@@ -58,8 +62,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-primary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-primary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-calendar-check feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Flight Scheduling</h4>
 					<p class="card-text text-muted">
@@ -74,8 +78,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-success bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-airplane" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-success bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-airplane feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Fleet Management</h4>
 					<p class="card-text text-muted">
@@ -90,8 +94,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-info bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-people" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-info bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-people feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Crew Management</h4>
 					<p class="card-text text-muted">
@@ -106,8 +110,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-warning bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-warning bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-graph-up feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Analytics & Reports</h4>
 					<p class="card-text text-muted">
@@ -122,8 +126,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-danger bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-globe" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-danger bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-globe feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Route Network</h4>
 					<p class="card-text text-muted">
@@ -138,8 +142,8 @@
 		<div class="col-md-6 col-lg-4">
 			<div class="card h-100 border-0 shadow-sm hover-lift">
 				<div class="card-body text-center p-4">
-					<div class="feature-icon bg-secondary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-						<i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+					<div class="feature-icon bg-secondary bg-gradient text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center">
+						<i class="bi bi-shield-check feature-icon-size"></i>
 					</div>
 					<h4 class="card-title mb-3">Security & Compliance</h4>
 					<p class="card-text text-muted">
@@ -153,7 +157,7 @@
 </div>
 
 <!-- Stats Section -->
-<div class="bg-light py-5 mb-5" style="border-radius: 15px;">
+<div class="bg-light py-5 mb-5 stats-section">
 	<div class="container">
 		<div class="row text-center g-4">
 			<div class="col-6 col-md-3">
@@ -230,9 +234,9 @@
 					</li>
 				</ul>
 			</div>
-			<div class="col-lg-6 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 400px;">
+			<div class="col-lg-6 bg-gradient msfs-bg-gradient">
 				<div class="d-flex align-items-center justify-content-center h-100 p-5">
-					<i class="bi bi-joystick" style="font-size: 12rem; opacity: 0.2;"></i>
+					<i class="bi bi-joystick msfs-icon"></i>
 				</div>
 			</div>
 		</div>
@@ -243,7 +247,7 @@
 @if (!User.Identity.IsAuthenticated)
 {
 	<div class="container mb-5">
-		<div class="card border-0 shadow-lg text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+		<div class="card border-0 shadow-lg text-center cta-gradient">
 			<div class="card-body p-5 text-white">
 				<h2 class="display-5 fw-bold mb-3">Ready to Take Off?</h2>
 				<p class="lead mb-4">
@@ -306,72 +310,3 @@
 		</div>
 	</div>
 </div>
-
-<style>
-	.hover-lift {
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
-
-		.hover-lift:hover {
-			transform: translateY(-10px);
-			box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
-		}
-
-	.stat-item {
-		padding: 20px;
-		transition: transform 0.3s ease;
-	}
-
-		.stat-item:hover {
-			transform: scale(1.1);
-		}
-
-	.feature-icon {
-		transition: transform 0.3s ease;
-	}
-
-	.card:hover .feature-icon {
-		transform: rotate(10deg) scale(1.1);
-	}
-
-	.hero-section {
-		position: relative;
-		overflow: hidden;
-	}
-
-		.hero-section::before {
-			position: absolute;
-			top: -50%;
-			right: -50%;
-			width: 200%;
-			height: 200%;
-			background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-			animation: pulse 15s ease-in-out infinite;
-		}
-
-	@@keyframes pulse {
-		0%, 100% {
-			transform: scale(1);
-			opacity: 0.3;
-		}
-
-		50% {
-			transform: scale(1.2);
-			opacity: 0.5;
-		}
-	}
-
-	.card {
-		transition: all 0.3s ease;
-	}
-
-	@@media (max-width: 768px) {
-		.display-3 {
-			font-size: 2.5rem;
-		}
-
-		.display-5 {
-			font-size: 2rem;
-		}
-	}
-</style>

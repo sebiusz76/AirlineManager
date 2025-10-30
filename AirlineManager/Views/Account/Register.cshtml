@@ -1,7 +1,11 @@
 ﻿@model AirlineManager.Models.ViewModel.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+	ViewData["Title"] = "Register";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/views/Account/Register.css" asp-append-version="true" />
 }
 
 <div class="auth-container">
@@ -11,9 +15,9 @@
 				<!-- Register Card -->
 				<div class="auth-card card border-0 shadow-lg">
 					<!-- Header with gradient -->
-					<div class="auth-header text-white text-center py-4" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 15px 15px 0 0;">
+					<div class="auth-header auth-header-gradient text-white text-center py-4">
 						<div class="mb-3">
-							<i class="bi bi-person-plus-fill" style="font-size: 3.5rem;"></i>
+							<i class="bi bi-person-plus-fill auth-header-icon"></i>
 						</div>
 						<h2 class="fw-bold mb-2">Join Airline Manager</h2>
 						<p class="mb-0 opacity-75">Create your account and start managing your virtual airline</p>
@@ -78,12 +82,12 @@
 							</div>
 
 							<!-- Password Requirements Info -->
-							<div class="alert alert-info mb-4 border-0" style="background-color: #e7f3ff;">
+							<div class="alert alert-info mb-4 border-0 password-requirements-box">
 								<div class="d-flex align-items-start">
-									<i class="bi bi-info-circle-fill me-2 mt-1" style="color: #0c5ea8;"></i>
+									<i class="bi bi-info-circle-fill me-2 mt-1 password-requirements-icon"></i>
 									<div>
-										<strong style="color: #0c5ea8;">Password Requirements:</strong>
-										<ul class="mb-0 mt-2 small" style="color: #0c5ea8;">
+										<strong class="password-requirements-text">Password Requirements:</strong>
+										<ul class="mb-0 mt-2 small password-requirements-text">
 											<li>At least 8 characters long</li>
 											<li>Contains at least one uppercase letter (A-Z)</li>
 											<li>Contains at least one lowercase letter (a-z)</li>
@@ -95,7 +99,7 @@
 
 							<!-- Register Button -->
 							<div class="d-grid gap-2 mb-4">
-								<button type="submit" class="btn btn-lg text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+								<button type="submit" class="btn btn-lg text-white btn-gradient-primary">
 									<i class="bi bi-rocket-takeoff me-2"></i>Create Account
 								</button>
 							</div>
@@ -132,52 +136,8 @@
 	</div>
 </div>
 
-<style>
-	.auth-container {
-		min-height: 100vh;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		display: flex;
-		align-items: center;
-		margin: -1rem -15px -60px;
-		padding-bottom: 60px;
-	}
-
-	.auth-card {
-		border-radius: 15px;
-		overflow: hidden;
-		animation: fadeInUp 0.6s ease-out;
-	}
-
-	@@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(30px);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.form-control:focus {
-		border-color: #2a5298;
-		box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
-	}
-
-	.btn:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-		transition: all 0.3s ease;
-	}
-
-	.alert {
-		border-radius: 10px;
-	}
-</style>
-
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }
