@@ -4,8 +4,8 @@
 
 /* Profile header card with gradient */
 .profile-header-gradient {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    border-radius: 15px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
 }
 
 /* Hidden antiforgery form */
@@ -22,7 +22,7 @@
 /* 2FA setup area - hidden by default */
 .tfa-setup-area {
     display: none;
-    margin-top: 12px;
+    margin-top: var(--spacing-lg);
 }
 
 /* QR code container */

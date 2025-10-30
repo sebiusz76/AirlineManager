@@ -104,19 +104,15 @@
         color: var(--dark-text-primary);
     }
 
-    .card-header {
-        background-color: var(--dark-bg-tertiary);
-        border-bottom-color: var(--dark-border);
-        color: var(--dark-text-primary);
-    }
-
+    .card-header,
     .card-footer {
         background-color: var(--dark-bg-tertiary);
-        border-top-color: var(--dark-border);
+        border-color: var(--dark-border);
+        color: var(--dark-text-primary);
     }
     /* Navbar - keep gradient but adjust */
     .navbar {
-        background: linear-gradient(135deg, color-mix(in srgb, var(--dark-bg-primary) 80%, #1e3c72 20%), color-mix(in srgb, var(--dark-bg-primary) 70%, #2a5298 30%) ) !important;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--dark-bg-primary) 80%, #1e3c72 20%), color-mix(in srgb, var(--dark-bg-primary) 70%, #2a5298 30%)) !important;
     }
     /* Dropdown menus */
     .dropdown-menu {
@@ -193,14 +189,10 @@
         color: var(--dark-text-primary);
     }
 
-    .modal-header {
-        border-bottom-color: var(--dark-border);
-        background-color: var(--dark-bg-tertiary);
-    }
-
+    .modal-header,
     .modal-footer {
-        border-top-color: var(--dark-border);
         background-color: var(--dark-bg-tertiary);
+        border-color: var(--dark-border);
     }
 
     .btn-close {
@@ -318,24 +310,12 @@
         color: var(--dark-text-secondary) !important;
     }
     /* Borders */
-    .border {
-        border-color: var(--dark-border) !important;
-    }
-
-    .border-top {
-        border-top-color: var(--dark-border) !important;
-    }
-
-    .border-bottom {
-        border-bottom-color: var(--dark-border) !important;
-    }
-
-    .border-start {
-        border-left-color: var(--dark-border) !important;
-    }
-
+    .border,
+    .border-top,
+    .border-bottom,
+    .border-start,
     .border-end {
-        border-right-color: var(--dark-border) !important;
+        border-color: var(--dark-border) !important;
     }
     /* Buttons */
     .btn-outline-primary {
@@ -360,7 +340,7 @@
         color: var(--dark-text-primary);
         border: 1px solid var(--dark-border);
     }
-    /* Scrollbar styling for dark mode */
+    /* Scrollbar styling */
     ::-webkit-scrollbar {
         width: 12px;
         height: 12px;
@@ -381,41 +361,29 @@
         }
 }
 
-/* ============================================
-   SMOOTH TRANSITIONS
- ============================================ */
-* {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Disable transitions on theme change to prevent flash */
-html[data-bs-theme-transitioning] * {
-    transition: none !important;
-}
-
-/* ============================================
+    /* ============================================
    DARK THEME ICONS
  ============================================ */
-[data-bs-theme="dark"] .bi-sun,
-[data-bs-theme="dark-soft"] .bi-sun,
-[data-bs-theme="dark-slate"] .bi-sun,
-[data-bs-theme="dark-midnight"] .bi-sun {
-    color: var(--dark-accent-warning);
-}
+    [data-bs-theme="dark"] .bi-sun,
+    [data-bs-theme="dark-soft"] .bi-sun,
+    [data-bs-theme="dark-slate"] .bi-sun,
+    [data-bs-theme="dark-midnight"] .bi-sun {
+        color: var(--dark-accent-warning);
+    }
 
-[data-bs-theme="dark"] .bi-moon,
-[data-bs-theme="dark-soft"] .bi-moon,
-[data-bs-theme="dark-slate"] .bi-moon,
-[data-bs-theme="dark-midnight"] .bi-moon {
-    color: #60a5fa;
-}
+    [data-bs-theme="dark"] .bi-moon,
+    [data-bs-theme="dark-soft"] .bi-moon,
+    [data-bs-theme="dark-slate"] .bi-moon,
+    [data-bs-theme="dark-midnight"] .bi-moon {
+        color: #60a5fa;
+    }
 
-[data-bs-theme="dark"] .bi-circle-half,
-[data-bs-theme="dark-soft"] .bi-circle-half,
-[data-bs-theme="dark-slate"] .bi-circle-half,
-[data-bs-theme="dark-midnight"] .bi-circle-half {
-    color: #a78bfa;
-}
+    [data-bs-theme="dark"] .bi-circle-half,
+    [data-bs-theme="dark-soft"] .bi-circle-half,
+    [data-bs-theme="dark-slate"] .bi-circle-half,
+    [data-bs-theme="dark-midnight"] .bi-circle-half {
+        color: #a78bfa;
+    }
 
 /* ============================================
    RESPONSIVE ADJUSTMENTS
