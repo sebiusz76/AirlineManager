@@ -21,5 +21,10 @@ namespace AirlineManager.Models.Domain
 
         // Date when password was last changed
         public DateTime? PasswordChangedAt { get; set; }
+
+        // User's preferred theme: "auto", "light", or "dark"
+        // "auto" = follow system preference, "light" = force light, "dark" = force dark
+        [MaxLength(20)]
+        public string PreferredTheme { get; set; } = "auto";
     }
 }

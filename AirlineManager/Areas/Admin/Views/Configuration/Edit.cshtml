@@ -1,4 +1,4 @@
-@model AirlineManager.Models.Domain.AppConfiguration
+﻿@model AirlineManager.Models.Domain.AppConfiguration
 
 @{
 	ViewData["Title"] = "Edit Configuration";
@@ -47,11 +47,37 @@
 								<i class="bi bi-info-circle"></i> This value is encrypted. Enter a new value to update, or leave empty to keep the current encrypted value.
 							</small>
 						}
+						else if (Model.Key == "Theme_Default")
+						{
+							<select asp-for="Value" class="form-select" id="Theme_Default">
+								<option value="auto" selected="@(Model.Value == "auto")">
+									🔄 Auto (Follow System Preference)
+								</option>
+								<option value="light" selected="@(Model.Value == "light")">
+									☀️ Light Mode
+								</option>
+								<optgroup label="Dark Themes">
+									<option value="dark" selected="@(Model.Value == "dark")">
+										🌙 Dark (Soft) - Warm & easy on eyes
+									</option>
+									<option value="dark-slate" selected="@(Model.Value == "dark-slate")">
+										🌟 Dark (Slate) - Professional & neutral
+									</option>
+									<option value="dark-midnight" selected="@(Model.Value == "dark-midnight")">
+										🌚 Dark (Midnight) - Modern tech style
+									</option>
+								</optgroup>
+							</select>
+							<small class="text-muted">
+								<i class="bi bi-info-circle"></i> This sets the default theme for new users and guests. 
+								Users can override this in their profile settings and choose from multiple dark variants.
+							</small>
+						}
 						else if (Model.Key.Contains("Port") || Model.Key.Contains("Timeout"))
 						{
 							<input asp-for="Value" type="number" class="form-control" />
 						}
-						else if (Model.Key.Contains("Enable") || Model.Key.Contains("SSL") || Model.Key.Contains("TLS"))
+						else if (Model.Key.Contains("Enable") || Model.Key.Contains("SSL") || Model.Key.Contains("TLS") || Model.Key.Contains("_Mode_"))
 						{
 							<select asp-for="Value" class="form-select">
 								<option value="true">True</option>
@@ -135,6 +161,29 @@
 						</small>
 					</div>
 				}
+
+				@if (Model.Category == "Theme")
+				{
+					<div class="alert alert-info">
+						<strong><i class="bi bi-palette"></i> Theme Settings</strong><br>
+						<small>
+							<ul class="mb-0 mt-2">
+								<li><strong>Auto:</strong> Follows user's system preference</li>
+								<li><strong>Light:</strong> Bright theme for daytime use</li>
+								<li class="mt-2"><strong>Dark Variants:</strong></li>
+								<ul>
+									<li><strong>Soft:</strong> Warm, easy on eyes (recommended)</li>
+									<li><strong>Slate:</strong> Professional, neutral gray</li>
+									<li><strong>Midnight:</strong> Modern tech style, high contrast</li>
+								</ul>
+							</ul>
+							<div class="mt-2 p-2 bg-light rounded">
+								<i class="bi bi-lightbulb"></i> <strong>Tip:</strong> Users can override this setting in their profile 
+								and choose their preferred dark mode variant.
+							</div>
+						</small>
+					</div>
+				}
 			</div>
 		</div>
 	</div>
@@ -142,4 +191,44 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	
+	@if (Model.Key == "Theme_Default")
+	{
+		<script>
+			(function() {
+				const themeSelect = document.getElementById('Theme_Default');
+				if (themeSelect) {
+					// Update theme preview when selection changes
+					themeSelect.addEventListener('change', function() {
+						const selectedTheme = this.value;
+						if (window.ThemeManager) {
+							// Temporarily apply theme for preview
+							window.ThemeManager.setTheme(selectedTheme);
+						}
+					});
+
+					// Add visual indicators to options
+					const options = themeSelect.querySelectorAll('option');
+					options.forEach(option => {
+						const theme = option.value;
+						let icon = '';
+						switch(theme) {
+							case 'auto':
+								icon = '🔄 ';
+								break;
+							case 'light':
+								icon = '☀️ ';
+								break;
+							case 'dark':
+								icon = '🌙 ';
+								break;
+						}
+						if (!option.textContent.startsWith(icon)) {
+							option.textContent = icon + option.textContent;
+						}
+					});
+				}
+			})();
+		</script>
+	}
 }

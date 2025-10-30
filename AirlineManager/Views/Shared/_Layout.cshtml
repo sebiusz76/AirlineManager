@@ -1,6 +1,19 @@
 ﻿@inject AirlineManager.Services.IConfigurationService ConfigService
+@inject AirlineManager.Services.Interfaces.IThemeService ThemeService
+@using Microsoft.AspNetCore.Identity
+@using AirlineManager.Models.Domain
+@inject UserManager<ApplicationUser> UserManager
+@{
+	string? userId = null;
+	if (User.Identity?.IsAuthenticated == true)
+	{
+		var currentUser = await UserManager.GetUserAsync(User);
+		userId = currentUser?.Id;
+	}
+	var effectiveTheme = await ThemeService.GetEffectiveThemeAsync(userId);
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="@effectiveTheme">
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +22,7 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/dark-theme.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/AirlineManager.styles.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/lib/sweetalert2/dist/sweetalert2.min.css" />
 </head>
@@ -153,8 +167,14 @@
 	<script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
 	<script>
-		// Show toast if TempData contains notification
+		// Initialize Bootstrap tooltips
 		$(function () {
+			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+				return new bootstrap.Tooltip(tooltipTriggerEl);
+			});
+
+			// Show toast if TempData contains notification
 			const toast = Swal.mixin({
 				toast: true,
 				position: 'top-end',
