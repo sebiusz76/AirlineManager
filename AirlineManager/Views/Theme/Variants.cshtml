@@ -1,24 +1,38 @@
 @{
-	ViewData["Title"] = "Dark Mode Variants";
+	ViewData["Title"] = "Theme Variants";
+}
+
+@section Styles {
+	<link rel="stylesheet" href="~/css/views/Theme/Variants.css" asp-append-version="true" />
 }
 
 <div class="container py-5">
 	<div class="row mb-5">
 		<div class="col-12">
 			<h1 class="display-4 mb-3">
-				<i class="bi bi-palette"></i> Dark Mode Variants
+				<i class="bi bi-palette"></i> Theme Variants
 			</h1>
 			<p class="lead">
-				Choose your preferred dark mode style. Each variant is optimized for different preferences and use cases.
+				Choose your preferred theme style. Each variant is optimized for different preferences and use cases.
+				Available in both light and dark modes.
 			</p>
 		</div>
 	</div>
 
-	<!-- Theme Comparison Cards -->
-	<div class="row g-4">
+	<!-- Dark Mode Variants Section -->
+	<div class="row mb-4">
+		<div class="col-12">
+			<h2 class="mb-4">
+				<i class="bi bi-moon-stars-fill"></i> Dark Mode Variants
+			</h2>
+		</div>
+	</div>
+
+	<!-- Dark Theme Comparison Cards -->
+	<div class="row g-4 mb-5">
 		<!-- Soft Dark -->
 		<div class="col-md-4">
-			<div class="card h-100 shadow-sm" data-theme-preview="dark">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="dark">
 				<div class="card-header bg-primary text-white">
 					<h5 class="mb-0">
 						<i class="bi bi-moon"></i> Dark (Soft)
@@ -26,13 +40,13 @@
 				</div>
 				<div class="card-body">
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #1e1e2e; color: #e5e7eb;">
+						<div class="color-preview-box theme-preview-dark-soft-primary">
 							<strong>Primary Background</strong><br>
 							<code>#1e1e2e</code>
 						</div>
 					</div>
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #2a2a3e; color: #e5e7eb;">
+						<div class="color-preview-box theme-preview-dark-soft-secondary">
 							<strong>Secondary Background</strong><br>
 							<code>#2a2a3e</code>
 						</div>
@@ -52,7 +66,7 @@
 
 		<!-- Slate Dark -->
 		<div class="col-md-4">
-			<div class="card h-100 shadow-sm" data-theme-preview="dark-slate">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="dark-slate">
 				<div class="card-header bg-secondary text-white">
 					<h5 class="mb-0">
 						<i class="bi bi-moon-stars"></i> Dark (Slate)
@@ -60,13 +74,13 @@
 				</div>
 				<div class="card-body">
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #1a1d23; color: #e4e6eb;">
+						<div class="color-preview-box theme-preview-dark-slate-primary">
 							<strong>Primary Background</strong><br>
 							<code>#1a1d23</code>
 						</div>
 					</div>
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #242830; color: #e4e6eb;">
+						<div class="color-preview-box theme-preview-dark-slate-secondary">
 							<strong>Secondary Background</strong><br>
 							<code>#242830</code>
 						</div>
@@ -86,21 +100,21 @@
 
 		<!-- Midnight Blue -->
 		<div class="col-md-4">
-			<div class="card h-100 shadow-sm" data-theme-preview="dark-midnight">
-				<div class="card-header text-white" style="background-color: #0d1117;">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="dark-midnight">
+				<div class="card-header card-header-dark-midnight">
 					<h5 class="mb-0">
 						<i class="bi bi-moon-fill"></i> Dark (Midnight)
 					</h5>
 				</div>
 				<div class="card-body">
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #0d1117; color: #c9d1d9;">
+						<div class="color-preview-box theme-preview-dark-midnight-primary">
 							<strong>Primary Background</strong><br>
 							<code>#0d1117</code>
 						</div>
 					</div>
 					<div class="mb-3">
-						<div class="p-3 rounded" style="background-color: #161b22; color: #c9d1d9;">
+						<div class="color-preview-box theme-preview-dark-midnight-secondary">
 							<strong>Secondary Background</strong><br>
 							<code>#161b22</code>
 						</div>
@@ -119,12 +133,128 @@
 		</div>
 	</div>
 
-	<!-- Feature Comparison -->
+	<!-- Light Mode Variants Section -->
+	<div class="row mb-4 mt-5">
+		<div class="col-12">
+			<h2 class="mb-4">
+				<i class="bi bi-sun-fill"></i> Light Mode Variants
+			</h2>
+		</div>
+	</div>
+
+	<!-- Light Theme Comparison Cards -->
+	<div class="row g-4 mb-5">
+		<!-- Soft Light -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="light">
+				<div class="card-header card-header-light-soft">
+					<h5 class="mb-0">
+						<i class="bi bi-sun"></i> Light (Soft)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-soft-primary border">
+							<strong>Primary Background</strong><br>
+							<code>#f8f9fa</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-soft-secondary border">
+							<strong>Secondary Background</strong><br>
+							<code>#ffffff</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>Default light experience</li>
+						<li>Balanced brightness</li>
+						<li>All-day use</li>
+					</ul>
+					<button class="btn btn-light border w-100" onclick="applyTheme('light')">
+						<i class="bi bi-check-circle"></i> Apply Soft Light
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Crisp Light -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="light-crisp">
+				<div class="card-header card-header-light-crisp">
+					<h5 class="mb-0">
+						<i class="bi bi-brightness-high"></i> Light (Crisp)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-crisp-primary border">
+							<strong>Primary Background</strong><br>
+							<code>#f5f7fa</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-crisp-secondary border">
+							<strong>Secondary Background</strong><br>
+							<code>#ffffff</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>Professional settings</li>
+						<li>High contrast preference</li>
+						<li>Clarity and focus</li>
+					</ul>
+					<button class="btn btn-outline-primary w-100" onclick="applyTheme('light-crisp')">
+						<i class="bi bi-check-circle"></i> Apply Crisp Light
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Warm Light -->
+		<div class="col-md-4">
+			<div class="card h-100 shadow-sm theme-card-preview" data-theme-preview="light-warm">
+				<div class="card-header card-header-light-warm">
+					<h5 class="mb-0">
+						<i class="bi bi-sunrise"></i> Light (Warm)
+					</h5>
+				</div>
+				<div class="card-body">
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-warm-primary border">
+							<strong>Primary Background</strong><br>
+							<code>#faf8f5</code>
+						</div>
+					</div>
+					<div class="mb-3">
+						<div class="color-preview-box theme-preview-light-warm-secondary border">
+							<strong>Secondary Background</strong><br>
+							<code>#ffffff</code>
+						</div>
+					</div>
+					<h6 class="mt-3">Best For:</h6>
+					<ul class="small">
+						<li>Comfortable reading</li>
+						<li>Warmer tone preference</li>
+						<li>Cozy atmosphere</li>
+					</ul>
+					<button class="btn btn-warning w-100" onclick="applyTheme('light-warm')">
+						<i class="bi bi-check-circle"></i> Apply Warm Light
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Feature Comparison - Dark Themes -->
 	<div class="row mt-5">
 		<div class="col-12">
-			<h2 class="mb-4">Feature Comparison</h2>
+			<h3 class="mb-4">
+				<i class="bi bi-moon-stars"></i> Dark Mode Feature Comparison
+			</h3>
 			<div class="table-responsive">
-				<table class="table table-bordered">
+				<table class="table table-bordered feature-comparison-table">
 					<thead>
 						<tr>
 							<th>Feature</th>
@@ -164,17 +294,130 @@
 		</div>
 	</div>
 
+	<!-- Feature Comparison - Light Themes -->
+	<div class="row mt-5">
+		<div class="col-12">
+			<h3 class="mb-4">
+				<i class="bi bi-sun-fill"></i> Light Mode Feature Comparison
+			</h3>
+			<div class="table-responsive">
+				<table class="table table-bordered feature-comparison-table">
+					<thead>
+						<tr>
+							<th>Feature</th>
+							<th>Soft Light</th>
+							<th>Crisp Light</th>
+							<th>Warm Light</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><strong>Brightness</strong></td>
+							<td><span class="badge bg-primary">Medium</span></td>
+							<td><span class="badge bg-success">High</span></td>
+							<td><span class="badge bg-warning text-dark">Medium-Low</span></td>
+						</tr>
+						<tr>
+							<td><strong>Contrast</strong></td>
+							<td><span class="badge bg-primary">Medium</span></td>
+							<td><span class="badge bg-success">High</span></td>
+							<td><span class="badge bg-primary">Medium</span></td>
+						</tr>
+						<tr>
+							<td><strong>Eye Comfort</strong></td>
+							<td><span class="badge bg-success">Excellent</span></td>
+							<td><span class="badge bg-primary">Good</span></td>
+							<td><span class="badge bg-success">Excellent</span></td>
+						</tr>
+						<tr>
+							<td><strong>Best Time of Day</strong></td>
+							<td>All Day</td>
+							<td>Daylight</td>
+							<td>Morning / Evening</td>
+						</tr>
+						<tr>
+							<td><strong>Color Temperature</strong></td>
+							<td>Neutral</td>
+							<td>Cool</td>
+							<td>Warm</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
 	<!-- Tips -->
 	<div class="row mt-5">
 		<div class="col-12">
-			<div class="alert alert-info">
+			<div class="alert alert-info theme-tips-alert">
 				<h5><i class="bi bi-lightbulb"></i> Tips for Choosing</h5>
-				<ul class="mb-0">
+
+				<h6 class="mt-3">Dark Mode Variants:</h6>
+				<ul>
 					<li><strong>Soft Dark:</strong> Recommended for most users. Reduces eye strain during extended use.</li>
 					<li><strong>Slate Dark:</strong> Best for professional settings or if you prefer a neutral gray tone.</li>
 					<li><strong>Midnight Dark:</strong> Choose if you work in very dark environments or prefer maximum contrast.</li>
-					<li><strong>Auto Mode:</strong> Let the system decide based on your OS settings.</li>
 				</ul>
+
+				<h6 class="mt-3">Light Mode Variants:</h6>
+				<ul>
+					<li><strong>Soft Light:</strong> Default light theme, balanced and suitable for most situations.</li>
+					<li><strong>Crisp Light:</strong> Professional and sharp, ideal for bright environments and detailed work.</li>
+					<li><strong>Warm Light:</strong> Easy on the eyes with a warmer tone, perfect for long reading sessions.</li>
+				</ul>
+
+				<p class="mb-0 mt-3">
+					<strong>Auto Mode:</strong> Let the system decide based on your OS settings and time of day.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Quick Theme Switcher -->
+	<div class="row mt-5">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="mb-0">
+						<i class="bi bi-toggle-on"></i> Quick Theme Switcher
+					</h5>
+				</div>
+				<div class="card-body">
+					<p class="text-muted mb-3">Try different themes instantly to find your favorite:</p>
+					<div class="row g-2">
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-primary w-100 quick-theme-btn" onclick="applyTheme('light')">
+								<i class="bi bi-sun"></i> Soft Light
+							</button>
+						</div>
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-primary w-100 quick-theme-btn" onclick="applyTheme('light-crisp')">
+								<i class="bi bi-brightness-high"></i> Crisp Light
+							</button>
+						</div>
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-warning w-100 quick-theme-btn" onclick="applyTheme('light-warm')">
+								<i class="bi bi-sunrise"></i> Warm Light
+							</button>
+						</div>
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-secondary w-100 quick-theme-btn" onclick="applyTheme('dark')">
+								<i class="bi bi-moon"></i> Soft Dark
+							</button>
+						</div>
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-secondary w-100 quick-theme-btn" onclick="applyTheme('dark-slate')">
+								<i class="bi bi-moon-stars"></i> Slate Dark
+							</button>
+						</div>
+						<div class="col-md-2 col-6">
+							<button class="btn btn-outline-dark w-100 quick-theme-btn" onclick="applyTheme('dark-midnight')">
+								<i class="bi bi-moon-fill"></i> Midnight
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -182,24 +425,24 @@
 
 @section Scripts {
 	<script>
-			  function applyTheme(theme) {
+		function applyTheme(theme) {
 			if (window.ThemeManager) {
-		  window.ThemeManager.setTheme(theme);
+				window.ThemeManager.setTheme(theme);
 
-		 // Show success toast
-		if (typeof Swal !== 'undefined') {
-		  Swal.fire({
-			  toast: true,
-			 position: 'top-end',
-			 icon: 'success',
-		  title: 'Theme applied!',
-		  text: 'Your preference has been saved.',
-				showConfirmButton: false,
-		   timer: 2000,
-		 timerProgressBar: true
-					 });
-					  }
+				// Show success toast
+				if (typeof Swal !== 'undefined') {
+					Swal.fire({
+						toast: true,
+						position: 'top-end',
+						icon: 'success',
+						title: 'Theme applied!',
+						text: `${theme} theme has been activated.`,
+						showConfirmButton: false,
+						timer: 2000,
+						timerProgressBar: true
+					});
 				}
-			  }
+			}
+		}
 	</script>
 }

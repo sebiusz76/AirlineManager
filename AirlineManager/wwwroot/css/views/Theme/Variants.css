@@ -1,0 +1,146 @@
+/* ============================================
+   THEME/VARIANTS VIEW STYLES
+ ============================================ */
+
+/* Dark Mode Preview Colors */
+.theme-preview-dark-soft-primary {
+    background-color: #1e1e2e;
+    color: #e5e7eb;
+}
+
+.theme-preview-dark-soft-secondary {
+    background-color: #2a2a3e;
+    color: #e5e7eb;
+}
+
+.theme-preview-dark-slate-primary {
+    background-color: #1a1d23;
+    color: #e4e6eb;
+}
+
+.theme-preview-dark-slate-secondary {
+    background-color: #242830;
+    color: #e4e6eb;
+}
+
+.theme-preview-dark-midnight-primary {
+    background-color: #0d1117;
+    color: #c9d1d9;
+}
+
+.theme-preview-dark-midnight-secondary {
+    background-color: #161b22;
+    color: #c9d1d9;
+}
+
+/* Light Mode Preview Colors */
+.theme-preview-light-soft-primary {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.theme-preview-light-soft-secondary {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+.theme-preview-light-crisp-primary {
+    background-color: #f5f7fa;
+    color: #1a202c;
+}
+
+.theme-preview-light-crisp-secondary {
+    background-color: #ffffff;
+    color: #1a202c;
+}
+
+.theme-preview-light-warm-primary {
+    background-color: #faf8f5;
+    color: #2d3748;
+}
+
+.theme-preview-light-warm-secondary {
+    background-color: #ffffff;
+    color: #2d3748;
+}
+
+/* Card Header Colors */
+.card-header-dark-midnight {
+    background-color: #0d1117;
+    color: #ffffff;
+}
+
+.card-header-light-soft {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.card-header-light-crisp {
+    background-color: #f5f7fa;
+    color: #1a202c;
+}
+
+.card-header-light-warm {
+    background-color: #faf8f5;
+    color: #2d3748;
+}
+
+/* Theme Preview Cards */
+.theme-card-preview {
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+    .theme-card-preview:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+/* Color Preview Boxes */
+.color-preview-box {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+}
+
+    .color-preview-box code {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+    }
+
+/* Quick Switcher Buttons */
+.quick-theme-btn {
+    transition: var(--transition-normal);
+}
+
+    .quick-theme-btn:hover {
+        transform: translateY(-2px);
+    }
+
+/* Feature Comparison Tables */
+.feature-comparison-table {
+    font-size: var(--font-size-sm);
+}
+
+    .feature-comparison-table th {
+        font-weight: 600;
+        background-color: var(--bs-table-bg);
+    }
+
+/* Tips Alert Customization */
+.theme-tips-alert h6 {
+    color: inherit;
+    font-weight: 600;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .quick-theme-btn {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-sm);
+    }
+
+    .color-preview-box {
+        padding: var(--spacing-sm);
+    }
+}
