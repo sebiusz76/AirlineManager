@@ -4,8 +4,8 @@
 
 .theme-option {
     cursor: pointer;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s ease;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: var(--transition-fast);
 }
 
     .theme-option:hover {
@@ -15,11 +15,11 @@
     .theme-option.active {
         background-color: rgba(30, 60, 114, 0.1);
         font-weight: 600;
-        border-left: 3px solid #1e3c72;
+        border-left: 3px solid var(--color-primary-dark);
     }
 
     .theme-option small {
-        font-size: 0.75rem;
+        font-size: var(--font-size-xs);
         opacity: 0.8;
     }
 
@@ -31,20 +31,20 @@
 /* Theme select styling */
 #themeSelect {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-all);
     border-color: rgba(0, 0, 0, 0.15);
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
     font-weight: 500;
 }
 
     #themeSelect:hover {
-        border-color: #1e3c72;
+        border-color: var(--color-primary-dark);
         box-shadow: 0 2px 8px rgba(30, 60, 114, 0.1);
         transform: translateY(-1px);
     }
 
     #themeSelect:focus {
-        border-color: #1e3c72;
+        border-color: var(--color-primary-dark);
         box-shadow: 0 0 0 0.25rem rgba(30, 60, 114, 0.25);
         transform: translateY(0);
     }
@@ -55,33 +55,29 @@
 
     #themeSelect option {
         padding: 8px;
-        font-size: 0.9rem;
+        font-size: var(--font-size-sm);
     }
 
     #themeSelect optgroup {
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: var(--font-size-sm);
         color: #6c757d;
         padding: 4px 0;
     }
 
 /* Animate theme select on change */
 @keyframes selectPulse {
-    0% {
+    0%, 100% {
         transform: scale(1);
     }
 
     50% {
         transform: scale(1.02);
     }
-
-    100% {
-        transform: scale(1);
-    }
 }
 
 #themeSelect.theme-changing {
-    animation: selectPulse 0.3s ease;
+    animation: selectPulse var(--transition-normal);
 }
 
 /* Dark theme adjustments */
@@ -132,7 +128,7 @@
 }
 
 #currentThemeBadge {
-    transition: all 0.3s ease;
+    transition: var(--transition-all);
     font-weight: 600;
 }
 
@@ -140,16 +136,17 @@
         transform: scale(1.05);
     }
 
+/* User avatars */
 .user-avatar {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius-pill);
+    background: var(--gradient-purple);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
@@ -157,23 +154,24 @@
 .user-avatar-large {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius-pill);
+    background: var(--gradient-purple);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
     color: white;
     border: 3px solid #f0f0f0;
 }
 
+/* Navigation buttons */
 .btn-nav-register,
 .btn-nav-login {
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    border-radius: var(--radius-md);
+    transition: var(--transition-all);
     font-weight: 500;
-    padding: 0.5rem 1rem !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -193,17 +191,17 @@
 
 .btn-nav-login {
     background-color: rgba(255, 255, 255, 0.9);
-    color: #1e3c72 !important;
+    color: var(--color-primary-dark) !important;
     font-weight: 600;
 }
 
     .btn-nav-login:hover {
         background-color: white;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-md);
     }
 
-/* Wyrównanie przycisków w navbar */
+/* Navbar nav items alignment */
 .navbar-nav .nav-item {
     display: flex;
     align-items: center;
@@ -217,7 +215,7 @@
 }
 
     .dropdown-menu-custom .dropdown-item {
-        padding: 0.6rem 1rem;
+        padding: 0.6rem var(--spacing-md);
     }
 
         .dropdown-menu-custom .dropdown-item i {

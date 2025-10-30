@@ -1,0 +1,70 @@
+/* ============================================
+   SHARED AUTH STYLES (Login, Register, etc.)
+ Common styles for all authentication pages
+ ============================================ */
+
+/* Auth container with purple gradient */
+.auth-container {
+    min-height: 100vh;
+    background: var(--gradient-purple);
+    display: flex;
+    align-items: center;
+    margin: -1rem -15px -60px;
+    padding-bottom: 60px;
+}
+
+/* Auth card with animation */
+.auth-card {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    animation: fadeInUp var(--transition-slow);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Auth header with primary gradient */
+.auth-header-gradient {
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.auth-header-icon {
+    font-size: 3.5rem;
+}
+
+/* Submit button with primary gradient */
+.btn-gradient-primary {
+    background: var(--gradient-primary);
+}
+
+/* Form control focus state */
+.auth-container .form-control:focus {
+    border-color: var(--color-primary-main);
+    box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+}
+
+.auth-container .form-check-input:checked {
+    background-color: var(--color-primary-main);
+    border-color: var(--color-primary-main);
+}
+
+/* Button hover effect */
+.auth-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Alert styling */
+.auth-container .alert {
+    border-radius: var(--radius-md);
+}

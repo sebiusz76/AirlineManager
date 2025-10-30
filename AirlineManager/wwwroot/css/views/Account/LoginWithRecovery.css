@@ -1,42 +1,15 @@
 /* ============================================
    ACCOUNT/LOGIN WITH RECOVERY VIEW STYLES
+   Recovery-specific styles (common auth styles in auth-shared.css)
  ============================================ */
 
-.auth-container {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    margin: -1rem -15px -60px;
-    padding-bottom: 60px;
-}
+/* Import shared auth styles */
+@import url('auth-shared.css');
 
-.auth-card {
-    border-radius: 15px;
-    overflow: hidden;
-    animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Auth header with warning/recovery gradient */
+/* Auth header with warning/recovery gradient - Recovery-specific */
 .auth-header-warning-gradient {
     background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
-    border-radius: 15px 15px 0 0;
-}
-
-.auth-header-icon {
-    font-size: 3.5rem;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 /* Recovery code input specific styles */
@@ -50,27 +23,18 @@
 
     .recovery-code-input:focus {
         background-color: #fff;
-        animation: pulse 0.3s ease-in-out;
+        animation: pulse var(--transition-normal);
     }
 
-/* Submit button warning gradient */
+/* Submit button warning gradient - Recovery-specific */
 .btn-gradient-warning {
     background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
 }
 
-.form-control:focus {
+/* Recovery-specific focus color */
+.auth-container .recovery-code-input:focus {
     border-color: #f0ad4e;
     box-shadow: 0 0 0 0.25rem rgba(240, 173, 78, 0.25);
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.alert {
-    border-radius: 10px;
 }
 
 @keyframes pulse {

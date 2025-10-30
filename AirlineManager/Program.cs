@@ -296,12 +296,14 @@ try
             }
         }
 
-        // Create a SuperAdmin if it doesn't exist (you'll want to secure this in production)
-        var adminEmail = "admin@example.com";
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser == null)
+        // Check if any SuperAdmin exists in the system
+        var existingSuperAdmins = await userManager.GetUsersInRoleAsync("SuperAdmin");
+
+        // Only create default SuperAdmin if no SuperAdmin exists
+        if (!existingSuperAdmins.Any())
         {
-            adminUser = new ApplicationUser
+            var adminEmail = "admin@example.com";
+            var adminUser = new ApplicationUser
             {
                 UserName = adminEmail,
                 Email = adminEmail,
@@ -314,12 +316,16 @@ try
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "SuperAdmin");
-                Log.Information("Created SuperAdmin user: {Email}", adminEmail);
+                Log.Information("Created default SuperAdmin user: {Email}", adminEmail);
             }
             else
             {
-                Log.Error("Failed to create SuperAdmin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                Log.Error("Failed to create default SuperAdmin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
             }
+        }
+        else
+        {
+            Log.Information("SuperAdmin already exists in the system. Skipping default admin creation.");
         }
     }
 

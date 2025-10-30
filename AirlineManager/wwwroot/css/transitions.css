@@ -1,0 +1,50 @@
+/* ============================================
+   GLOBAL TRANSITIONS & ANIMATIONS
+   Centralized transition handling for theme changes
+ ============================================ */
+
+/* Default smooth transitions for common properties */
+body,
+.card,
+.card-header,
+.card-footer,
+.modal-content,
+.modal-header,
+.modal-footer,
+.dropdown-menu,
+.dropdown-item,
+.form-control,
+.form-select,
+.input-group-text,
+.form-check-input,
+.navbar,
+.footer,
+.btn,
+.nav-link,
+.page-link,
+.list-group-item,
+.nav-tabs .nav-link,
+.alert,
+.badge,
+.breadcrumb,
+pre,
+code {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions on theme change to prevent flash */
+html[data-bs-theme-transitioning],
+html[data-bs-theme-transitioning] * {
+    transition: none !important;
+}
+
+/* Reduced motion support - respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
