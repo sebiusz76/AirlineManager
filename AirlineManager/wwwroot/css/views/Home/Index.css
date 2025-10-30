@@ -1,0 +1,121 @@
+/* ============================================
+HOME/INDEX VIEW STYLES
+ ============================================ */
+
+/* Hero section */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section-gradient {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 15s ease-in-out infinite;
+}
+
+.hero-icon {
+    font-size: 15rem;
+    opacity: 0.3;
+}
+
+/* Feature cards */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .hover-lift:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    }
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    transition: transform 0.3s ease;
+}
+
+.feature-icon-size {
+    font-size: 2rem;
+}
+
+.card:hover .feature-icon {
+    transform: rotate(10deg) scale(1.1);
+}
+
+/* Stats section */
+.stats-section {
+    border-radius: 15px;
+}
+
+.stat-item {
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+    .stat-item:hover {
+        transform: scale(1.1);
+    }
+
+/* MSFS Integration section */
+.msfs-bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 400px;
+}
+
+.msfs-icon {
+    font-size: 12rem;
+    opacity: 0.2;
+}
+
+/* CTA section */
+.cta-gradient {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-3 {
+        font-size: 2.5rem;
+    }
+
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    .hero-icon {
+        font-size: 8rem;
+    }
+
+    .msfs-icon {
+        font-size: 6rem;
+    }
+}

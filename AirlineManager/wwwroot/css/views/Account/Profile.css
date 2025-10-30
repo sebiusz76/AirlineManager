@@ -1,0 +1,32 @@
+/* ============================================
+   ACCOUNT/PROFILE VIEW STYLES
+ ============================================ */
+
+/* Profile header card with gradient */
+.profile-header-gradient {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 15px;
+}
+
+/* Hidden antiforgery form */
+.antiforgery-form-hidden {
+    display: none;
+}
+
+/* Recovery codes display */
+.recovery-codes-display {
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+/* 2FA setup area - hidden by default */
+.tfa-setup-area {
+    display: none;
+    margin-top: 12px;
+}
+
+/* QR code container */
+.tfa-qr-container {
+    width: 200px;
+    height: 200px;
+}

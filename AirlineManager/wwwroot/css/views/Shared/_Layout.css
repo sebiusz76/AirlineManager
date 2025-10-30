@@ -1,0 +1,21 @@
+/* ============================================
+   SHARED/_LAYOUT VIEW STYLES
+ ============================================ */
+
+/* Maintenance mode banner */
+.maintenance-alert {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+/* Main navbar gradient background */
+.navbar-gradient-primary {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+/* Navbar brand icon */
+.navbar-brand-icon {
+    font-size: 1.5rem;
+}

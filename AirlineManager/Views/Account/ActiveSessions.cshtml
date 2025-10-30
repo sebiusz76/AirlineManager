@@ -124,7 +124,7 @@
 					<div class="card-footer">
 						@if (!isCurrentSession)
 						{
-							<form asp-action="TerminateSession" method="post" style="display: inline;">
+							<form asp-action="TerminateSession" method="post" class="d-inline">
 								@Html.AntiForgeryToken()
 								<input type="hidden" name="sessionId" value="@session.SessionId" />
 								<button type="submit" class="btn btn-sm btn-outline-danger" 
