@@ -13,7 +13,9 @@
         // Available themes
         themes: {
             auto: { name: 'Auto (System)', icon: 'bi-circle-half', description: 'Follows your system preference' },
-            light: { name: 'Light', icon: 'bi-sun', description: 'Bright and clear for daytime' },
+            light: { name: 'Light (Soft)', icon: 'bi-sun', variant: 'light', description: 'Warm & comfortable' },
+            'light-crisp': { name: 'Light (Crisp)', icon: 'bi-sun-fill', variant: 'light-crisp', description: 'Professional & sharp' },
+            'light-warm': { name: 'Light (Warm)', icon: 'bi-brightness-high', variant: 'light-warm', description: 'Cozy & inviting' },
             dark: { name: 'Dark (Soft)', icon: 'bi-moon', variant: 'dark', description: 'Warm & easy on eyes' },
             'dark-slate': { name: 'Dark (Slate)', icon: 'bi-moon-stars', variant: 'dark-slate', description: 'Professional & neutral' },
             'dark-midnight': { name: 'Dark (Midnight)', icon: 'bi-moon-fill', variant: 'dark-midnight', description: 'Modern tech style' }
@@ -77,10 +79,10 @@
                 if (systemPrefersDark) {
                     htmlElement.setAttribute('data-bs-theme', 'dark');
                 } else {
-                    htmlElement.removeAttribute('data-bs-theme');
+                    htmlElement.setAttribute('data-bs-theme', 'light');
                 }
-            } else if (theme.startsWith('dark-')) {
-                // Apply specific dark variant
+            } else if (theme.startsWith('dark-') || theme.startsWith('light-')) {
+                // Apply specific variant
                 htmlElement.setAttribute('data-bs-theme', theme);
             } else {
                 htmlElement.setAttribute('data-bs-theme', theme);
@@ -105,8 +107,8 @@
             const htmlElement = document.documentElement;
             let currentTheme = htmlElement.getAttribute('data-bs-theme') || 'auto';
 
-            // Normalize dark variants to 'dark' for UI display
-            const displayTheme = currentTheme.startsWith('dark') ? currentTheme : currentTheme;
+            // Normalize theme variants for UI display
+            const displayTheme = currentTheme;
 
             // Update dropdown button icon and label (if exists - for separate theme selector)
             const themeIcon = document.getElementById('themeIcon');
@@ -243,7 +245,7 @@
                     if (e.matches) {
                         htmlElement.setAttribute('data-bs-theme', 'dark');
                     } else {
-                        htmlElement.removeAttribute('data-bs-theme');
+                        htmlElement.setAttribute('data-bs-theme', 'light');
                     }
                     this.updateThemeUI();
                 }
@@ -273,6 +275,8 @@
 
                 switch (theme) {
                     case 'light':
+                    case 'light-crisp':
+                    case 'light-warm':
                         iconHtml = '<i class="bi bi-sun-fill" style="font-size: 2rem; color: #fbbf24;"></i>';
                         break;
                     case 'dark':
@@ -325,144 +329,7 @@
 
     // Cookie consent object
     const CookieConsent = {
-        init: function () {
-            this.checkConsent();
-            this.attachEventListeners();
-        },
-
-        checkConsent: function () {
-            const consent = this.getConsent();
-            const consentDate = localStorage.getItem(COOKIE_CONSENT_DATE_KEY);
-
-            // Check if consent exists and is not expired
-            if (consent === null || this.isConsentExpired(consentDate)) {
-                this.showBanner();
-            } else {
-                this.hideBanner();
-                // Apply consent settings
-                this.applyConsent(consent);
-            }
-        },
-
-        isConsentExpired: function (consentDate) {
-            if (!consentDate) return true;
-
-            const consentTime = new Date(consentDate).getTime();
-            const currentTime = new Date().getTime();
-            const daysDiff = (currentTime - consentTime) / (1000 * 60 * 60 * 24);
-
-            return daysDiff > CONSENT_EXPIRY_DAYS;
-        },
-
-        showBanner: function () {
-            const banner = document.getElementById('cookieConsent');
-            if (banner) {
-                banner.classList.add('show');
-            }
-        },
-
-        hideBanner: function () {
-            const banner = document.getElementById('cookieConsent');
-            if (banner) {
-                banner.classList.remove('show');
-            }
-        },
-
-        acceptAll: function () {
-            const consent = {
-                necessary: true,
-                analytics: true,
-                marketing: true
-            };
-            this.saveConsent(consent);
-            this.applyConsent(consent);
-            this.hideBanner();
-            this.showToast('Cookie preferences saved', 'success');
-        },
-
-        declineAll: function () {
-            const consent = {
-                necessary: true, // Necessary cookies cannot be declined
-                analytics: false,
-                marketing: false
-            };
-            this.saveConsent(consent);
-            this.applyConsent(consent);
-            this.hideBanner();
-            this.showToast('Only necessary cookies will be used', 'info');
-        },
-
-        saveConsent: function (consent) {
-            localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
-            localStorage.setItem(COOKIE_CONSENT_DATE_KEY, new Date().toISOString());
-        },
-
-        getConsent: function () {
-            const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-            return consent ? JSON.parse(consent) : null;
-        },
-
-        applyConsent: function (consent) {
-            // Here you can add logic to enable/disable tracking scripts
-            // based on user consent
-
-            if (consent.analytics) {
-                // Enable Google Analytics or other analytics tools
-                console.log('Analytics cookies enabled');
-                // Example: this.enableGoogleAnalytics();
-            } else {
-                console.log('Analytics cookies disabled');
-            }
-
-            if (consent.marketing) {
-                // Enable marketing/advertising cookies
-                console.log('Marketing cookies enabled');
-            } else {
-                console.log('Marketing cookies disabled');
-            }
-        },
-
-        attachEventListeners: function () {
-            const acceptBtn = document.getElementById('acceptCookies');
-            const declineBtn = document.getElementById('declineCookies');
-
-            if (acceptBtn) {
-                acceptBtn.addEventListener('click', () => this.acceptAll());
-            }
-
-            if (declineBtn) {
-                declineBtn.addEventListener('click', () => this.declineAll());
-            }
-        },
-
-        showToast: function (message, type) {
-            // If SweetAlert2 is available, use it
-            if (typeof Swal !== 'undefined') {
-                const toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-
-                toast.fire({
-                    icon: type || 'info',
-                    title: message
-                });
-            } else {
-                // Fallback to console
-                console.log(`${type}: ${message}`);
-            }
-        },
-
-        // Method to revoke consent (can be called from Privacy page)
-        revokeConsent: function () {
-            localStorage.removeItem(COOKIE_CONSENT_KEY);
-            localStorage.removeItem(COOKIE_CONSENT_DATE_KEY);
-            this.showBanner();
-            this.showToast('Cookie consent revoked. Please set your preferences again.', 'info');
-        }
+        // ...existing code...
     };
 
     // Initialize when DOM is ready
