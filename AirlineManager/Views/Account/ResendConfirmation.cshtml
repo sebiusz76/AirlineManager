@@ -4,44 +4,100 @@
 	ViewData["Title"] = "Resend Confirmation Email";
 }
 
-<div class="row justify-content-center">
-	<div class="col-md-6 col-lg-5">
-		<div class="card shadow-sm mt-5">
-			<div class="card-header bg-primary text-white text-center">
-				<h4><i class="bi bi-envelope"></i> Resend Confirmation Email</h4>
-			</div>
-			<div class="card-body">
-				<p class="text-muted">Enter your email address to receive a new confirmation link.</p>
-				
-				<form asp-action="ResendConfirmation" method="post">
-					@Html.AntiForgeryToken()
-					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@section Styles {
+	<link rel="stylesheet" href="~/css/views/Account/ResendConfirmation.css" asp-append-version="true" />
+}
 
-					<div class="mb-3">
-						<label asp-for="Email" class="form-label"></label>
-						<input asp-for="Email" class="form-control" placeholder="your-email@example.com" autocomplete="email" />
-						<span asp-validation-for="Email" class="text-danger"></span>
+<div class="auth-container">
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-5 col-md-7">
+				<!-- Resend Confirmation Card -->
+				<div class="auth-card card border-0 shadow-lg">
+					<!-- Header with gradient -->
+					<div class="auth-header auth-header-gradient text-white text-center py-4">
+						<div class="mb-3">
+							<i class="bi bi-envelope-arrow-up-fill auth-header-icon"></i>
+						</div>
+						<h2 class="fw-bold mb-2">Resend Confirmation</h2>
+						<p class="mb-0 opacity-75">Get a new activation link</p>
 					</div>
 
-					<div class="d-grid gap-2">
-						<button type="submit" class="btn btn-primary">
-							<i class="bi bi-send"></i> Send Confirmation Email
-						</button>
-						<a asp-action="Login" class="btn btn-outline-secondary">
-							<i class="bi bi-arrow-left"></i> Back to Login
-						</a>
+					<div class="card-body p-4 p-md-5">
+						<!-- Info Alert -->
+						<div class="alert alert-info border-0 rounded-3 mb-4">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-info-circle-fill fs-4 me-3 mt-1"></i>
+								<div>
+									<h6 class="alert-heading mb-2">Need a New Link?</h6>
+									<p class="mb-0 small">
+										Enter your email address and we'll send you a new confirmation link. 
+										Make sure to check your spam folder.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<form asp-action="ResendConfirmation" method="post">
+							@Html.AntiForgeryToken()
+							<div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4"></div>
+
+							<!-- Email Input -->
+							<div class="form-floating mb-4">
+								<input asp-for="Email" class="form-control form-control-lg" placeholder="name@example.com" autocomplete="email" autofocus />
+								<label asp-for="Email">
+									<i class="bi bi-envelope me-2"></i>Email Address
+								</label>
+								<span asp-validation-for="Email" class="text-danger small"></span>
+							</div>
+
+							<!-- Submit Button -->
+							<div class="d-grid gap-2 mb-4">
+								<button type="submit" class="btn btn-lg text-white btn-gradient-primary">
+									<i class="bi bi-send me-2"></i>Send Confirmation Email
+								</button>
+								<a asp-action="Login" class="btn btn-outline-secondary btn-lg">
+									<i class="bi bi-arrow-left me-2"></i>Back to Login
+								</a>
+							</div>
+						</form>
+
+						<!-- Divider -->
+						<div class="position-relative mb-4">
+							<hr class="text-muted" />
+							<span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+								Important Notes
+							</span>
+						</div>
+
+						<!-- Notes Section -->
+						<div class="notes-section">
+							<h6 class="mb-3 fw-semibold">
+								<i class="bi bi-clipboard-check me-2"></i>Please Note:
+							</h6>
+							<ul class="notes-list">
+								<li>
+									<i class="bi bi-check-circle text-primary me-2"></i>
+									<span>Check your spam folder if you don't see the email</span>
+								</li>
+								<li>
+									<i class="bi bi-check-circle text-primary me-2"></i>
+									<span>The confirmation link will expire in <strong>24 hours</strong></span>
+								</li>
+								<li>
+									<i class="bi bi-check-circle text-primary me-2"></i>
+									<span>You can only resend if your email is not already confirmed</span>
+								</li>
+							</ul>
+						</div>
 					</div>
-				</form>
+				</div>
 
-				<hr class="my-4">
-
-				<div class="text-muted small">
-					<p class="mb-1"><strong>Note:</strong></p>
-					<ul class="mb-0">
-						<li>Check your spam folder if you don't see the email</li>
-						<li>The confirmation link will expire in 24 hours</li>
-						<li>You can only resend if your email is not already confirmed</li>
-					</ul>
+				<!-- Back to Home -->
+				<div class="text-center mt-4">
+					<a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">
+						<i class="bi bi-arrow-left me-1"></i>Back to Home
+					</a>
 				</div>
 			</div>
 		</div>

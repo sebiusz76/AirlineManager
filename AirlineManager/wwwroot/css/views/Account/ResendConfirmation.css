@@ -1,0 +1,141 @@
+/* ============================================
+   ACCOUNT/RESEND CONFIRMATION VIEW STYLES
+   Resend-specific styles (common auth styles in auth-shared.css)
+ ============================================ */
+
+/* Import shared auth styles */
+@import url('auth-shared.css');
+
+/* Header icon animation - envelope sending up */
+.auth-header-icon {
+    animation: envelopeSend 1.5s ease-in-out;
+}
+
+@keyframes envelopeSend {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    40% {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 1;
+    }
+
+    60% {
+        transform: translateY(-15px) scale(1.05);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Info Alert Enhancement */
+.alert-info {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-left: 4px solid var(--bs-info);
+}
+
+    .alert-info .bi-info-circle-fill {
+        color: var(--bs-info);
+    }
+
+/* Notes Section */
+.notes-section {
+    background-color: rgba(var(--bs-primary-rgb), 0.03);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+    .notes-section h6 {
+        color: var(--bs-body-color);
+    }
+
+/* Notes List */
+.notes-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+    .notes-list li {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+        .notes-list li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .notes-list li i {
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+
+        .notes-list li span {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--bs-body-color);
+        }
+
+/* Form input focus enhancement */
+.form-floating > .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button hover enhancements */
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notes-section {
+        padding: 1rem;
+    }
+
+    .notes-list li {
+        padding: 0.4rem 0;
+    }
+
+        .notes-list li span {
+            font-size: 0.85rem;
+        }
+
+    .alert .fs-4 {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Dark Theme Support */
+[data-bs-theme="dark"] .notes-section,
+[data-bs-theme="dark-slate"] .notes-section,
+[data-bs-theme="dark-midnight"] .notes-section {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+[data-bs-theme="dark"] .alert-info,
+[data-bs-theme="dark-slate"] .alert-info,
+[data-bs-theme="dark-midnight"] .alert-info {
+    background-color: rgba(13, 110, 253, 0.15);
+}
+
+[data-bs-theme="dark"] .notes-list li,
+[data-bs-theme="dark-slate"] .notes-list li,
+[data-bs-theme="dark-midnight"] .notes-list li {
+    border-bottom-color: var(--bs-border-color);
+}
+
+/* Divider span background fix for dark theme */
+[data-bs-theme="dark"] .position-relative span,
+[data-bs-theme="dark-slate"] .position-relative span,
+[data-bs-theme="dark-midnight"] .position-relative span {
+    background-color: var(--bs-body-bg) !important;
+}
