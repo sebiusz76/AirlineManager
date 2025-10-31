@@ -3,14 +3,13 @@
  Common styles for all authentication pages
  ============================================ */
 
-/* Auth container with purple gradient */
+/* Auth container without background - uses page default */
 .auth-container {
     min-height: 100vh;
-    background: var(--gradient-purple);
     display: flex;
     align-items: center;
-    margin: -1rem -15px -60px;
-    padding-bottom: 60px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 /* Auth card with animation */
@@ -18,6 +17,7 @@
     border-radius: var(--radius-xl);
     overflow: hidden;
     animation: fadeInUp var(--transition-slow);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes fadeInUp {
@@ -36,21 +36,74 @@
 .auth-header-gradient {
     background: var(--gradient-primary);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    position: relative;
+    overflow: hidden;
 }
+
+    /* Add subtle gradient overlay to header */
+    .auth-header-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+        pointer-events: none;
+    }
 
 .auth-header-icon {
     font-size: 3.5rem;
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 /* Submit button with primary gradient */
 .btn-gradient-primary {
     background: var(--gradient-primary);
+    border: none;
+    transition: var(--transition-all);
+    position: relative;
+    overflow: hidden;
 }
+
+    .btn-gradient-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-gradient-primary:active::before {
+        width: 300px;
+        height: 300px;
+    }
 
 /* Form control focus state */
 .auth-container .form-control:focus {
     border-color: var(--color-primary-main);
     box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+    transform: translateY(-1px);
+    transition: var(--transition-fast);
+}
+
+.auth-container .form-floating > .form-control:focus ~ label {
+    color: var(--color-primary-main);
 }
 
 .auth-container .form-check-input:checked {
@@ -68,3 +121,13 @@
 .auth-container .alert {
     border-radius: var(--radius-md);
 }
+
+/* Link styling */
+.auth-container a {
+    transition: var(--transition-fast);
+}
+
+    .auth-container a:hover {
+        transform: translateX(3px);
+        display: inline-block;
+    }
