@@ -1,0 +1,192 @@
+/* ============================================
+   SHARED/ERROR VIEW STYLES
+   Custom error pages styling
+ ============================================ */
+
+/* Error Container */
+.error-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Error Card */
+.error-card {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: var(--transition-slow);
+}
+
+    .error-card.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* Error Header */
+.error-header {
+    background: var(--gradient-primary);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+    .error-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+        pointer-events: none;
+    }
+
+/* Error Icon */
+.error-icon-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+.error-icon {
+    font-size: 5rem;
+    animation: iconPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* Error Code */
+.error-code {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+}
+
+/* Error Title */
+.error-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+/* Help Cards */
+.help-card {
+    background-color: var(--bs-light);
+    border: 1px solid var(--bs-border-color);
+    transition: var(--transition-fast);
+    cursor: pointer;
+}
+
+    .help-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        background-color: var(--bs-white);
+        border-color: var(--color-primary-main);
+    }
+
+    .help-card i {
+        transition: var(--transition-fast);
+    }
+
+    .help-card:hover i {
+        transform: scale(1.1);
+    }
+
+/* Action Buttons */
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.125rem;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-all);
+}
+
+    .btn-lg:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+
+/* Alert Customization */
+.alert-light {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+    border-color: rgba(var(--bs-primary-rgb), 0.15);
+}
+
+/* Debug Info */
+.alert-warning code {
+    background-color: rgba(0,0,0,0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .error-icon {
+        font-size: 3.5rem;
+    }
+
+    .error-code {
+        font-size: 3rem;
+    }
+
+    .error-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.625rem 1.5rem;
+    }
+
+    .help-card {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Dark Theme Support */
+[data-bs-theme="dark"] .help-card,
+[data-bs-theme="dark-slate"] .help-card,
+[data-bs-theme="dark-midnight"] .help-card {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-border-color);
+}
+
+    [data-bs-theme="dark"] .help-card:hover,
+    [data-bs-theme="dark-slate"] .help-card:hover,
+    [data-bs-theme="dark-midnight"] .help-card:hover {
+        background-color: var(--bs-body-bg);
+        border-color: var(--color-primary-main);
+    }
+
+[data-bs-theme="dark"] .alert-light,
+[data-bs-theme="dark-slate"] .alert-light,
+[data-bs-theme="dark-midnight"] .alert-light {
+    background-color: rgba(var(--bs-primary-rgb), 0.15);
+    border-color: rgba(var(--bs-primary-rgb), 0.25);
+    color: var(--bs-body-color);
+}
+
+/* Divider Span Background Fix for Dark Theme */
+[data-bs-theme="dark"] .position-relative span,
+[data-bs-theme="dark-slate"] .position-relative span,
+[data-bs-theme="dark-midnight"] .position-relative span {
+    background-color: var(--bs-body-bg) !important;
+}
