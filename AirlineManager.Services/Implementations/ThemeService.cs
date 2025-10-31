@@ -11,7 +11,15 @@ namespace AirlineManager.Services.Implementations
         private readonly IConfigurationService _configService;
         private readonly ILogger<ThemeService> _logger;
 
-        private static readonly string[] ValidThemes = { "auto", "light", "dark", "dark-soft", "dark-slate", "dark-midnight" };
+        private static readonly string[] ValidThemes = {
+            "auto",
+            "light",
+            "light-crisp",
+            "light-warm",
+            "dark",
+            "dark-slate",
+            "dark-midnight"
+        };
 
         public ThemeService(
               ApplicationDbContext context,

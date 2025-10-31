@@ -45,42 +45,6 @@
 					</a>
 				</li>
 				<li><hr class="dropdown-divider"></li>
-
-				<!-- Theme Selection Section -->
-				<li class="dropdown-header d-flex justify-content-between align-items-center">
-					<small class="text-muted"><i class="bi bi-palette me-1"></i>APPEARANCE</small>
-					<span class="badge bg-primary theme-badge-small" id="currentThemeBadge"
-						  data-bs-toggle="tooltip" data-bs-placement="left" title="Current theme">
-						Auto
-					</span>
-				</li>
-				<li class="px-3 py-2">
-					<select class="form-select form-select-sm" id="themeSelect" aria-label="Select theme">
-						<optgroup label="System">
-							<option value="auto" data-icon="bi-circle-half">🔄 Auto (System)</option>
-						</optgroup>
-						<optgroup label="Light Themes">
-							<option value="light" data-icon="bi-sun">☀️ Light (Soft)</option>
-							<option value="light-crisp" data-icon="bi-sun-fill">🌞 Light (Crisp)</option>
-							<option value="light-warm" data-icon="bi-brightness-high">🌅 Light (Warm)</option>
-						</optgroup>
-						<optgroup label="Dark Themes">
-							<option value="dark" data-icon="bi-moon">🌙 Dark (Soft)</option>
-							<option value="dark-slate" data-icon="bi-moon-stars">🌟 Dark (Slate)</option>
-							<option value="dark-midnight" data-icon="bi-moon-fill">🌚 Dark (Midnight)</option>
-						</optgroup>
-					</select>
-					<small class="text-muted d-block mt-1" id="themeDescription">
-						<i class="bi bi-info-circle"></i> <span id="themeDescriptionText">Choose your preferred theme</span>
-					</small>
-				</li>
-				<li class="px-3 pb-2">
-					<a class="btn btn-sm btn-outline-primary w-100" asp-area="" asp-controller="Theme" asp-action="Variants">
-						<i class="bi bi-palette me-1"></i>Compare All Themes
-					</a>
-				</li>
-
-				<li><hr class="dropdown-divider"></li>
 				<li>
 					<form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
 						<button type="submit" class="dropdown-item text-danger">

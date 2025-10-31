@@ -71,5 +71,5 @@ jobs:
       - name: Image pushed successfully
         run: |
           echo "✅ Docker images pushed successfully!"
-          echo "📦 Version tag: registry.hub.sebiusz.ovh/airlinemanager:${VERSION}"
+          # echo "📦 Version tag: registry.hub.sebiusz.ovh/airlinemanager:${VERSION}"
           echo "🏷️  Latest tag: registry.hub.sebiusz.ovh/airlinemanager:latest"
