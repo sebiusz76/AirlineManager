@@ -234,9 +234,12 @@ try
     }
     else
     {
-        app.UseExceptionHandler("/Home/Error");
+        app.UseExceptionHandler("/Error");
         app.UseHsts();
     }
+
+    // Add custom status code pages
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
     // Add Serilog request logging
     app.UseSerilogRequestLogging(options =>
