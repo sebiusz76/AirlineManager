@@ -1,4 +1,4 @@
-@model AirlineManager.Models.ViewModel.ProfileCompositeViewModel
+﻿@model AirlineManager.Models.ViewModel.ProfileCompositeViewModel
 @inject Microsoft.AspNetCore.Identity.UserManager<AirlineManager.Models.Domain.ApplicationUser> UserManager
 
 @{
@@ -210,8 +210,18 @@
 			</button>
 		</li>
 		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="appearance-tab" data-bs-toggle="tab" data-bs-target="#appearance" type="button" role="tab">
+				<i class="bi bi-palette me-2"></i>Appearance
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
 			<button class="nav-link" id="twofactor-tab" data-bs-toggle="tab" data-bs-target="#twofactor" type="button" role="tab">
 				<i class="bi bi-shield-lock me-2"></i>Two-Factor
+			</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+				<i class="bi bi-shield-check me-2"></i>Security
 			</button>
 		</li>
 		<li class="nav-item" role="presentation">
@@ -344,11 +354,151 @@
 			</div>
 		</div>
 
+		<div class="tab-pane fade" id="appearance" role="tabpanel">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4">
+					<h5 class="card-title mb-4">
+						<i class="bi bi-palette text-primary me-2"></i>Theme & Appearance
+					</h5>
+					
+					<div class="mb-4">
+						<label for="profileThemeSelect" class="form-label fw-bold">Select Theme</label>
+						<select class="form-control-modern" id="profileThemeSelect" aria-label="Select theme">
+							<optgroup label="System">
+								<option value="auto">🔄 Auto (System)</option>
+							</optgroup>
+							<optgroup label="Light Themes">
+								<option value="light">☀️ Light (Soft)</option>
+								<option value="light-crisp">🌞 Light (Crisp)</option>
+								<option value="light-warm">🌅 Light (Warm)</option>
+							</optgroup>
+							<optgroup label="Dark Themes">
+								<option value="dark">🌙 Dark (Soft)</option>
+								<option value="dark-slate">🌟 Dark (Slate)</option>
+								<option value="dark-midnight">🌚 Dark (Midnight)</option>
+							</optgroup>
+						</select>
+						<small class="text-muted d-block mt-2" id="profileThemeDescription">
+							<i class="bi bi-info-circle"></i> <span id="profileThemeDescriptionText">Choose your preferred theme</span>
+						</small>
+					</div>
+
+					<div class="alert-modern alert-gradient-info">
+						<i class="bi bi-info-circle-fill"></i>
+						<div>
+							<strong>Current Theme:</strong> <span id="currentThemeDisplay" class="badge-modern badge-gradient-primary">Auto</span>
+							<br><small class="mt-1 d-block">Your theme preference is automatically saved and will be applied across all your devices.</small>
+						</div>
+					</div>
+
+					<div class="mt-4">
+						<a asp-area="" asp-controller="Theme" asp-action="Variants" class="btn-modern btn-gradient-primary" target="_blank">
+							<i class="bi bi-palette me-2"></i>Compare All Themes
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="security" role="tabpanel">
+			<div class="row g-4">
+				<div class="col-md-6">
+					<div class="card-modern hover-lift h-100">
+						<div class="card-body-modern">
+							<div class="d-flex align-items-center mb-3">
+								<div class="feature-icon bg-success bg-gradient text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+									<i class="bi bi-display" style="font-size: 1.5rem;"></i>
+								</div>
+								<div>
+									<h5 class="mb-0">Active Sessions</h5>
+									<small class="text-muted">Manage your devices</small>
+								</div>
+							</div>
+							<p class="text-muted mb-3">
+View and manage all devices currently logged into your account. You can revoke access from any device at any time.
+							</p>
+							<a asp-action="ActiveSessions" class="btn-modern btn-gradient-success w-100">
+								<i class="bi bi-display me-2"></i>View Active Sessions
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="card-modern hover-lift h-100">
+						<div class="card-body-modern">
+							<div class="d-flex align-items-center mb-3">
+								<div class="feature-icon bg-info bg-gradient text-white rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+									<i class="bi bi-clock-history" style="font-size: 1.5rem;"></i>
+								</div>
+								<div>
+									<h5 class="mb-0">Login History</h5>
+									<small class="text-muted">Track your account activity</small>
+								</div>
+							</div>
+							<p class="text-muted mb-3">
+								Review recent login activity including timestamps, locations, and devices used to access your account.
+							</p>
+							<a asp-action="LoginHistory" class="btn-modern btn-gradient-info w-100">
+								<i class="bi bi-clock-history me-2"></i>View Login History
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card-modern mt-4">
+				<div class="card-body-modern">
+					<h5 class="mb-3">
+						<i class="bi bi-shield-check text-primary me-2"></i>Security Recommendations
+					</h5>
+					<div class="row g-3">
+						<div class="col-md-6">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+								<div>
+									<strong>Use Strong Passwords</strong>
+									<p class="small text-muted mb-0">Include uppercase, lowercase, numbers, and special characters</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+								<div>
+									<strong>Enable Two-Factor Authentication</strong>
+									<p class="small text-muted mb-0">Add an extra layer of security to your account</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+								<div>
+									<strong>Review Active Sessions Regularly</strong>
+									<p class="small text-muted mb-0">Check for any unauthorized access to your account</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+								<div>
+									<strong>Monitor Login History</strong>
+									<p class="small text-muted mb-0">Stay informed about account access patterns</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="tab-pane fade" id="twofactor" role="tabpanel">
 			<div class="card shadow-sm border-0">
 				<div class="card-body p-4">
 					<h5 class="card-title mb-4">
-						<i class="bi bi-shield-check text-primary me-2"></i>Two-Factor Authentication
+						<i class="bi bi-shield-lock text-primary me-2"></i>Two-Factor Authentication
 					</h5>
 					@{
 						var twoFactor = Model.TwoFactor;
@@ -469,6 +619,69 @@
 	<partial name="_ValidationScriptsPartial" />
 	<script src="~/lib/qrcodejs/qrcode.min.js"></script>	
 	<script src="~/js/views/Account/Profile.js" asp-append-version="true"></script>
+	
+	<!-- Theme selection in Profile page -->
+	<script>
+		// Sync profile theme select with global theme manager
+		document.addEventListener('DOMContentLoaded', function() {
+			const profileThemeSelect = document.getElementById('profileThemeSelect');
+			const currentThemeDisplay = document.getElementById('currentThemeDisplay');
+			const profileThemeDescText = document.getElementById('profileThemeDescriptionText');
+
+			if (profileThemeSelect && window.ThemeManager) {
+				// Set initial value
+				const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'auto';
+				profileThemeSelect.value = currentTheme;
+				
+				// Update display
+				if (window.ThemeManager.themes[currentTheme]) {
+					currentThemeDisplay.textContent = window.ThemeManager.themes[currentTheme].name;
+					profileThemeDescText.textContent = window.ThemeManager.themes[currentTheme].description;
+				}
+
+				// Handle theme change
+				profileThemeSelect.addEventListener('change', function(e) {
+					const selectedTheme = e.target.value;
+					
+// Add animation
+					profileThemeSelect.classList.add('theme-changing');
+					setTimeout(() => {
+						profileThemeSelect.classList.remove('theme-changing');
+					}, 300);
+
+					// Update theme via global ThemeManager
+					window.ThemeManager.setTheme(selectedTheme, true);
+
+					// Update display
+					if (window.ThemeManager.themes[selectedTheme]) {
+						currentThemeDisplay.textContent = window.ThemeManager.themes[selectedTheme].name;
+						profileThemeDescText.textContent = window.ThemeManager.themes[selectedTheme].description;
+					}
+				});
+
+				// Listen for theme changes from other sources (e.g., user menu)
+				const observer = new MutationObserver(function(mutations) {
+					mutations.forEach(function(mutation) {
+						if (mutation.attributeName === 'data-bs-theme') {
+							const newTheme = document.documentElement.getAttribute('data-bs-theme') || 'auto';
+							if (profileThemeSelect.value !== newTheme) {
+								profileThemeSelect.value = newTheme;
+								if (window.ThemeManager.themes[newTheme]) {
+									currentThemeDisplay.textContent = window.ThemeManager.themes[newTheme].name;
+									profileThemeDescText.textContent = window.ThemeManager.themes[newTheme].description;
+								}
+							}
+						}
+					});
+				});
+
+				observer.observe(document.documentElement, {
+					attributes: true,
+					attributeFilter: ['data-bs-theme']
+				});
+			}
+		});
+	</script>
 	
 	<!-- Active tab data attribute for server-side tab switching -->
 	@if (TempData["ActiveTab"] != null)
