@@ -1,0 +1,160 @@
+/* ============================================
+   ACCOUNT/REGISTER CONFIRMATION VIEW STYLES
+   Confirmation-specific styles (common auth styles in auth-shared.css)
+ ============================================ */
+
+/* Import shared auth styles */
+@import url('auth-shared.css');
+
+/* Success icon animation */
+.auth-header-icon {
+    animation: successBounce 1s ease-in-out;
+}
+
+@keyframes successBounce {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    25% {
+        transform: translateY(-15px) scale(1.1);
+    }
+
+    50% {
+        transform: translateY(0) scale(1);
+    }
+
+    75% {
+        transform: translateY(-8px) scale(1.05);
+    }
+}
+
+/* Steps Container */
+.steps-container {
+    position: relative;
+    padding-left: 1rem;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+    .step-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 1.125rem;
+        top: 2.5rem;
+        width: 2px;
+        height: calc(100% - 1rem);
+        background: linear-gradient(to bottom, var(--color-primary-main) 0%, var(--bs-border-color) 100%);
+        opacity: 0.3;
+    }
+
+.step-number {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.875rem;
+    margin-right: 1rem;
+    box-shadow: 0 2px 8px rgba(42, 82, 152, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.step-content {
+    flex: 1;
+    padding-top: 0.25rem;
+}
+
+    .step-content h6 {
+        color: var(--bs-body-color);
+        font-size: 0.95rem;
+    }
+
+/* Success Alert Enhancement */
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    border-left: 4px solid var(--bs-success);
+}
+
+    .alert-success .bi-check-circle-fill {
+        color: var(--bs-success);
+    }
+
+/* Warning Alert Enhancement */
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid var(--bs-warning);
+}
+
+    .alert-warning .bi-exclamation-triangle-fill {
+        color: var(--bs-warning);
+    }
+
+/* Help Section */
+.help-section {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    background-color: rgba(var(--bs-primary-rgb), 0.03);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .step-item {
+        margin-bottom: 1.25rem;
+    }
+
+    .step-number {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+
+    .step-content h6 {
+        font-size: 0.875rem;
+    }
+
+    .alert .fs-3 {
+        font-size: 1.5rem !important;
+    }
+
+    .alert .fs-4 {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Dark Theme Support */
+[data-bs-theme="dark"] .help-section,
+[data-bs-theme="dark-slate"] .help-section,
+[data-bs-theme="dark-midnight"] .help-section {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+[data-bs-theme="dark"] .step-item:not(:last-child)::after,
+[data-bs-theme="dark-slate"] .step-item:not(:last-child)::after,
+[data-bs-theme="dark-midnight"] .step-item:not(:last-child)::after {
+    background: linear-gradient(to bottom, var(--color-primary-main) 0%, var(--bs-border-color) 100%);
+    opacity: 0.5;
+}
+
+[data-bs-theme="dark"] .alert-success,
+[data-bs-theme="dark-slate"] .alert-success,
+[data-bs-theme="dark-midnight"] .alert-success {
+    background-color: rgba(25, 135, 84, 0.15);
+}
+
+[data-bs-theme="dark"] .alert-warning,
+[data-bs-theme="dark-slate"] .alert-warning,
+[data-bs-theme="dark-midnight"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.15);
+}

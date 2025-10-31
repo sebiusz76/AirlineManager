@@ -1,41 +1,129 @@
 ﻿@{
-	ViewData["Title"] = "Registration Pending";
+	ViewData["Title"] = "Registration Successful";
 }
 
-<div class="row justify-content-center">
-	<div class="col-md-8 col-lg-6">
-		<div class="card shadow-sm mt-5">
-			<div class="card-header bg-success text-white text-center">
-				<h4><i class="bi bi-envelope-check"></i> Registration Successful!</h4>
-			</div>
-			<div class="card-body">
-				<div class="alert alert-info">
-					<h5><i class="bi bi-info-circle"></i> Please Confirm Your Email</h5>
-					<p class="mb-0">We've sent a confirmation email to your inbox. Please click the confirmation link in the email to activate your account.</p>
+@section Styles {
+	<link rel="stylesheet" href="~/css/views/Account/RegisterConfirmation.css" asp-append-version="true" />
+}
+
+<div class="auth-container">
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-6 col-md-8">
+				<!-- Confirmation Card -->
+				<div class="auth-card card border-0 shadow-lg">
+					<!-- Header with gradient -->
+					<div class="auth-header auth-header-gradient text-white text-center py-4">
+						<div class="mb-3">
+							<i class="bi bi-envelope-check-fill auth-header-icon"></i>
+						</div>
+						<h2 class="fw-bold mb-2">Registration Successful!</h2>
+						<p class="mb-0 opacity-75">Check your email to activate your account</p>
+					</div>
+
+					<div class="card-body p-4 p-md-5">
+						<!-- Success Alert -->
+						<div class="alert alert-success border-0 rounded-3 mb-4">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-check-circle-fill fs-3 me-3 mt-1"></i>
+								<div>
+									<h5 class="alert-heading mb-2">
+										<i class="bi bi-info-circle me-2"></i>Please Confirm Your Email
+									</h5>
+									<p class="mb-0">
+										We've sent a confirmation email to your inbox. Please click the confirmation link to activate your account.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Steps -->
+						<div class="mb-4">
+							<h6 class="mb-3 fw-bold">
+								<i class="bi bi-list-ol me-2"></i>What's Next?
+							</h6>
+							<div class="steps-container">
+								<div class="step-item">
+									<div class="step-number">1</div>
+									<div class="step-content">
+										<h6 class="mb-1">Check Your Email</h6>
+										<p class="text-muted small mb-0">
+											A confirmation email has been sent to the address you provided.
+										</p>
+									</div>
+								</div>
+								<div class="step-item">
+									<div class="step-number">2</div>
+									<div class="step-content">
+										<h6 class="mb-1">Click the Confirmation Link</h6>
+										<p class="text-muted small mb-0">
+											Open the email and click the "Confirm Email Address" button.
+										</p>
+									</div>
+								</div>
+								<div class="step-item">
+									<div class="step-number">3</div>
+									<div class="step-content">
+										<h6 class="mb-1">Log In</h6>
+										<p class="text-muted small mb-0">
+											After confirming your email, you'll be able to log in to your account.
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Warning Alert -->
+						<div class="alert alert-warning border-0 rounded-3 mb-4">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-exclamation-triangle-fill fs-4 me-3 mt-1"></i>
+								<div>
+									<h6 class="alert-heading mb-2">
+										<i class="bi bi-clock-history me-2"></i>Important
+									</h6>
+									<p class="mb-0 small">
+										The confirmation link will expire in <strong>24 hours</strong>. 
+										If you don't receive the email, check your spam folder or contact support.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Action Button -->
+						<div class="d-grid gap-2 mb-4">
+							<a asp-action="Login" class="btn btn-lg text-white btn-gradient-primary">
+								<i class="bi bi-box-arrow-in-right me-2"></i>Go to Login
+							</a>
+						</div>
+
+						<!-- Divider -->
+						<div class="position-relative mb-4">
+							<hr class="text-muted" />
+							<span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+								Need Help?
+							</span>
+						</div>
+
+						<!-- Help Section -->
+						<div class="help-section text-center">
+							<p class="text-muted mb-2">
+								<strong>Didn't receive the email?</strong>
+							</p>
+							<p class="small text-muted mb-3">
+								Check your spam folder, or resend the confirmation email.
+							</p>
+							<a asp-action="ResendConfirmation" class="btn btn-outline-secondary">
+								<i class="bi bi-envelope me-2"></i>Resend Confirmation Email
+							</a>
+						</div>
+					</div>
 				</div>
 
-				<h6>What's next?</h6>
-				<ol>
-					<li><strong>Check your email</strong> - A confirmation email has been sent to the address you provided.</li>
-					<li><strong>Click the confirmation link</strong> - Open the email and click the "Confirm Email Address" button.</li>
-					<li><strong>Log in</strong> - After confirming your email, you'll be able to log in to your account.</li>
-				</ol>
-
-				<div class="alert alert-warning mt-3">
-					<strong>⚠️ Important:</strong> The confirmation link will expire in 24 hours. If you don't receive the email, check your spam folder or contact support.
-				</div>
-
-				<div class="mt-4 text-center">
-					<a asp-action="Login" class="btn btn-primary">
-						<i class="bi bi-box-arrow-in-right"></i> Go to Login
+				<!-- Back to Home -->
+				<div class="text-center mt-4">
+					<a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">
+						<i class="bi bi-arrow-left me-1"></i>Back to Home
 					</a>
-				</div>
-
-				<hr class="my-4">
-
-				<div class="text-muted small">
-					<p class="mb-0"><strong>Didn't receive the email?</strong></p>
-					<p>Check your spam folder, or <a asp-action="ResendConfirmation">click here to resend the confirmation email</a>.</p>
 				</div>
 			</div>
 		</div>
