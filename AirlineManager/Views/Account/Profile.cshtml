@@ -156,43 +156,6 @@
 		</div>
 	</div>
 
-	<!-- Two-Factor Authentication Modal -->
-	<div class="modal fade" id="twoFactorModal" tabindex="-1" aria-labelledby="twoFactorModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header bg-primary text-white">
-					<h5 class="modal-title" id="twoFactorModalLabel">
-						<i class="bi bi-shield-lock"></i> Two-Factor Authentication
-					</h5>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<p class="text-muted">To enhance account security, you can enable two-factor authentication (2FA). This requires a verification code from your authenticator app in addition to your password when signing in.</p>
-					<div class="mb-3">
-						<label for="tfCode" class="form-label fw-bold">Verification Code</label>
-						<input id="tfCode" class="form-control" autocomplete="one-time-code" />
-					</div>
-					<div class="tfa-setup-area" style="display:none;">
-						<div id="tfQr" class="tfa-qr-container"></div>
-						<div class="mt-2">
-							<strong>Authentication key</strong>
-						</div>
-						<pre id="tfKey" class="p-2 bg-light" style="max-width:320px; white-space:pre-wrap;"></pre>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button id="tfEnable" class="btn btn-success">
-						<i class="bi bi-check-circle me-2"></i>Enable
-					</button>
-					<button id="tfDisable" class="btn btn-danger">
-						<i class="bi bi-x-circle me-2"></i>Disable 2FA
-					</button>
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<ul class="nav nav-tabs nav-tabs-custom" id="profileTabs" role="tablist">
 		<li class="nav-item" role="presentation">
 			<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
@@ -507,66 +470,139 @@ View and manage all devices currently logged into your account. You can revoke a
 					}
 					@if (is2faEnabled)
 					{
-						<div class="alert alert-success">
-							<i class="bi bi-check-circle-fill"></i> <strong>Two-factor authentication is enabled.</strong>
+						<div class="alert alert-success rounded-3">
+							<div class="d-flex align-items-center">
+								<i class="bi bi-check-circle-fill me-3" style="font-size: 1.5rem;"></i>
+								<div>
+									<strong>Two-factor authentication is enabled</strong>
+									<p class="mb-0 mt-1 small">Your account is protected with two-factor authentication using an authenticator app.</p>
+								</div>
+							</div>
 						</div>
-						<p>Your account is protected with two-factor authentication using an authenticator app.</p>
 
 						@if (recoveryCodesLeft != null)
 						{
 							var codesLeft = recoveryCodesLeft.Value;
 							if (codesLeft == 0)
 							{
-								<div class="alert alert-danger">
-									<strong>Warning!</strong> You have no recovery codes left. Generate new recovery codes immediately to avoid being locked out.
+								<div class="alert alert-danger rounded-3">
+									<div class="d-flex align-items-start">
+										<i class="bi bi-exclamation-triangle-fill me-3 mt-1" style="font-size: 1.5rem;"></i>
+										<div>
+											<strong>Warning! No recovery codes remaining</strong>
+											<p class="mb-0 mt-1 small">You have no recovery codes left. Generate new recovery codes immediately to avoid being locked out of your account.</p>
+										</div>
+									</div>
 								</div>
 							}
 							else if (codesLeft <= 3)
 							{
-								<div class="alert alert-warning">
-									<strong>Warning!</strong> You have only <strong>@codesLeft</strong> recovery code(s) left. Consider generating new recovery codes.
+								<div class="alert alert-warning rounded-3">
+									<div class="d-flex align-items-start">
+										<i class="bi bi-exclamation-triangle me-3 mt-1" style="font-size: 1.5rem;"></i>
+										<div>
+											<strong>Warning! Low recovery codes</strong>
+											<p class="mb-0 mt-1 small">You have only <strong>@codesLeft</strong> recovery code(s) left. Consider generating new recovery codes soon.</p>
+										</div>
+									</div>
 								</div>
 							}
 							else
 							{
-								<div class="alert alert-info">
-									You have <strong>@codesLeft</strong> recovery code(s) remaining.
+								<div class="alert alert-info rounded-3">
+									<div class="d-flex align-items-center">
+										<i class="bi bi-info-circle-fill me-3" style="font-size: 1.5rem;"></i>
+										<div>
+											<strong>Recovery codes available</strong>
+											<p class="mb-0 mt-1 small">You have <strong>@codesLeft</strong> recovery code(s) remaining. Keep them in a safe place.</p>
+										</div>
+									</div>
 								</div>
 							}
 						}
 
-						<div class="mb-3">
+						<div class="d-grid gap-2 d-md-flex mt-4">
 							<button id="tfResetRecovery" class="btn btn-warning">
 								<i class="bi bi-arrow-clockwise me-2"></i>Reset Recovery Codes
 							</button>
-							<button id="tfDisable" class="btn btn-danger ms-2">
+							<button id="tfDisable" class="btn btn-danger">
 								<i class="bi bi-x-circle me-2"></i>Disable 2FA
 							</button>
 						</div>
 					}
 					else
 					{
-						<p>Configure your authenticator app (TOTP) to enable two-factor authentication.</p>
-						<div class="mb-2">
-							<button id="tfConfigure" class="btn btn-primary">
-								<i class="bi bi-shield-plus me-2"></i>Configure Authenticator
-							</button>
+						<div class="alert alert-warning rounded-3 mb-4">
+							<div class="d-flex align-items-start">
+								<i class="bi bi-shield-exclamation me-3 mt-1" style="font-size: 1.5rem;"></i>
+								<div>
+									<strong>Two-factor authentication is not enabled</strong>
+									<p class="mb-0 mt-2 small">
+										Add an extra layer of security to your account by enabling two-factor authentication. 
+										You'll need an authenticator app like Google Authenticator, Microsoft Authenticator, or Authy.
+									</p>
+								</div>
+							</div>
 						</div>
+
+						<div class="mb-4">
+							<h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>How it works</h6>
+							<ol class="small text-muted">
+								<li class="mb-2">Click "Configure Authenticator" to generate a QR code</li>
+								<li class="mb-2">Scan the QR code with your authenticator app</li>
+								<li class="mb-2">Enter the 6-digit code from your app to verify</li>
+								<li class="mb-2">Save your recovery codes in a secure location</li>
+							</ol>
+						</div>
+
+						<button id="tfConfigure" class="btn btn-primary btn-lg">
+							<i class="bi bi-shield-plus me-2"></i>Configure Authenticator
+						</button>
 					}
-					<div id="tfArea" class="tfa-setup-area" style="display:none; margin-top:12px;">
-						<div id="tfQr" class="tfa-qr-container"></div>
-						<div class="mt-2"><strong>Authentication key</strong></div>
-						<pre id="tfKey" class="p-2 bg-light" style="max-width:320px; white-space:pre-wrap;"></pre>
-						<div class="mt-2">
-							<label for="tfCode">Verification code</label>
-							<input id="tfCode" class="form-control" autocomplete="one-time-code" />
+					
+					<!-- 2FA Setup Area (hidden by default) -->
+					<div id="tfArea" class="tfa-setup-area" style="display:none; margin-top:24px;">
+						<hr class="my-4" />
+						
+						<div class="row">
+							<div class="col-md-6 mb-4">
+								<h6 class="fw-bold mb-3">
+									<i class="bi bi-qr-code me-2"></i>Step 1: Scan QR Code
+								</h6>
+								<div id="tfQr" class="tfa-qr-container"></div>
+								<p class="small text-muted mt-2 text-center">
+									Scan this QR code with your authenticator app
+								</p>
+							</div>
+							
+							<div class="col-md-6 mb-4">
+								<h6 class="fw-bold mb-3">
+									<i class="bi bi-key-fill me-2"></i>Manual Entry Key
+								</h6>
+								<div id="tfKey" class="mb-3"></div>
+								
+								<h6 class="fw-bold mb-3 mt-4">
+									<i class="bi bi-shield-check me-2"></i>Step 2: Verify Code
+								</h6>
+								<label for="tfCode" class="form-label">Enter the 6-digit code from your app</label>
+								<input id="tfCode" 
+									   type="text" 
+									   class="form-control form-control-lg text-center" 
+									   placeholder="000000"
+									   autocomplete="one-time-code"
+									   inputmode="numeric"
+									   maxlength="6"
+									   pattern="[0-9]{6}"
+									   style="font-family: monospace; font-size: 1.5rem; letter-spacing: 0.5rem;" />
+								<div id="tfFeedback" class="alert alert-danger mt-2" style="display:none;"></div>
+								
+								<div class="d-grid gap-2 mt-3">
+									<button id="tfEnable" class="btn btn-success btn-lg">
+										<i class="bi bi-check-circle me-2"></i>Enable 2FA
+									</button>
+								</div>
+							</div>
 						</div>
-						<div class="mt-2">
-							<button id="tfEnable" class="btn btn-success">
-								<i class="bi bi-check-circle me-2"></i>Enable
-							</button>
-						</div>
-						<div id="tfFeedback" class="mt-2 text-danger" style="display:none;"></div>
 					</div>
 				</div>
 			</div>
@@ -617,7 +653,11 @@ View and manage all devices currently logged into your account. You can revoke a
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
-	<script src="~/lib/qrcodejs/qrcode.min.js"></script>	
+	
+	<!-- QRCode.js library for 2FA QR code generation -->
+	<script src="~/lib/qrcodejs/qrcode.min.js"></script>
+	
+	<!-- Profile page scripts -->
 	<script src="~/js/views/Account/Profile.js" asp-append-version="true"></script>
 	
 	<!-- Theme selection in Profile page -->
@@ -643,7 +683,7 @@ View and manage all devices currently logged into your account. You can revoke a
 				profileThemeSelect.addEventListener('change', function(e) {
 					const selectedTheme = e.target.value;
 					
-// Add animation
+					// Add animation
 					profileThemeSelect.classList.add('theme-changing');
 					setTimeout(() => {
 						profileThemeSelect.classList.remove('theme-changing');

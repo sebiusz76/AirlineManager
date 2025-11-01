@@ -32,21 +32,29 @@
 						}
 
 						<div class="alert alert-info rounded-3 mb-4">
-							<i class="bi bi-info-circle me-2"></i>
-							<strong>Recovery Code Required</strong>
-							<p class="mb-0 mt-2 small">
-								Enter one of the recovery codes you saved when you enabled two-factor authentication.
-								Each code can only be used once.
-							</p>
+							<div class="d-flex align-items-start">
+								<i class="bi bi-info-circle-fill me-3 mt-1" style="font-size: 1.5rem;"></i>
+								<div>
+									<strong class="d-block mb-2">Recovery Code Required</strong>
+									<p class="mb-0 small">
+										Enter one of the recovery codes you saved when you enabled two-factor authentication.
+										Each recovery code can only be used once.
+									</p>
+								</div>
+							</div>
 						</div>
 
 						<div class="alert alert-warning rounded-3 mb-4">
-							<i class="bi bi-shield-exclamation me-2"></i>
-							<strong>Security Notice</strong>
-							<p class="mb-0 mt-2 small">
-								After using a recovery code, you should generate new codes as soon as possible.
-								You can do this in your profile settings after logging in.
-							</p>
+							<div class="d-flex align-items-start">
+								<i class="bi bi-shield-exclamation me-3 mt-1" style="font-size: 1.5rem;"></i>
+								<div>
+									<strong class="d-block mb-2">Security Notice</strong>
+									<p class="mb-0 small">
+										After using a recovery code, you should generate new codes as soon as possible.
+										You can do this in your profile settings after logging in.
+									</p>
+								</div>
+							</div>
 						</div>
 
 						<form asp-action="LoginWithRecovery" method="post">
@@ -55,8 +63,9 @@
 
 							<!-- Recovery Code Input -->
 							<div class="mb-4">
-								<label asp-for="RecoveryCode" class="form-label fw-bold">
-									<i class="bi bi-key-fill me-2"></i>Recovery Code
+								<label asp-for="RecoveryCode" class="form-label fw-bold d-flex align-items-center">
+									<i class="bi bi-key-fill me-2 text-warning"></i>
+									<span>Recovery Code</span>
 								</label>
 								<input asp-for="RecoveryCode"
 									   class="form-control form-control-lg text-center recovery-code-input"
@@ -64,10 +73,16 @@
 									   autocomplete="off"
 									   autofocus />
 								<span asp-validation-for="RecoveryCode" class="text-danger small"></span>
-								<small class="text-muted d-block mt-2">
-									<i class="bi bi-info-circle me-1"></i>
-									Recovery codes are case-insensitive and may contain dashes
-								</small>
+								<div class="mt-2">
+									<small class="text-muted d-block">
+										<i class="bi bi-info-circle me-1"></i>
+										Recovery codes are case-insensitive and may contain dashes or spaces
+									</small>
+									<small class="text-muted d-block mt-1">
+										<i class="bi bi-shield-check me-1"></i>
+										Find your codes in a secure location where you saved them
+									</small>
+								</div>
 							</div>
 
 							<input type="hidden" asp-for="ReturnUrl" />
@@ -90,15 +105,20 @@
 
 							<!-- Back to Authenticator Link -->
 							<div class="text-center">
+								<div class="mb-3">
+									<i class="bi bi-smartphone text-primary" style="font-size: 2rem;"></i>
+								</div>
 								<p class="text-muted mb-2">
-									<i class="bi bi-smartphone me-1"></i>
-									Have access to your authenticator app?
+									<strong>Have access to your authenticator app?</strong>
+								</p>
+								<p class="text-muted small mb-3">
+									If you've regained access to your device, use your authenticator code instead
 								</p>
 								<a asp-action="LoginWith2fa"
 								   asp-route-returnUrl="@Model.ReturnUrl"
 								   asp-route-userId="@Model.UserId"
-								   class="text-decoration-none fw-bold">
-									<i class="bi bi-arrow-left me-1"></i>Back to Authenticator Code
+								   class="btn btn-outline-primary">
+									<i class="bi bi-arrow-left me-2"></i>Back to Authenticator Code
 								</a>
 							</div>
 						</form>
@@ -107,7 +127,7 @@
 
 				<!-- Back to Login -->
 				<div class="text-center mt-4">
-					<a asp-action="Login" class="text-decoration-none text-white opacity-75">
+					<a asp-action="Login" class="text-decoration-none text-muted">
 						<i class="bi bi-arrow-left me-1"></i>Back to Login
 					</a>
 				</div>
@@ -119,19 +139,65 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script>
-		// Auto-format recovery code (uppercase, remove spaces)
-		document.querySelector('input[name="RecoveryCode"]')?.addEventListener('input', function(e) {
-			// Convert to uppercase and remove spaces
-			let value = e.target.value.toUpperCase().replace(/\s/g, '');
-			e.target.value = value;
-		});
+		// Enhanced recovery code input handling
+		(function() {
+			const recoveryInput = document.querySelector('input[name="RecoveryCode"]');
+			if (!recoveryInput) return;
 
-		// Paste handler to clean up pasted recovery codes
-		document.querySelector('input[name="RecoveryCode"]')?.addEventListener('paste', function(e) {
-			setTimeout(() => {
-				let value = e.target.value.toUpperCase().replace(/\s/g, '');
+			// Auto-format recovery code (uppercase, preserve dashes)
+			recoveryInput.addEventListener('input', function(e) {
+				// Convert to uppercase and trim
+				let value = e.target.value.toUpperCase().trim();
 				e.target.value = value;
-			}, 10);
-		});
+
+				// Visual feedback when code looks valid (contains alphanumeric)
+				if (value.length >= 8 && /^[A-Z0-9-]+$/.test(value)) {
+					e.target.classList.add('is-valid');
+					e.target.classList.remove('is-invalid');
+				} else if (value.length > 0) {
+					e.target.classList.remove('is-valid');
+					e.target.classList.add('is-invalid');
+				} else {
+					e.target.classList.remove('is-valid', 'is-invalid');
+				}
+			});
+
+			// Paste handler to clean up pasted recovery codes
+			recoveryInput.addEventListener('paste', function(e) {
+				setTimeout(() => {
+					let value = e.target.value.toUpperCase().trim();
+					// Remove multiple spaces
+					value = value.replace(/\s+/g, ' ');
+					e.target.value = value;
+
+					// Trigger validation
+					if (value.length >= 8 && /^[A-Z0-9-]+$/.test(value)) {
+						e.target.classList.add('is-valid');
+						e.target.classList.remove('is-invalid');
+					}
+				}, 10);
+			});
+
+			// Focus effect - select all text
+			recoveryInput.addEventListener('focus', function() {
+				this.select();
+			});
+
+			// Prevent special characters except dash and space
+			recoveryInput.addEventListener('keypress', function(e) {
+				const char = e.key;
+				// Allow: alphanumeric, dash, space, backspace, delete, tab
+				if (!/[a-zA-Z0-9\s-]/.test(char) && 
+					!['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+					e.preventDefault();
+				}
+			});
+
+			// Helper text animation
+			const helperTexts = recoveryInput.parentElement.querySelectorAll('small');
+			helperTexts.forEach((text, index) => {
+				text.style.animation = `slideInDown 0.5s ease-out ${0.1 * (index + 1)}s both`;
+			});
+		})();
 	</script>
 }

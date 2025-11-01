@@ -8,41 +8,286 @@
 
 /* Auth header with warning/recovery gradient - Recovery-specific */
 .auth-header-warning-gradient {
-    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 50%, #d58512 100%);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add animated overlay to warning header */
+.auth-header-warning-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* Life preserver icon animation */
+.auth-header-warning-gradient .auth-header-icon {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+    animation: lifePreserverFloat 3s ease-in-out infinite;
+}
+
+@keyframes lifePreserverFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+ transform: translateY(-12px) rotate(10deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+  }
+    75% {
+    transform: translateY(-12px) rotate(-10deg);
+    }
 }
 
 /* Recovery code input specific styles */
 .recovery-code-input {
-    font-size: 1.2rem;
-    letter-spacing: 0.2rem;
-    font-family: monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.3rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
     text-transform: uppercase;
-    background-color: #fff9f0;
+    padding: 1.25rem;
+    text-align: center;
+    background: linear-gradient(145deg, #fff9f0, #ffffff);
+    border: 2px solid #f0ad4e;
+    transition: all 0.3s ease;
 }
 
-    .recovery-code-input:focus {
-        background-color: #fff;
-        animation: pulse var(--transition-normal);
+.recovery-code-input:focus {
+    font-size: 1.7rem;
+    letter-spacing: 0.4rem;
+    background: linear-gradient(145deg, #ffffff, #fff9f0);
+    border-color: #ec971f;
+    box-shadow: 0 0 20px rgba(240, 173, 78, 0.4), 0 0 0 0.25rem rgba(240, 173, 78, 0.2);
+    animation: recoveryPulseFocus 2s ease-in-out infinite;
+}
+
+/* Enhanced pulse animation for recovery code input */
+@keyframes recoveryPulseFocus {
+    0%, 100% {
+        transform: scale(1);
+     box-shadow: 0 0 20px rgba(240, 173, 78, 0.4), 0 0 0 0.25rem rgba(240, 173, 78, 0.2);
+  }
+    50% {
+     transform: scale(1.01);
+        box-shadow: 0 0 30px rgba(240, 173, 78, 0.5), 0 0 0 0.35rem rgba(240, 173, 78, 0.25);
     }
+}
+
+.recovery-code-input::placeholder {
+    font-size: 1.3rem;
+    letter-spacing: 0.2rem;
+    opacity: 0.4;
+}
 
 /* Submit button warning gradient - Recovery-specific */
 .btn-gradient-warning {
-    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 50%, #d58512 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(240, 173, 78, 0.4);
+    font-weight: 600;
+ letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Recovery-specific focus color */
-.auth-container .recovery-code-input:focus {
-    border-color: #f0ad4e;
-    box-shadow: 0 0 0 0.25rem rgba(240, 173, 78, 0.25);
+/* Ripple effect for warning button */
+.btn-gradient-warning::before {
+    content: '';
+    position: absolute;
+top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
+.btn-gradient-warning:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-gradient-warning:hover {
+    box-shadow: 0 6px 20px rgba(240, 173, 78, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Enhanced alert styles for Recovery page */
+.auth-container .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+border-left: 4px solid #d58512;
+    border-radius: var(--radius-lg);
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+      opacity: 0;
+   transform: translateY(-20px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+.auth-container .alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-left: 4px solid #0c5460;
+    border-radius: var(--radius-lg);
+    animation: slideInDown 0.5s ease-out 0.1s both;
+}
+
+/* Card hover effect */
+.auth-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* Link hover effects */
+.auth-container a {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.auth-container a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 0.3s ease;
+}
+
+.auth-container a:hover::after {
+    width: 100%;
+}
+
+/* Icon emphasis in alerts */
+.alert i {
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+/* Enhanced divider styling */
+.auth-container hr {
+    opacity: 0.1;
+}
+
+.auth-container .position-relative span {
+    font-weight: 500;
+}
+
+/* Button loading state */
+.btn-gradient-warning:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    animation: pulseDisabled 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDisabled {
+    0%, 100% {
+   opacity: 0.7;
+  }
     50% {
-        transform: scale(1.02);
+        opacity: 0.5;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+    .recovery-code-input {
+        font-size: 1.2rem;
+        letter-spacing: 0.2rem;
+  padding: 1rem;
+ }
+    
+ .recovery-code-input:focus {
+        font-size: 1.4rem;
+        letter-spacing: 0.25rem;
+    }
+    
+    .auth-header-icon {
+        font-size: 2.5rem;
+    }
+    
+    .alert {
+        font-size: 0.9rem;
+    }
+}
+
+/* Dark mode support */
+[data-bs-theme="dark"] .recovery-code-input,
+[data-bs-theme="dark-slate"] .recovery-code-input,
+[data-bs-theme="dark-midnight"] .recovery-code-input {
+    background: linear-gradient(145deg, #3a2f1a, #2d2416);
+    border-color: #d58512;
+    color: #ffeaa7;
+}
+
+[data-bs-theme="dark"] .recovery-code-input:focus,
+[data-bs-theme="dark-slate"] .recovery-code-input:focus,
+[data-bs-theme="dark-midnight"] .recovery-code-input:focus {
+    background: linear-gradient(145deg, #2d2416, #3a2f1a);
+    border-color: #f0ad4e;
+    box-shadow: 0 0 20px rgba(240, 173, 78, 0.5), 0 0 0 0.25rem rgba(240, 173, 78, 0.25);
+}
+
+[data-bs-theme="dark"] .recovery-code-input::placeholder,
+[data-bs-theme="dark-slate"] .recovery-code-input::placeholder,
+[data-bs-theme="dark-midnight"] .recovery-code-input::placeholder {
+    color: #a08040;
+}
+
+/* Security badge animation */
+.alert-warning i {
+    animation: shieldPulse 2s ease-in-out infinite;
+}
+
+@keyframes shieldPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Success state (for future use) */
+.recovery-success {
+    animation: recoverySuccess 0.6s ease-out;
+}
+
+@keyframes recoverySuccess {
+    0% {
+      transform: scale(1);
+   opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+      opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+ opacity: 1;
     }
 }
