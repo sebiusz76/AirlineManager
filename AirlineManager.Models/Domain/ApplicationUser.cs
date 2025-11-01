@@ -30,5 +30,8 @@ namespace AirlineManager.Models.Domain
         // Navigation Properties
         // One-to-Many: User has many login history entries
         public virtual ICollection<UserLoginHistory> LoginHistories { get; set; } = new List<UserLoginHistory>();
+
+        // One-to-Many: User has many active sessions
+        public virtual ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
     }
 }

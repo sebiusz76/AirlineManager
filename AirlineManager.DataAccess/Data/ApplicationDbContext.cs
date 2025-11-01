@@ -116,6 +116,12 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.SessionId).IsUnique();
                 entity.HasIndex(e => e.IsActive);
                 entity.HasIndex(e => e.ExpiresAt);
+
+                // Configure One-to-Many relationship: ApplicationUser -> UserSession
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.Sessions)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed default SMTP configuration
