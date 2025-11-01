@@ -33,5 +33,11 @@ namespace AirlineManager.Models.Domain
 
         // One-to-Many: User has many active sessions
         public virtual ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
+
+        // One-to-Many: User has many audit log entries (as the subject of the audit)
+        public virtual ICollection<UserAuditLog> AuditLogs { get; set; } = new List<UserAuditLog>();
+
+        // One-to-Many: User has many audit log entries (as the modifier who made changes)
+        public virtual ICollection<UserAuditLog> ModifiedAuditLogs { get; set; } = new List<UserAuditLog>();
     }
 }

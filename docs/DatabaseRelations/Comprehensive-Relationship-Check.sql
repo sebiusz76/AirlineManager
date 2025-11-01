@@ -30,7 +30,7 @@ SELECT
     OBJECT_NAME(fk.referenced_object_id) AS [Parent Table],
     COL_NAME(fkc.referenced_object_id, fkc.referenced_column_id) AS [Parent Column],
     fk.delete_referential_action_desc AS [On Delete],
- fk.update_referential_action_desc AS [On Update],
+    fk.update_referential_action_desc AS [On Update],
     CASE WHEN fk.is_disabled = 0 THEN 'Enabled' ELSE 'Disabled' END AS [Status]
 FROM 
     sys.foreign_keys AS fk
@@ -38,11 +38,11 @@ INNER JOIN
     sys.foreign_key_columns AS fkc ON fk.object_id = fkc.constraint_object_id
 WHERE
     OBJECT_NAME(fk.parent_object_id) IN (
-        'UserLoginHistories',
+      'UserLoginHistories',
         'UserSessions',
-        'UserAuditLogs',
-    'AspNetUserRoles'
-    )
+   'UserAuditLogs',
+        'AspNetUserRoles'
+  )
 ORDER BY 
     OBJECT_NAME(fk.parent_object_id),
     fk.name;
@@ -73,18 +73,19 @@ BEGIN
     PRINT '✅ FK_UserLoginHistories_AspNetUsers_UserId: EXISTS';
     
     SELECT 
-        'UserLoginHistory' AS [Relation],
- COUNT(*) AS [FK Verified],
-        'CASCADE' AS [Expected Delete],
-        fk.delete_referential_action_desc AS [Actual Delete],
-        CASE 
-     WHEN fk.delete_referential_action_desc = 'CASCADE' THEN '✅ CORRECT'
+      'UserLoginHistory' AS [Relation],
+     COUNT(*) AS [FK Verified],
+  'CASCADE' AS [Expected Delete],
+        MAX(fk.delete_referential_action_desc) AS [Actual Delete],
+     CASE 
+            WHEN MAX(fk.delete_referential_action_desc) = 'CASCADE' THEN '✅ CORRECT'
          ELSE '❌ INCORRECT'
         END AS [Status]
     FROM 
         sys.foreign_keys AS fk
     WHERE 
-        fk.name = 'FK_UserLoginHistories_AspNetUsers_UserId';
+   fk.name = 'FK_UserLoginHistories_AspNetUsers_UserId'
+    GROUP BY fk.name;
 END
 ELSE
 BEGIN
@@ -102,7 +103,7 @@ PRINT '';
 
 IF EXISTS (
     SELECT 1 
-    FROM sys.foreign_keys 
+ FROM sys.foreign_keys 
     WHERE name = 'FK_UserSessions_AspNetUsers_UserId'
 )
 BEGIN
@@ -110,17 +111,18 @@ BEGIN
     
     SELECT 
         'UserSession' AS [Relation],
-     COUNT(*) AS [FK Verified],
+        COUNT(*) AS [FK Verified],
         'CASCADE' AS [Expected Delete],
-        fk.delete_referential_action_desc AS [Actual Delete],
+        MAX(fk.delete_referential_action_desc) AS [Actual Delete],
         CASE 
-        WHEN fk.delete_referential_action_desc = 'CASCADE' THEN '✅ CORRECT'
-            ELSE '❌ INCORRECT'
-     END AS [Status]
+    WHEN MAX(fk.delete_referential_action_desc) = 'CASCADE' THEN '✅ CORRECT'
+    ELSE '❌ INCORRECT'
+        END AS [Status]
     FROM 
         sys.foreign_keys AS fk
     WHERE 
-        fk.name = 'FK_UserSessions_AspNetUsers_UserId';
+        fk.name = 'FK_UserSessions_AspNetUsers_UserId'
+    GROUP BY fk.name;
 END
 ELSE
 BEGIN
@@ -143,20 +145,21 @@ IF EXISTS (
 )
 BEGIN
     PRINT '✅ FK_UserAuditLogs_AspNetUsers_UserId: EXISTS';
-  
+    
     SELECT 
-        'UserAuditLog (User)' AS [Relation],
-      COUNT(*) AS [FK Verified],
-     'CASCADE' AS [Expected Delete],
-        fk.delete_referential_action_desc AS [Actual Delete],
-   CASE 
-            WHEN fk.delete_referential_action_desc = 'CASCADE' THEN '✅ CORRECT'
-     ELSE '❌ INCORRECT'
- END AS [Status]
+    'UserAuditLog (User)' AS [Relation],
+  COUNT(*) AS [FK Verified],
+        'CASCADE' AS [Expected Delete],
+  MAX(fk.delete_referential_action_desc) AS [Actual Delete],
+        CASE 
+            WHEN MAX(fk.delete_referential_action_desc) = 'CASCADE' THEN '✅ CORRECT'
+      ELSE '❌ INCORRECT'
+        END AS [Status]
     FROM 
- sys.foreign_keys AS fk
+        sys.foreign_keys AS fk
     WHERE 
-        fk.name = 'FK_UserAuditLogs_AspNetUsers_UserId';
+     fk.name = 'FK_UserAuditLogs_AspNetUsers_UserId'
+    GROUP BY fk.name;
 END
 ELSE
 BEGIN
@@ -173,26 +176,27 @@ PRINT '--- RELACJA 4: ApplicationUser → UserAuditLog (modyfikator) ---';
 PRINT '';
 
 IF EXISTS (
-    SELECT 1 
+  SELECT 1 
     FROM sys.foreign_keys 
     WHERE name = 'FK_UserAuditLogs_AspNetUsers_ModifiedBy'
 )
 BEGIN
-    PRINT '✅ FK_UserAuditLogs_AspNetUsers_ModifiedBy: EXISTS';
+PRINT '✅ FK_UserAuditLogs_AspNetUsers_ModifiedBy: EXISTS';
 
     SELECT 
         'UserAuditLog (Modifier)' AS [Relation],
-    COUNT(*) AS [FK Verified],
-     'RESTRICT or NO_ACTION' AS [Expected Delete],
-        fk.delete_referential_action_desc AS [Actual Delete],
-        CASE 
-       WHEN fk.delete_referential_action_desc IN ('NO_ACTION', 'RESTRICT') THEN '✅ CORRECT'
-      ELSE '⚠️  CHECK NEEDED'
-     END AS [Status]
-FROM 
-        sys.foreign_keys AS fk
+        COUNT(*) AS [FK Verified],
+   'RESTRICT or NO_ACTION' AS [Expected Delete],
+    MAX(fk.delete_referential_action_desc) AS [Actual Delete],
+     CASE 
+  WHEN MAX(fk.delete_referential_action_desc) IN ('NO_ACTION', 'RESTRICT') THEN '✅ CORRECT'
+            ELSE '⚠️ CHECK NEEDED'
+        END AS [Status]
+    FROM 
+   sys.foreign_keys AS fk
     WHERE 
-        fk.name = 'FK_UserAuditLogs_AspNetUsers_ModifiedBy';
+        fk.name = 'FK_UserAuditLogs_AspNetUsers_ModifiedBy'
+    GROUP BY fk.name;
 END
 ELSE
 BEGIN
@@ -212,12 +216,12 @@ DECLARE @UserRoleFK INT = 0;
 DECLARE @RoleUserFK INT = 0;
 
 IF EXISTS (
- SELECT 1 
+    SELECT 1 
     FROM sys.foreign_keys 
     WHERE name = 'FK_AspNetUserRoles_AspNetUsers_UserId'
 )
 BEGIN
-    SET @UserRoleFK = 1;
+  SET @UserRoleFK = 1;
     PRINT '✅ FK_AspNetUserRoles_AspNetUsers_UserId: EXISTS';
 END
 ELSE
@@ -226,7 +230,7 @@ BEGIN
 END
 
 IF EXISTS (
-    SELECT 1 
+  SELECT 1 
     FROM sys.foreign_keys 
     WHERE name = 'FK_AspNetUserRoles_AspNetRoles_RoleId'
 )
@@ -240,14 +244,14 @@ BEGIN
 END
 
 SELECT 
- 'IdentityRole (Many-to-Many)' AS [Relation],
+    'IdentityRole (Many-to-Many)' AS [Relation],
     @UserRoleFK + @RoleUserFK AS [FKs Verified],
     2 AS [Expected FKs],
     CASE 
-    WHEN @UserRoleFK + @RoleUserFK = 2 THEN '✅ COMPLETE'
-        WHEN @UserRoleFK + @RoleUserFK = 1 THEN '⚠️  PARTIAL'
+        WHEN @UserRoleFK + @RoleUserFK = 2 THEN '✅ COMPLETE'
+        WHEN @UserRoleFK + @RoleUserFK = 1 THEN '⚠️ PARTIAL'
         ELSE '❌ MISSING'
-  END AS [Status];
+    END AS [Status];
 
 PRINT '';
 PRINT '';
@@ -266,12 +270,12 @@ BEGIN TRY
     INSERT INTO UserLoginHistories (UserId, UserEmail, LoginTime, IsSuccessful, RequiredTwoFactor)
     VALUES ('00000000-0000-0000-0000-000000000000', 'invalid@test.com', GETUTCDATE(), 1, 0);
     
-    PRINT '❌ FAILED: FK constraint does NOT work - orphan record created';
+  PRINT '❌ FAILED: FK constraint does NOT work - orphan record created';
     DELETE FROM UserLoginHistories WHERE UserId = '00000000-0000-0000-0000-000000000000';
 END TRY
 BEGIN CATCH
-  PRINT '✅ PASSED: FK constraint works correctly';
-    PRINT '   Error: ' + ERROR_MESSAGE();
+    PRINT '✅ PASSED: FK constraint works correctly';
+ PRINT '   Error: ' + ERROR_MESSAGE();
 END CATCH
 
 PRINT '';
@@ -299,7 +303,7 @@ BEGIN TRY
     VALUES ('00000000-0000-0000-0000-000000000000', 'invalid@test.com', 'admin', 'admin@test.com', GETUTCDATE(), 'TEST');
     
     PRINT '❌ FAILED: FK constraint does NOT work - orphan record created';
-DELETE FROM UserAuditLogs WHERE UserId = '00000000-0000-0000-0000-000000000000';
+    DELETE FROM UserAuditLogs WHERE UserId = '00000000-0000-0000-0000-000000000000';
 END TRY
 BEGIN CATCH
     PRINT '✅ PASSED: FK constraint works correctly';
@@ -327,7 +331,7 @@ DECLARE @TestEmail NVARCHAR(256) = 'cascade.test.comprehensive@airlinemanager.lo
 -- Create test user
 INSERT INTO AspNetUsers (
     Id, UserName, NormalizedUserName, Email, NormalizedEmail,
- EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp,
+    EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp,
     PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount,
     FirstName, LastName, MustChangePassword, PreferredTheme
 )
@@ -391,17 +395,17 @@ PRINT '---';
 
 -- UserLoginHistory
 IF @LoginHistoryAfter = 0 AND @LoginHistoryBefore > 0
- PRINT '✅ UserLoginHistory: Cascade Delete WORKS';
+    PRINT '✅ UserLoginHistory: Cascade Delete WORKS';
 ELSE IF @LoginHistoryBefore = 0
-    PRINT '⚠️  UserLoginHistory: No test data to verify';
+    PRINT '⚠️ UserLoginHistory: No test data to verify';
 ELSE
     PRINT '❌ UserLoginHistory: Cascade Delete FAILED';
 
 -- UserSession
 IF @SessionsAfter = 0 AND @SessionsBefore > 0
-    PRINT '✅ UserSession: Cascade Delete WORKS';
+ PRINT '✅ UserSession: Cascade Delete WORKS';
 ELSE IF @SessionsBefore = 0
-  PRINT '⚠️  UserSession: No test data to verify';
+    PRINT '⚠️ UserSession: No test data to verify';
 ELSE
     PRINT '❌ UserSession: Cascade Delete FAILED';
 
@@ -409,7 +413,7 @@ ELSE
 IF @AuditLogsAfter = 0 AND @AuditLogsBefore > 0
     PRINT '✅ UserAuditLog: Cascade Delete WORKS';
 ELSE IF @AuditLogsBefore = 0
-    PRINT '⚠️  UserAuditLog: No FK or no test data';
+    PRINT '⚠️ UserAuditLog: No FK or no test data';
 ELSE
     PRINT '❌ UserAuditLog: Cascade Delete FAILED';
 
@@ -429,13 +433,13 @@ PRINT '================================================';
 PRINT '';
 
 SELECT 
-    'Total Users' AS [Metric],
+  'Total Users' AS [Metric],
     COUNT(*) AS [Count]
 FROM AspNetUsers
 UNION ALL
 SELECT 
-    'Users with LoginHistory',
-COUNT(DISTINCT UserId)
+  'Users with LoginHistory',
+    COUNT(DISTINCT UserId)
 FROM UserLoginHistories
 UNION ALL
 SELECT 
@@ -444,7 +448,7 @@ SELECT
 FROM UserSessions
 UNION ALL
 SELECT 
-    'Users with AuditLogs',
+'Users with AuditLogs',
     COUNT(DISTINCT UserId)
 FROM UserAuditLogs
 UNION ALL
@@ -455,7 +459,7 @@ FROM UserLoginHistories
 UNION ALL
 SELECT 
     'Total Active Sessions',
-    COUNT(*)
+ COUNT(*)
 FROM UserSessions
 WHERE IsActive = 1
 UNION ALL
@@ -482,12 +486,12 @@ BEGIN
         u.UserName,
         u.Email,
         lh.LoginTime,
- lh.IpAddress,
-        CASE WHEN lh.IsSuccessful = 1 THEN 'Success' ELSE 'Failed' END AS [Status]
+lh.IpAddress,
+    CASE WHEN lh.IsSuccessful = 1 THEN 'Success' ELSE 'Failed' END AS [Status]
     FROM 
-        UserLoginHistories lh
- INNER JOIN 
-   AspNetUsers u ON lh.UserId = u.Id
+    UserLoginHistories lh
+    INNER JOIN 
+     AspNetUsers u ON lh.UserId = u.Id
     ORDER BY 
         lh.LoginTime DESC;
     PRINT '';
@@ -497,21 +501,21 @@ IF EXISTS (SELECT 1 FROM UserSessions WHERE IsActive = 1)
 BEGIN
     PRINT '--- Active Sessions with User Info ---';
     SELECT TOP 5
-        u.UserName,
-        u.Email,
+     u.UserName,
+      u.Email,
         s.SessionId,
-        s.CreatedAt,
-        s.LastActivityAt,
-   s.Device
+     s.CreatedAt,
+     s.LastActivityAt,
+        s.Device
     FROM 
         UserSessions s
     INNER JOIN 
         AspNetUsers u ON s.UserId = u.Id
     WHERE 
-        s.IsActive = 1
+    s.IsActive = 1
     ORDER BY 
-   s.LastActivityAt DESC;
-    PRINT '';
+        s.LastActivityAt DESC;
+  PRINT '';
 END
 
 IF EXISTS (SELECT 1 FROM UserAuditLogs)
@@ -520,13 +524,13 @@ BEGIN
     SELECT TOP 5
         u.UserName AS [User],
         u.Email AS [User Email],
- al.Action,
-        al.ModifiedAt,
-        al.ModifiedByEmail AS [Modified By]
-  FROM 
+        al.Action,
+ al.ModifiedAt,
+ al.ModifiedByEmail AS [Modified By]
+    FROM 
         UserAuditLogs al
     INNER JOIN 
-        AspNetUsers u ON al.UserId = u.Id
+     AspNetUsers u ON al.UserId = u.Id
     ORDER BY 
         al.ModifiedAt DESC;
     PRINT '';
@@ -558,12 +562,14 @@ IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_UserAuditLogs_AspNetU
 IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_UserAuditLogs_AspNetUsers_ModifiedBy')
     SET @ImplementedRelations = @ImplementedRelations + 1;
 
-IF EXISTS (
-    SELECT 1 FROM sys.foreign_keys 
-    WHERE name IN ('FK_AspNetUserRoles_AspNetUsers_UserId', 'FK_AspNetUserRoles_AspNetRoles_RoleId')
-    HAVING COUNT(*) = 2
-)
-  SET @ImplementedRelations = @ImplementedRelations + 1;
+-- Check for Identity Role FKs (count as 1 relation)
+DECLARE @IdentityRoleFKs INT = 0;
+IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AspNetUserRoles_AspNetUsers_UserId')
+    SET @IdentityRoleFKs = @IdentityRoleFKs + 1;
+IF EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_AspNetUserRoles_AspNetRoles_RoleId')
+    SET @IdentityRoleFKs = @IdentityRoleFKs + 1;
+IF @IdentityRoleFKs = 2
+    SET @ImplementedRelations = @ImplementedRelations + 1;
 
 PRINT 'IMPLEMENTATION PROGRESS:';
 PRINT '---';
@@ -601,14 +607,10 @@ ELSE
     PRINT '4. UserAuditLog (modyfikator): ❌ MISSING';
 
 -- Relation 5
-IF EXISTS (
-    SELECT 1 FROM sys.foreign_keys 
-    WHERE name IN ('FK_AspNetUserRoles_AspNetUsers_UserId', 'FK_AspNetUserRoles_AspNetRoles_RoleId')
-    HAVING COUNT(*) = 2
-)
-PRINT '5. IdentityRole (Many-to-Many): ✅ IMPLEMENTED';
+IF @IdentityRoleFKs = 2
+    PRINT '5. IdentityRole (Many-to-Many): ✅ IMPLEMENTED';
 ELSE
-    PRINT '5. IdentityRole (Many-to-Many): ⚠️  PARTIAL/MISSING';
+    PRINT '5. IdentityRole (Many-to-Many): ⚠️ PARTIAL/MISSING';
 
 PRINT '';
 PRINT '================================================';
