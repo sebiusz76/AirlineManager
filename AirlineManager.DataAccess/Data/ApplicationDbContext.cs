@@ -86,6 +86,12 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => e.LoginTime);
                 entity.HasIndex(e => e.IsSuccessful);
+
+                // Configure One-to-Many relationship: ApplicationUser -> UserLoginHistory
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.LoginHistories)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<UserSession>(entity =>

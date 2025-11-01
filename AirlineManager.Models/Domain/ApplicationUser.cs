@@ -26,5 +26,9 @@ namespace AirlineManager.Models.Domain
         // "auto" = follow system preference, "light" = force light, "dark" = force dark
         [MaxLength(20)]
         public string PreferredTheme { get; set; } = "auto";
+
+        // Navigation Properties
+        // One-to-Many: User has many login history entries
+        public virtual ICollection<UserLoginHistory> LoginHistories { get; set; } = new List<UserLoginHistory>();
     }
 }
