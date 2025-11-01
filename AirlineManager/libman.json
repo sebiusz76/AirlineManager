@@ -18,6 +18,13 @@
         "font/fonts/bootstrap-icons.woff2"
       ],
       "destination": "wwwroot/lib/bootstrap-icons/"
+    },
+    {
+      "library": "qrcodejs@1.0.0",
+      "files": [
+        "qrcode.min.js"
+      ],
+      "destination": "wwwroot/lib/qrcodejs/"
     }
   ]
 }

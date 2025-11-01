@@ -20,7 +20,7 @@
 							<i class="bi bi-shield-lock auth-header-icon"></i>
 						</div>
 						<h2 class="fw-bold mb-2">Two-Factor Authentication</h2>
-						<p class="mb-0 opacity-75">Enter your authentication code</p>
+						<p class="mb-0 opacity-75">Secure your login with 2FA</p>
 					</div>
 
 					<div class="card-body p-4 p-md-5">
@@ -32,11 +32,16 @@
 						}
 
 						<div class="alert alert-info rounded-3 mb-4">
-							<i class="bi bi-info-circle me-2"></i>
-							<strong>Authenticator Code Required</strong>
-							<p class="mb-0 mt-2 small">
-								Open your authenticator app and enter the 6-digit code to continue.
-							</p>
+							<div class="d-flex align-items-start">
+								<i class="bi bi-info-circle-fill me-3 mt-1" style="font-size: 1.5rem;"></i>
+								<div>
+									<strong class="d-block mb-2">Authenticator Code Required</strong>
+									<p class="mb-0 small">
+										Open your authenticator app (Google Authenticator, Microsoft Authenticator, or Authy) 
+										and enter the 6-digit code to continue. Codes refresh every 30 seconds.
+									</p>
+								</div>
+							</div>
 						</div>
 
 						<form asp-action="LoginWith2fa" method="post">
@@ -45,31 +50,40 @@
 
 							<!-- 2FA Code Input -->
 							<div class="mb-4">
-								<label asp-for="TwoFactorCode" class="form-label fw-bold">
-									<i class="bi bi-key me-2"></i>Authentication Code
+								<label asp-for="TwoFactorCode" class="form-label fw-bold d-flex align-items-center">
+									<i class="bi bi-key-fill me-2 text-primary"></i>
+									<span>Authentication Code</span>
 								</label>
 								<input asp-for="TwoFactorCode"
 									   class="form-control form-control-lg text-center twofa-code-input"
 									   placeholder="000000"
 									   autocomplete="one-time-code"
+									   inputmode="numeric"
 									   maxlength="6"
+									   pattern="[0-9]{6}"
 									   autofocus />
 								<span asp-validation-for="TwoFactorCode" class="text-danger small"></span>
-								<small class="text-muted d-block mt-2">
-									<i class="bi bi-clock me-1"></i>Codes expire after 30 seconds
-								</small>
+								<div class="d-flex align-items-center justify-content-between mt-2">
+									<small class="text-muted">
+										<i class="bi bi-clock me-1"></i>Codes expire every 30 seconds
+									</small>
+									<small class="text-muted">
+										<i class="bi bi-shield-check me-1"></i>Secure
+									</small>
+								</div>
 							</div>
 
 							<!-- Remember Machine -->
 							<div class="mb-4">
-								<div class="form-check">
-									<input asp-for="RememberMachine" class="form-check-input" type="checkbox" />
-									<label asp-for="RememberMachine" class="form-check-label">
-										Trust this device for 30 days
+								<div class="form-check d-flex align-items-center">
+									<input asp-for="RememberMachine" class="form-check-input me-2" type="checkbox" id="rememberMachine" />
+									<label asp-for="RememberMachine" class="form-check-label" for="rememberMachine">
+										<strong>Trust this device for 30 days</strong>
 									</label>
 								</div>
-								<small class="text-muted d-block mt-1 ms-4">
-									Don't check this on public or shared computers
+								<small class="text-muted d-block mt-2 ms-4">
+									<i class="bi bi-exclamation-triangle me-1"></i>
+									Only check this on your personal, secure devices
 								</small>
 							</div>
 
@@ -80,7 +94,7 @@
 							<!-- Verify Button -->
 							<div class="d-grid gap-2 mb-4">
 								<button type="submit" class="btn btn-lg text-white btn-gradient-primary">
-									<i class="bi bi-check-circle me-2"></i>Verify Code
+									<i class="bi bi-check-circle-fill me-2"></i>Verify & Continue
 								</button>
 							</div>
 
@@ -94,15 +108,20 @@
 
 							<!-- Recovery Code Link -->
 							<div class="text-center">
+								<div class="mb-3">
+									<i class="bi bi-life-preserver text-warning" style="font-size: 2rem;"></i>
+								</div>
 								<p class="text-muted mb-2">
-									<i class="bi bi-life-preserver me-1"></i>
-									Lost access to your authenticator app?
+									<strong>Lost access to your authenticator app?</strong>
+								</p>
+								<p class="text-muted small mb-3">
+									Use one of your backup recovery codes to sign in
 								</p>
 								<a asp-action="LoginWithRecovery"
 								   asp-route-returnUrl="@Model.ReturnUrl"
 								   asp-route-userId="@Model.UserId"
-								   class="text-decoration-none fw-bold">
-									Use a Recovery Code <i class="bi bi-arrow-right"></i>
+								   class="btn btn-outline-warning">
+									<i class="bi bi-unlock-fill me-2"></i>Use a Recovery Code
 								</a>
 							</div>
 						</form>
@@ -123,21 +142,57 @@
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script>
-		// Auto-format 2FA code (add spaces for readability)
-		document.querySelector('input[name="TwoFactorCode"]')?.addEventListener('input', function(e) {
-			// Remove non-digits
-			let value = e.target.value.replace(/\D/g, '');
-			// Limit to 6 digits
-			value = value.substring(0, 6);
-			e.target.value = value;
-		});
+		// Enhanced 2FA code input handling
+		(function() {
+			const codeInput = document.querySelector('input[name="TwoFactorCode"]');
+			if (!codeInput) return;
 
-		// Auto-submit when 6 digits entered
-		document.querySelector('input[name="TwoFactorCode"]')?.addEventListener('input', function(e) {
-			if (e.target.value.length === 6) {
-				// Optional: auto-submit after a short delay
-				// setTimeout(() => e.target.form.submit(), 500);
-			}
-		});
+			// Auto-format 2FA code (remove non-digits)
+			codeInput.addEventListener('input', function(e) {
+				// Remove non-digits
+				let value = e.target.value.replace(/\D/g, '');
+				// Limit to 6 digits
+				value = value.substring(0, 6);
+				e.target.value = value;
+
+				// Visual feedback when 6 digits entered
+				if (value.length === 6) {
+					e.target.classList.add('is-valid');
+					// Optional: auto-submit after a short delay
+					// setTimeout(() => e.target.form.submit(), 300);
+				} else {
+					e.target.classList.remove('is-valid');
+				}
+			});
+
+			// Paste handler to clean up pasted codes
+			codeInput.addEventListener('paste', function(e) {
+				setTimeout(() => {
+					let value = e.target.value.replace(/\D/g, '');
+					value = value.substring(0, 6);
+					e.target.value = value;
+					
+					if (value.length === 6) {
+						e.target.classList.add('is-valid');
+					}
+				}, 10);
+			});
+
+			// Focus effect
+			codeInput.addEventListener('focus', function() {
+				this.select();
+			});
+
+			// Prevent non-numeric input
+			codeInput.addEventListener('keypress', function(e) {
+				if (!/[0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab') {
+					e.preventDefault();
+				}
+			});
+
+			// Show countdown timer (optional enhancement)
+			// This could show time remaining for current TOTP code
+			// Implementation would require server-side sync or client estimation
+		})();
 	</script>
 }

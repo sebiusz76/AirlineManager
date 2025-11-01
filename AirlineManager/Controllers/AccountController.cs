@@ -665,6 +665,7 @@ namespace AirlineManager.Controllers
         [HttpPost]
         [Authorize]
         [Route("Account/Generate2faAjax")]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Generate2faAjax()
         {
             var user = await _userManager.GetUserAsync(User);

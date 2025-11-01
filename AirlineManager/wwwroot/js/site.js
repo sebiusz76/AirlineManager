@@ -340,7 +340,156 @@
 
     // Cookie consent object
     const CookieConsent = {
-        // ...existing code...
+        init: function () {
+            // Check if consent has already been given
+            const consent = this.getConsent();
+     
+          if (!consent) {
+                // Show the banner if no consent recorded
+       this.showBanner();
+  } else {
+        // Check if consent has expired
+   const consentDate = this.getConsentDate();
+        if (consentDate) {
+const expiryDate = new Date(consentDate);
+        expiryDate.setDate(expiryDate.getDate() + CONSENT_EXPIRY_DAYS);
+        
+          if (new Date() > expiryDate) {
+   // Consent expired, show banner again
+         this.revokeConsent();
+ this.showBanner();
+             }
+                }
+            }
+
+   // Attach event listeners
+            this.attachEventListeners();
+     },
+
+        showBanner: function () {
+  const banner = document.getElementById('cookieConsent');
+      if (banner) {
+            banner.classList.add('show');
+       }
+        },
+
+        hideBanner: function () {
+         const banner = document.getElementById('cookieConsent');
+      if (banner) {
+          banner.classList.remove('show');
+        
+       // Add fade out animation
+       banner.style.animation = 'slideDown 0.4s ease-out';
+              setTimeout(() => {
+                banner.style.display = 'none';
+    }, 400);
+            }
+      },
+
+    attachEventListeners: function () {
+            const acceptButton = document.getElementById('acceptCookies');
+            const declineButton = document.getElementById('declineCookies');
+
+            if (acceptButton) {
+      acceptButton.addEventListener('click', () => {
+            this.acceptCookies();
+    });
+      }
+
+  if (declineButton) {
+    declineButton.addEventListener('click', () => {
+    this.declineCookies();
+    });
+   }
+        },
+
+        acceptCookies: function () {
+            this.setConsent('accepted');
+        this.hideBanner();
+      
+            // Show subtle notification
+      if (typeof Swal !== 'undefined') {
+           const toast = Swal.mixin({
+   toast: true,
+      position: 'top-end',
+   showConfirmButton: false,
+  timer: 2000,
+   timerProgressBar: true
+              });
+
+   toast.fire({
+   icon: 'success',
+        title: 'Cookie Preferences Saved',
+         text: 'All cookies accepted'
+       });
+     }
+         
+     console.log('Cookies accepted - all tracking and analytics enabled');
+        },
+
+        declineCookies: function () {
+  this.setConsent('necessary');
+            this.hideBanner();
+            
+         // Show subtle notification
+            if (typeof Swal !== 'undefined') {
+        const toast = Swal.mixin({
+     toast: true,
+      position: 'top-end',
+             showConfirmButton: false,
+          timer: 2000,
+               timerProgressBar: true
+    });
+
+     toast.fire({
+   icon: 'info',
+            title: 'Cookie Preferences Saved',
+     text: 'Only necessary cookies enabled'
+    });
+            }
+     
+            console.log('Only necessary cookies accepted - tracking and analytics disabled');
+        },
+
+        setConsent: function (value) {
+            localStorage.setItem(COOKIE_CONSENT_KEY, value);
+            localStorage.setItem(COOKIE_CONSENT_DATE_KEY, new Date().toISOString());
+      },
+
+    getConsent: function () {
+            return localStorage.getItem(COOKIE_CONSENT_KEY);
+   },
+
+        getConsentDate: function () {
+       return localStorage.getItem(COOKIE_CONSENT_DATE_KEY);
+        },
+
+        revokeConsent: function () {
+       localStorage.removeItem(COOKIE_CONSENT_KEY);
+      localStorage.removeItem(COOKIE_CONSENT_DATE_KEY);
+     
+            // Show banner again
+    this.showBanner();
+      
+          // Show notification
+      if (typeof Swal !== 'undefined') {
+    const toast = Swal.mixin({
+        toast: true,
+     position: 'top-end',
+  showConfirmButton: false,
+timer: 3000,
+    timerProgressBar: true
+                });
+
+   toast.fire({
+   icon: 'info',
+ title: 'Cookie Consent Revoked',
+           text: 'Please choose your cookie preferences again'
+           });
+      }
+     
+      console.log('Cookie consent revoked - please select preferences again');
+        }
     };
 
     // Initialize when DOM is ready
@@ -358,7 +507,10 @@
             CookieConsent.revokeConsent();
         },
         getConsent: function () {
-            return CookieConsent.getConsent();
+        return CookieConsent.getConsent();
+        },
+        init: function () {
+       CookieConsent.init();
         }
     };
 })();

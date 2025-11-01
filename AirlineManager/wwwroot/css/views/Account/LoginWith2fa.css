@@ -1,6 +1,6 @@
 /* ============================================
    ACCOUNT/LOGIN WITH 2FA VIEW STYLES
-   2FA-specific styles (common auth styles in auth-shared.css)
+ 2FA-specific styles (common auth styles in auth-shared.css)
  ============================================ */
 
 /* Import shared auth styles */
@@ -8,22 +8,258 @@
 
 /* 2FA Code input specific styles */
 .twofa-code-input {
-    font-size: 1.5rem;
+    font-size: 2rem;
+    letter-spacing: 0.8rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    padding: 1.25rem;
+    text-align: center;
+    background: linear-gradient(145deg, #f8f9fa, #ffffff);
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.twofa-code-input:focus {
+ font-size: 2.2rem;
+    letter-spacing: 1rem;
+    border-color: var(--color-primary-main);
+    box-shadow: 0 0 20px rgba(42, 82, 152, 0.3), 0 0 0 0.25rem rgba(42, 82, 152, 0.15);
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  animation: pulseFocus 2s ease-in-out infinite;
+}
+
+/* Enhanced pulse animation for code input */
+@keyframes pulseFocus {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(42, 82, 152, 0.3), 0 0 0 0.25rem rgba(42, 82, 152, 0.15);
+    }
+    50% {
+        transform: scale(1.01);
+        box-shadow: 0 0 30px rgba(42, 82, 152, 0.4), 0 0 0 0.35rem rgba(42, 82, 152, 0.2);
+    }
+}
+
+/* Code countdown visual effect */
+.twofa-code-input::placeholder {
+    font-size: 1.8rem;
     letter-spacing: 0.5rem;
-    font-family: monospace;
+    opacity: 0.4;
 }
 
-/* Code input animation */
-input[asp-for="TwoFactorCode"]:focus {
-    animation: pulse var(--transition-normal);
+/* Enhanced alert styles for 2FA page */
+.auth-container .alert {
+    border-radius: var(--radius-lg);
+    border: none;
+    animation: slideInDown 0.5s ease-out;
 }
 
-@keyframes pulse {
+@keyframes slideInDown {
+ from {
+        opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Info alert with gradient */
+.auth-container .alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-left: 4px solid #0c5460;
+}
+
+/* Success alert with gradient */
+.auth-container .alert-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-left: 4px solid #155724;
+}
+
+/* Warning alert with gradient */
+.auth-container .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-left: 4px solid #856404;
+}
+
+/* Enhanced card styling for 2FA */
+.auth-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* Shield icon animation in header */
+.auth-header-icon {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+    animation: iconFloatBounce 3s ease-in-out infinite;
+}
+
+@keyframes iconFloatBounce {
+    0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    }
+25% {
+      transform: translateY(-10px) rotate(5deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+}
+
+/* Checkbox styling enhancement */
+.form-check-input {
+    width: 1.25em;
+    height: 1.25em;
+    border: 2px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+    background-color: var(--color-primary-main);
+    border-color: var(--color-primary-main);
+    box-shadow: 0 0 10px rgba(42, 82, 152, 0.5);
+}
+
+.form-check-label {
+    padding-left: 0.5rem;
+    user-select: none;
+}
+
+/* Link hover effects */
+.auth-container a {
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.auth-container a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+ height: 2px;
+    background: currentColor;
+ transition: width 0.3s ease;
+}
+
+.auth-container a:hover::after {
+    width: 100%;
+}
+
+/* Button enhancements */
+.btn-gradient-primary {
+    box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.btn-gradient-primary:hover {
+    box-shadow: 0 6px 20px rgba(42, 82, 152, 0.4);
+    transform: translateY(-3px);
+}
+
+/* Loading state animation (optional enhancement) */
+.btn-gradient-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    animation: pulseDisabled 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDisabled {
+    0%, 100% {
+opacity: 0.7;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+    .twofa-code-input {
+        font-size: 1.5rem;
+        letter-spacing: 0.5rem;
+   padding: 1rem;
+    }
+    
+    .twofa-code-input:focus {
+ font-size: 1.7rem;
+        letter-spacing: 0.6rem;
+  }
+    
+    .auth-header-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* Dark mode support */
+[data-bs-theme="dark"] .twofa-code-input,
+[data-bs-theme="dark-slate"] .twofa-code-input,
+[data-bs-theme="dark-midnight"] .twofa-code-input {
+    background: linear-gradient(145deg, #2d3748, #1a202c);
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .twofa-code-input:focus,
+[data-bs-theme="dark-slate"] .twofa-code-input:focus,
+[data-bs-theme="dark-midnight"] .twofa-code-input:focus {
+    background: linear-gradient(145deg, #1a202c, #2d3748);
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 20px rgba(66, 153, 225, 0.4), 0 0 0 0.25rem rgba(66, 153, 225, 0.2);
+}
+
+[data-bs-theme="dark"] .twofa-code-input::placeholder,
+[data-bs-theme="dark-slate"] .twofa-code-input::placeholder,
+[data-bs-theme="dark-midnight"] .twofa-code-input::placeholder {
+    color: #718096;
+}
+
+/* Success checkmark animation (for future use) */
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-checkmark {
+    animation: checkmark 0.5s ease-out;
+}
+
+/* Timer countdown visual (for future countdown feature) */
+.code-timer {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: #856404;
+    animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
     0%, 100% {
         transform: scale(1);
     }
-
     50% {
-        transform: scale(1.02);
+        transform: scale(1.05);
     }
 }
