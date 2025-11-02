@@ -3,5 +3,6 @@
   <Project Path="AirlineManager.Middleware/AirlineManager.Middleware.csproj" Id="c45ab1b2-509a-4743-958f-a8202eb492e7" />
   <Project Path="AirlineManager.Models/AirlineManager.Models.csproj" Id="a2073ecb-7329-428f-a304-cf2101e6b2dc" />
   <Project Path="AirlineManager.Services/AirlineManager.Services.csproj" Id="a49dbbca-011f-4ff4-9f00-dbfd62d9154d" />
+  <Project Path="AirlineManager.Tests/AirlineManager.Tests.csproj" Id="3ffbf87a-2d47-427f-8054-8c72c77c0346" />
   <Project Path="AirlineManager/AirlineManager.csproj" />
 </Solution>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AirlineManager.Models.Domain
 {
@@ -57,5 +58,10 @@ namespace AirlineManager.Models.Domain
         /// True if user chose "Remember Me" during login
         /// </summary>
         public bool IsPersistent { get; set; }
+
+        // Navigation Property
+        // Many-to-One: Many sessions belong to one user
+        [ForeignKey(nameof(UserId))]
+        public virtual ApplicationUser? User { get; set; }
     }
 }

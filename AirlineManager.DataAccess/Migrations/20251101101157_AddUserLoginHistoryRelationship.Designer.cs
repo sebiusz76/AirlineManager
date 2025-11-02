@@ -4,6 +4,7 @@ using AirlineManager.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineManager.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251101101157_AddUserLoginHistoryRelationship")]
+    partial class AddUserLoginHistoryRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -809,40 +812,10 @@ namespace AirlineManager.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("AirlineManager.Models.Domain.UserAuditLog", b =>
-                {
-                    b.HasOne("AirlineManager.Models.Domain.ApplicationUser", "Modifier")
-                        .WithMany("ModifiedAuditLogs")
-                        .HasForeignKey("ModifiedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AirlineManager.Models.Domain.ApplicationUser", "User")
-                        .WithMany("AuditLogs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Modifier");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("AirlineManager.Models.Domain.UserLoginHistory", b =>
                 {
                     b.HasOne("AirlineManager.Models.Domain.ApplicationUser", "User")
                         .WithMany("LoginHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AirlineManager.Models.Domain.UserSession", b =>
-                {
-                    b.HasOne("AirlineManager.Models.Domain.ApplicationUser", "User")
-                        .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -903,13 +876,7 @@ namespace AirlineManager.DataAccess.Migrations
 
             modelBuilder.Entity("AirlineManager.Models.Domain.ApplicationUser", b =>
                 {
-                    b.Navigation("AuditLogs");
-
                     b.Navigation("LoginHistories");
-
-                    b.Navigation("ModifiedAuditLogs");
-
-                    b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
         }

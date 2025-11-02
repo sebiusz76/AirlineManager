@@ -51,6 +51,24 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.ModifiedBy);
                 entity.HasIndex(e => e.ModifiedAt);
                 entity.HasIndex(e => e.Action);
+
+                // Configure Multiple Relationships to ApplicationUser
+
+                // Relationship 1: ApplicationUser -> UserAuditLog (as subject)
+                // One user can have many audit logs about them
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.AuditLogs)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade) // Delete audit logs when user is deleted
+                    .IsRequired();
+
+                // Relationship 2: ApplicationUser -> UserAuditLog (as modifier)
+                // One user (admin) can create many audit log entries
+                entity.HasOne(e => e.Modifier)
+                    .WithMany(u => u.ModifiedAuditLogs)
+                    .HasForeignKey(e => e.ModifiedBy)
+                    .OnDelete(DeleteBehavior.Restrict) // Don't delete audit logs when modifier is deleted
+                    .IsRequired();
             });
 
             builder.Entity<AppConfiguration>(entity =>
@@ -86,6 +104,12 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => e.LoginTime);
                 entity.HasIndex(e => e.IsSuccessful);
+
+                // Configure One-to-Many relationship: ApplicationUser -> UserLoginHistory
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.LoginHistories)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<UserSession>(entity =>
@@ -110,6 +134,12 @@ namespace AirlineManager.DataAccess.Data
                 entity.HasIndex(e => e.SessionId).IsUnique();
                 entity.HasIndex(e => e.IsActive);
                 entity.HasIndex(e => e.ExpiresAt);
+
+                // Configure One-to-Many relationship: ApplicationUser -> UserSession
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.Sessions)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed default SMTP configuration
