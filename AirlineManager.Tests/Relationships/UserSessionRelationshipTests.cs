@@ -1,4 +1,4 @@
-﻿using AirlineManager.Models.Domain;
+using AirlineManager.Models.Domain;
 using AirlineManager.Tests.Infrastructure;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKey_UserSessions_AspNetUsers_UserId_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var foreignKeyName = "FK_UserSessions_AspNetUsers_UserId";
 
@@ -28,6 +30,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task EagerLoading_UserWithSessions_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("session.test@test.com");
 
@@ -67,6 +71,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task NavigationProperty_SessionToUser_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("session.nav@test.com");
 
@@ -102,6 +108,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKeyConstraint_ShouldPreventOrphanRecords()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var invalidUserId = "00000000-0000-0000-0000-000000000000";
 
@@ -128,6 +136,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task CascadeDelete_ShouldDeleteSessionsWhenUserDeleted()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("cascade.session@test.com");
 
@@ -175,6 +185,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task SessionId_ShouldBeUnique()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("unique.session@test.com");
         var sessionId = Guid.NewGuid().ToString();
@@ -216,6 +228,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task FilterActiveSessions_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("filter.session@test.com");
 
@@ -252,6 +266,8 @@ public class UserSessionRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task Index_OnSessionId_ShouldBeUnique()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange & Act
         var connection = Context.Database.GetDbConnection();
         await connection.OpenAsync();

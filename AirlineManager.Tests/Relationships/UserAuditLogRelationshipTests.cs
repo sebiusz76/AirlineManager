@@ -1,4 +1,4 @@
-﻿using AirlineManager.Models.Domain;
+using AirlineManager.Models.Domain;
 using AirlineManager.Tests.Infrastructure;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKey_UserAuditLogs_AspNetUsers_UserId_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var foreignKeyName = "FK_UserAuditLogs_AspNetUsers_UserId";
 
@@ -28,6 +30,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKey_UserAuditLogs_AspNetUsers_ModifiedBy_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var foreignKeyName = "FK_UserAuditLogs_AspNetUsers_ModifiedBy";
 
@@ -43,6 +47,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task EagerLoading_UserWithAuditLogs_AsSubject_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("audit.subject@test.com");
         var admin = await CreateTestUserAsync("audit.admin@test.com");
@@ -79,6 +85,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task EagerLoading_UserWithAuditLogs_AsModifier_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("audit.user2@test.com");
         var admin = await CreateTestUserAsync("audit.modifier@test.com");
@@ -115,6 +123,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task NavigationProperty_AuditLogToUser_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("audit.nav.user@test.com");
         var admin = await CreateTestUserAsync("audit.nav.admin@test.com");
@@ -152,6 +162,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task CascadeDelete_ForUserId_ShouldDeleteAuditLogs()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("cascade.audit.user@test.com");
         var admin = await CreateTestUserAsync("cascade.audit.admin@test.com");
@@ -198,6 +210,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task RestrictDelete_ForModifiedBy_ShouldPreventDeletion()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("restrict.audit.user@test.com");
         var admin = await CreateTestUserAsync("restrict.audit.admin@test.com");
@@ -226,6 +240,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task SelfAudit_UserModifiesOwnProfile_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("selfaudit@test.com");
 
@@ -263,6 +279,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task MultipleRelationships_ShouldBeIndependent()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user1 = await CreateTestUserAsync("multi.user1@test.com");
         var user2 = await CreateTestUserAsync("multi.user2@test.com");
@@ -316,6 +334,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task Index_OnUserId_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange & Act
         var connection = Context.Database.GetDbConnection();
         await connection.OpenAsync();
@@ -343,6 +363,8 @@ WHERE object_id = OBJECT_ID('UserAuditLogs')
     [Fact]
     public async Task Index_OnModifiedBy_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange & Act
         var connection = Context.Database.GetDbConnection();
         await connection.OpenAsync();

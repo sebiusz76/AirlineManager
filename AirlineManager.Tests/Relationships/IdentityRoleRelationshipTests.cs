@@ -1,4 +1,4 @@
-﻿using AirlineManager.Tests.Infrastructure;
+using AirlineManager.Tests.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKey_AspNetUserRoles_AspNetUsers_UserId_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var foreignKeyName = "FK_AspNetUserRoles_AspNetUsers_UserId";
 
@@ -28,6 +30,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task ForeignKey_AspNetUserRoles_AspNetRoles_RoleId_ShouldExist()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var foreignKeyName = "FK_AspNetUserRoles_AspNetRoles_RoleId";
 
@@ -42,6 +46,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task UserManager_AddToRole_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("role.test@test.com");
 
@@ -67,6 +73,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task UserManager_GetRoles_ShouldReturnUserRoles()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("multirole.test@test.com");
         var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -97,6 +105,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task UserManager_RemoveFromRole_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("removerole.test@test.com");
 
@@ -127,6 +137,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task CascadeDelete_User_ShouldRemoveUserRoles()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("cascade.user@test.com");
 
@@ -160,6 +172,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task CascadeDelete_Role_ShouldRemoveUserRoles()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("cascade.role@test.com");
 
@@ -192,6 +206,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task MultipleUsersInRole_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user1 = await CreateTestUserAsync("multi1.role@test.com");
         var user2 = await CreateTestUserAsync("multi2.role@test.com");
@@ -223,6 +239,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task UserInMultipleRoles_ShouldWork()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("multiroles.user@test.com");
         var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -257,6 +275,8 @@ public class IdentityRoleRelationshipTests : DatabaseTestBase
     [Fact]
     public async Task UserRoles_CompositeKey_ShouldPreventDuplicates()
     {
+        SkipIfDatabaseNotAvailable();
+
         // Arrange
         var user = await CreateTestUserAsync("duplicate.role@test.com");
 
