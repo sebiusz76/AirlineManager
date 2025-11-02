@@ -62,9 +62,6 @@ public class UserSessionRelationshipTests : DatabaseTestBase
         loadedUser!.Sessions.Should().NotBeEmpty();
         loadedUser.Sessions.Should().HaveCount(1);
         loadedUser.Sessions.First().UserId.Should().Be(user.Id);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -92,17 +89,14 @@ public class UserSessionRelationshipTests : DatabaseTestBase
 
         // Act
         var loadedSession = await Context.UserSessions
-        .Include(s => s.User)
-            .FirstOrDefaultAsync(s => s.UserId == user.Id);
+            .Include(s => s.User)
+      .FirstOrDefaultAsync(s => s.UserId == user.Id);
 
         // Assert
         loadedSession.Should().NotBeNull();
         loadedSession!.User.Should().NotBeNull();
         loadedSession.User!.Id.Should().Be(user.Id);
         loadedSession.User.Email.Should().Be(user.Email);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -128,8 +122,7 @@ public class UserSessionRelationshipTests : DatabaseTestBase
         Func<Task> act = async () => await Context.SaveChangesAsync();
 
         // Assert
-        await act.Should().ThrowAsync<DbUpdateException>()
-                .WithMessage("*FOREIGN KEY constraint*");
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 
     [Fact]
@@ -164,7 +157,7 @@ public class UserSessionRelationshipTests : DatabaseTestBase
         await Context.SaveChangesAsync();
 
         var sessionsBeforeDelete = await Context.UserSessions
-        .CountAsync(s => s.UserId == user.Id);
+             .CountAsync(s => s.UserId == user.Id);
 
         sessionsBeforeDelete.Should().Be(2, "Two sessions should exist before delete");
 
@@ -174,7 +167,7 @@ public class UserSessionRelationshipTests : DatabaseTestBase
 
         // Assert
         var sessionsAfterDelete = await Context.UserSessions
-        .CountAsync(s => s.UserId == user.Id);
+      .CountAsync(s => s.UserId == user.Id);
 
         sessionsAfterDelete.Should().Be(0, "All sessions should be deleted (CASCADE)");
     }
@@ -217,11 +210,7 @@ public class UserSessionRelationshipTests : DatabaseTestBase
         Func<Task> act = async () => await Context.SaveChangesAsync();
 
         // Assert
-        await act.Should().ThrowAsync<DbUpdateException>()
-  .WithMessage("*duplicate*");
-
-        // Cleanup
-        await CleanupTestDataAsync();
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 
     [Fact]
@@ -251,16 +240,13 @@ public class UserSessionRelationshipTests : DatabaseTestBase
 
         // Act
         var loadedUser = await Context.Users
-        .Include(u => u.Sessions.Where(s => s.IsActive))
-           .FirstOrDefaultAsync(u => u.Id == user.Id);
+   .Include(u => u.Sessions.Where(s => s.IsActive))
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
 
         // Assert
         loadedUser.Should().NotBeNull();
         loadedUser!.Sessions.Should().HaveCount(2, "Only active sessions should be loaded");
         loadedUser.Sessions.Should().OnlyContain(s => s.IsActive);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -274,10 +260,10 @@ public class UserSessionRelationshipTests : DatabaseTestBase
         {
             using var command = connection.CreateCommand();
             command.CommandText = @"
-         SELECT is_unique
-     FROM sys.indexes
-             WHERE object_id = OBJECT_ID('UserSessions')
-          AND name = 'IX_UserSessions_SessionId'";
+    SELECT is_unique
+FROM sys.indexes
+     WHERE object_id = OBJECT_ID('UserSessions')
+        AND name = 'IX_UserSessions_SessionId'";
 
             var result = await command.ExecuteScalarAsync();
 

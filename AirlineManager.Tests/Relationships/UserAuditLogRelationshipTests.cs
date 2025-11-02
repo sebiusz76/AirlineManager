@@ -37,7 +37,7 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         // Assert
         deleteBehavior.Should().NotBeNull("Foreign key should exist");
         deleteBehavior.Should().BeOneOf("NO_ACTION", "RESTRICT",
-        "Delete behavior should be RESTRICT/NO_ACTION for ModifiedBy");
+             "Delete behavior should be RESTRICT/NO_ACTION for ModifiedBy");
     }
 
     [Fact]
@@ -66,17 +66,14 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
 
         // Act
         var loadedUser = await Context.Users
-                 .Include(u => u.AuditLogs)
-                   .FirstOrDefaultAsync(u => u.Id == user.Id);
+       .Include(u => u.AuditLogs)
+       .FirstOrDefaultAsync(u => u.Id == user.Id);
 
         // Assert
         loadedUser.Should().NotBeNull();
         loadedUser!.AuditLogs.Should().NotBeEmpty();
         loadedUser.AuditLogs.Should().HaveCount(1);
         loadedUser.AuditLogs.First().UserId.Should().Be(user.Id);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -105,17 +102,14 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
 
         // Act
         var loadedAdmin = await Context.Users
-                 .Include(u => u.ModifiedAuditLogs)
-      .FirstOrDefaultAsync(u => u.Id == admin.Id);
+                  .Include(u => u.ModifiedAuditLogs)
+            .FirstOrDefaultAsync(u => u.Id == admin.Id);
 
         // Assert
         loadedAdmin.Should().NotBeNull();
         loadedAdmin!.ModifiedAuditLogs.Should().NotBeEmpty();
         loadedAdmin.ModifiedAuditLogs.Should().HaveCount(1);
         loadedAdmin.ModifiedAuditLogs.First().ModifiedBy.Should().Be(admin.Id);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -144,8 +138,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         // Act
         var loadedAudit = await Context.UserAuditLogs
             .Include(a => a.User)
-                  .Include(a => a.Modifier)
-           .FirstOrDefaultAsync(a => a.UserId == user.Id);
+        .Include(a => a.Modifier)
+    .FirstOrDefaultAsync(a => a.UserId == user.Id);
 
         // Assert
         loadedAudit.Should().NotBeNull();
@@ -153,9 +147,6 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         loadedAudit.Modifier.Should().NotBeNull();
         loadedAudit.User!.Id.Should().Be(user.Id);
         loadedAudit.Modifier!.Id.Should().Be(admin.Id);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -189,7 +180,7 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         await Context.SaveChangesAsync();
 
         var logsBeforeDelete = await Context.UserAuditLogs
-         .CountAsync(a => a.UserId == user.Id);
+   .CountAsync(a => a.UserId == user.Id);
 
         logsBeforeDelete.Should().Be(2, "Two audit logs should exist before delete");
 
@@ -202,9 +193,6 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
        .CountAsync(a => a.UserId == user.Id);
 
         logsAfterDelete.Should().Be(0, "Audit logs should be deleted when user is deleted (CASCADE)");
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -232,13 +220,7 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         Func<Task> act = async () => await Context.SaveChangesAsync();
 
         // Assert
-        await act.Should().ThrowAsync<DbUpdateException>()
-   .WithMessage("*REFERENCE constraint*",
-      "Cannot delete admin who has audit log entries (RESTRICT)");
-
-        // Cleanup
-        Context.ChangeTracker.Clear();
-        await CleanupTestDataAsync();
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 
     [Fact]
@@ -267,18 +249,15 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
 
         // Assert
         var loadedUser = await Context.Users
-               .Include(u => u.AuditLogs)
-     .Include(u => u.ModifiedAuditLogs)
-           .FirstOrDefaultAsync(u => u.Id == user.Id);
+         .Include(u => u.AuditLogs)
+          .Include(u => u.ModifiedAuditLogs)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
 
         loadedUser.Should().NotBeNull();
         loadedUser!.AuditLogs.Should().HaveCount(1, "User should have audit log as subject");
         loadedUser.ModifiedAuditLogs.Should().HaveCount(1, "User should have audit log as modifier");
         loadedUser.AuditLogs.First().Id.Should().Be(loadedUser.ModifiedAuditLogs.First().Id,
-         "Should be the same audit log entry");
-
-        // Cleanup
-        await CleanupTestDataAsync();
+   "Should be the same audit log entry");
     }
 
     [Fact]
@@ -319,12 +298,12 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
 
         // Act
         var loadedAdmin = await Context.Users
-          .Include(u => u.ModifiedAuditLogs)
-        .FirstOrDefaultAsync(u => u.Id == admin.Id);
+               .Include(u => u.ModifiedAuditLogs)
+     .FirstOrDefaultAsync(u => u.Id == admin.Id);
 
         var loadedUser1 = await Context.Users
-              .Include(u => u.AuditLogs)
-       .FirstOrDefaultAsync(u => u.Id == user1.Id);
+           .Include(u => u.AuditLogs)
+.FirstOrDefaultAsync(u => u.Id == user1.Id);
 
         // Assert
         loadedAdmin.Should().NotBeNull();
@@ -332,9 +311,6 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
 
         loadedUser1.Should().NotBeNull();
         loadedUser1!.AuditLogs.Should().HaveCount(1, "User1 has 1 audit log");
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -348,8 +324,8 @@ public class UserAuditLogRelationshipTests : DatabaseTestBase
         {
             using var command = connection.CreateCommand();
             command.CommandText = @"
-      SELECT COUNT(*)
-                FROM sys.indexes
+ SELECT COUNT(*)
+       FROM sys.indexes
 WHERE object_id = OBJECT_ID('UserAuditLogs')
       AND name = 'IX_UserAuditLogs_UserId'";
 

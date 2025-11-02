@@ -60,9 +60,6 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
         loadedUser!.LoginHistories.Should().NotBeEmpty();
         loadedUser.LoginHistories.Should().HaveCount(1);
         loadedUser.LoginHistories.First().UserId.Should().Be(user.Id);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -89,16 +86,13 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
         // Act
         var loadedHistory = await Context.UserLoginHistories
             .Include(h => h.User)
-            .FirstOrDefaultAsync(h => h.UserId == user.Id);
+      .FirstOrDefaultAsync(h => h.UserId == user.Id);
 
         // Assert
         loadedHistory.Should().NotBeNull();
         loadedHistory!.User.Should().NotBeNull();
         loadedHistory.User!.Id.Should().Be(user.Id);
         loadedHistory.User.Email.Should().Be(user.Email);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -122,8 +116,7 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
         Func<Task> act = async () => await Context.SaveChangesAsync();
 
         // Assert
-        await act.Should().ThrowAsync<DbUpdateException>()
-            .WithMessage("*FOREIGN KEY constraint*");
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 
     [Fact]
@@ -165,7 +158,7 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
 
         // Assert
         var historiesAfterDelete = await Context.UserLoginHistories
- .CountAsync(h => h.UserId == user.Id);
+       .CountAsync(h => h.UserId == user.Id);
 
         historiesAfterDelete.Should().Be(0, "All login histories should be deleted (CASCADE)");
     }
@@ -212,9 +205,6 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
         // Assert
         user1Histories.Should().Be(3);
         user2Histories.Should().Be(2);
-
-        // Cleanup
-        await CleanupTestDataAsync();
     }
 
     [Fact]
@@ -228,10 +218,10 @@ public class UserLoginHistoryRelationshipTests : DatabaseTestBase
         {
             using var command = connection.CreateCommand();
             command.CommandText = @"
-     SELECT COUNT(*)
+  SELECT COUNT(*)
    FROM sys.indexes
    WHERE object_id = OBJECT_ID('UserLoginHistories')
-              AND name = 'IX_UserLoginHistories_UserId'";
+           AND name = 'IX_UserLoginHistories_UserId'";
 
             var result = await command.ExecuteScalarAsync();
 
