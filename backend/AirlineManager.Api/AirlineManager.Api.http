@@ -1,36 +1,35 @@
 @AirlineManager.Api_HostAddress = http://localhost:5056
+@token = 
 
-### Health Check
+### Health Check (jeœli dostêpny)
 # GET {{AirlineManager.Api_HostAddress}}/health
 # Accept: application/json
 
 ###
 
-### Flights Endpoints
-# Example: Get all flights
-# GET {{AirlineManager.Api_HostAddress}}/api/flights
-# Accept: application/json
+### ====================
+### AUTH ENDPOINTS
+### ====================
+
+### Register - Rejestracja nowego u¿ytkownika
+POST {{AirlineManager.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SecurePassword123!",
+  "firstName": "Jan",
+  "lastName": "Kowalski"
+}
 
 ###
 
-# Example: Get flight by id
-# GET {{AirlineManager.Api_HostAddress}}/api/flights/1
-# Accept: application/json
+### Login - Logowanie u¿ytkownika
+POST {{AirlineManager.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "email": "user@example.com",
+  "password": "SecurePassword123!"
+}
 
-### Bookings Endpoints
-# Example: Get all bookings
-# GET {{AirlineManager.Api_HostAddress}}/api/bookings
-# Accept: application/json
-
-###
-
-### Aircraft Endpoints
-# Example: Get all aircraft
-# GET {{AirlineManager.Api_HostAddress}}/api/aircraft
-# Accept: application/json
-
-###
-
-# Response

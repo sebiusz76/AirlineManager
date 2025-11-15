@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="AirlineManager.Api/AirlineManager.Api.csproj" />
+  <Project Path="AirlineManager.Application/AirlineManager.Application.csproj" />
+  <Project Path="AirlineManager.Domain/AirlineManager.Domain.csproj" />
+  <Project Path="AirlineManager.Infrastructure/AirlineManager.Infrastructure.csproj" />
 </Solution>
